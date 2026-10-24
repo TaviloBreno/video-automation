@@ -190,14 +190,21 @@ def _call_ollama(messages: list[dict], cfg: AppConfig) -> str:
         "model": cfg.llm.model,
         "messages": messages,
         "stream": False,
-        "format": "json",  # força saída JSON [citation:1][citation:6]
+        "format": "json",
         "options": {
             "temperature": cfg.llm.temperature,
-            "num_predict": cfg.llm.max_tokens,
+            "num_predict": min(cfg.llm.max_tokens, 1536),
+            "num_ctx": 8192,
         },
     }
     response = requests.post(url, json=payload, timeout=cfg.llm.timeout_seconds)
-    response.raise_for_status()
+    if response.status_code != 200:
+        err_detail = ""
+        try:
+            err_detail = response.json().get("error", response.text)
+        except Exception:
+            err_detail = response.text
+        raise RuntimeError(f"Ollama HTTP {response.status_code}: {err_detail}")
     data = response.json()
     return data["message"]["content"]
 

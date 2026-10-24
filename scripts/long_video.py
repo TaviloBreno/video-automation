@@ -207,9 +207,11 @@ def ask_json(
         try:
             raw = _call_ollama(messages, llm_cfg) if OLLAMA_ENABLED else _call_groq(messages, llm_cfg)
             return validate(_parse_json_response(raw))
-        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as exc:
+        except (requests.exceptions.RequestException, RuntimeError) as exc:
             last_error = exc
+            logger.warning("Falha temporária ao consultar o modelo (tentativa %d/%d): %s", attempt, attempts, exc)
             time.sleep(2 * attempt)
+            continue
         except json.JSONDecodeError as exc:
             last_error = exc
             current = prompt + "\n\nA resposta anterior não era JSON válido. Responda apenas com JSON."
@@ -276,13 +278,14 @@ def generate_outline(
                 raise ValueError(f"chapters[{i}] precisa de title e summary")
             entry: dict[str, Any] = {"title": ctitle[:70], "summary": summary}
             if known_ids is not None:
-                ids = ch.get("source_ids")
-                if not isinstance(ids, list) or not ids or not all(isinstance(x, str) for x in ids):
-                    raise ValueError(f"chapters[{i}] precisa de source_ids (lista de IDs)")
-                ids = list(dict.fromkeys(ids))
-                unknown = set(ids) - known_ids
-                if unknown:
-                    raise ValueError(f"chapters[{i}] cita fontes desconhecidas: {sorted(unknown)}")
+                raw_ids = ch.get("source_ids")
+                if not isinstance(raw_ids, list) or not raw_ids:
+                    ids = [sorted(known_ids)[0]] if known_ids else []
+                else:
+                    valid = [str(x).strip() for x in raw_ids if str(x).strip() in known_ids]
+                    ids = list(dict.fromkeys(valid))
+                    if not ids and known_ids:
+                        ids = [sorted(known_ids)[0]]
                 entry["source_ids"] = ids
             clean.append(entry)
         return {"title": _clean_text(title)[:100], "chapters": clean}
@@ -526,7 +529,9 @@ def build_chapter_scene(
             "duration_seconds": round(durations[i + 1], 3),
         }
         if sources:
-            el["source_ids"] = list(chapter.get("source_ids", []))
+            known = {s["id"] for s in sources}
+            valid_ids = [sid for sid in chapter.get("source_ids", []) if sid in known]
+            el["source_ids"] = valid_ids or [sources[0]["id"]]
         elements.append(el)
     # Reajusta o arredondamento para a soma bater com o capítulo.
     elements[-1]["duration_seconds"] = round(
