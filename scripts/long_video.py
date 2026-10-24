@@ -41,6 +41,9 @@ from scripts.llm_client import (
     _call_ollama,
     _parse_json_response,
 )
+from scripts.bg_music import get_or_create_music, mix_voice_and_music
+from scripts.image_provider import collect_chapter_images
+from scripts.metadata_generator import generate_youtube_metadata
 from scripts.render_scene import render_scene
 from scripts.research_web import search_sources
 from scripts.scene_validator import validate_scene
@@ -493,6 +496,7 @@ def build_chapter_scene(
     slot_seconds: float,
     palette: str,
     sources: list[dict[str, str]] | None,
+    image_info: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Cria a cena de um capítulo: título + frases-chave sincronizadas à fala.
 
@@ -528,6 +532,10 @@ def build_chapter_scene(
             "animation": animations[i % len(animations)],
             "duration_seconds": round(durations[i + 1], 3),
         }
+        if image_info and i == 0:
+            el["image_url"] = image_info.get("image_url") or image_info.get("local_path")
+            credit = f"{image_info.get('author', 'Domínio Público')} ({image_info.get('license', 'CC')})"
+            el["image_credit"] = credit[:50]
         if sources:
             known = {s["id"] for s in sources}
             valid_ids = [sid for sid in chapter.get("source_ids", []) if sid in known]
@@ -666,7 +674,19 @@ def run_long_video(
         },
     )
 
-    # 4) Render por capítulo ---------------------------------------------------
+    # 4) Imagens e Render por capítulo ----------------------------------------
+    enable_images = bool(params.get("enable_images", True))
+    bg_music = str(params.get("bg_music", "space_ambient"))
+    images_info: list[dict[str, Any] | None] = []
+
+    if enable_images:
+        progress(0.42, "Buscando imagens livres (Wikimedia Commons) para cada capítulo…")
+        try:
+            images_info = collect_chapter_images(chapters, topic, job_dir / "images")
+        except Exception as exc:
+            logger.warning("Falha ao coletar imagens: %s", exc)
+            images_info = [None] * len(chapters)
+
     chapter_videos: list[Path] = []
     for i, ch in enumerate(chapters):
         check()
@@ -676,14 +696,16 @@ def run_long_video(
         video_path = d / "chapter.mp4"
         sig_path = d / "chapter.sig"
         slot = compute_scene_duration(words_path, padding=pad)
-        scene = build_chapter_scene(ch, read_words(words_path), slot, palette, sources)
+        ch_img = images_info[i] if i < len(images_info) else None
+        scene = build_chapter_scene(ch, read_words(words_path), slot, palette, sources, image_info=ch_img)
         _save_json(scene_path, scene)
-        sig = _signature(scene_path, words_path, d / "voice.mp3", extra=f"{pad:.3f}|{palette}")
+        img_sig = ch_img.get("filename", "") if ch_img else ""
+        sig = _signature(scene_path, words_path, d / "voice.mp3", extra=f"{pad:.3f}|{palette}|{img_sig}")
         pct = 0.45 + 0.43 * (i / n)
         if video_path.exists() and sig_path.exists() and sig_path.read_text().strip() == sig:
             progress(pct, f"Capítulo {i + 1}/{n} já renderizado.")
         else:
-            progress(pct, f"Renderizando capítulo {i + 1}/{n}…")
+            progress(pct, f"Renderizando capítulo {i + 1}/{n} com visual…")
             build_composition(
                 str(scene_path), str(words_path), str(WIDE_TEMPLATE), str(COMPOSITION_PATH),
                 padding=pad,
@@ -692,7 +714,7 @@ def run_long_video(
             sig_path.write_text(sig, encoding="utf-8")
         chapter_videos.append(video_path)
 
-    # 5) Montagem -------------------------------------------------------------
+    # 5) Montagem de Áudio e Vídeo --------------------------------------------
     check()
     progress(0.89, "Montando o vídeo final…")
     offsets: list[float] = []
@@ -733,12 +755,26 @@ def run_long_video(
     run_ffmpeg(["-f", "concat", "-safe", "0", "-i", str(list_v), "-an", "-c:v", "copy",
                 str(long_silent)], "vídeo completo")
 
+    # Mixagem de Música de Fundo (Audio Ducking)
+    master_audio = long_audio
+    if bg_music and bg_music != "none":
+        progress(0.91, f"Mixando trilha sonora royalty-free ({bg_music}) com ducking…")
+        try:
+            total_dur = media_duration(long_silent)
+            music_file = get_or_create_music(bg_music, total_dur, job_dir)
+            if music_file:
+                mixed_audio = job_dir / "master_audio.m4a"
+                mix_voice_and_music(long_audio, music_file, mixed_audio, music_volume=0.16)
+                master_audio = mixed_audio
+        except Exception as exc:
+            logger.warning("Falha ao mixar música de fundo: %s, prosseguindo com narração pura", exc)
+
     check()
-    progress(0.92, "Queimando legendas (pode levar alguns minutos)…")
+    progress(0.93, "Queimando legendas dinâmicas…")
     final_path = job_dir / "video.mp4"
     add_subtitles(
         str(words_all_path), str(long_silent), str(job_dir / "subs.ass"),
-        str(final_path), legend_style, str(long_audio),
+        str(final_path), legend_style, str(master_audio),
         play_res_x=1920, play_res_y=1080, margin_v=70,
     )
     poster = job_dir / "poster.jpg"
@@ -756,13 +792,15 @@ def run_long_video(
         "voice": voice,
         "voice_rate": rate,
         "legend_style": legend_style,
+        "bg_music": bg_music,
         "target_seconds": target,
         "actual_seconds": round(actual, 2),
         "video": "video.mp4",
         "poster": "poster.jpg" if poster else None,
-        "audio": "long_audio.m4a",
+        "audio": master_audio.name,
         "words": "long_words.json",
         "sources": sources,
+        "images": [img for img in images_info if img],
         "chapters": [],
     }
     for i, ch in enumerate(chapters):
@@ -781,11 +819,23 @@ def run_long_video(
                 "narration": ch["narration"],
                 "key_points": ch["key_points"],
                 "source_ids": ch.get("source_ids", []),
+                "image": images_info[i] if i < len(images_info) else None,
                 "start": round(start, 3),
                 "duration": round(durations[i], 3),
                 "elements": elements,
             }
         )
+
+    # 6) SEO e Metadados do YouTube --------------------------------------------
+    progress(0.97, "Gerando títulos de alto clique, descrição com timestamps e tags para YouTube…")
+    try:
+        seo_data = generate_youtube_metadata(topic, manifest, images_info, cfg)
+        manifest["seo"] = seo_data
+        _save_json(job_dir / "youtube_seo.json", seo_data)
+    except Exception as exc:
+        logger.warning("Falha ao gerar SEO do YouTube: %s", exc)
+        manifest["seo"] = None
+
     _save_json(job_dir / "manifest.json", manifest)
     progress(1.0, f"Vídeo pronto: {actual / 60:.1f} min (pedido: {target / 60:.1f} min).")
     logger.info("Vídeo longo concluído: %s (%.1fs, meta %.1fs)", final_path, actual, target)

@@ -35,6 +35,7 @@ from scripts.llm_client import (
     _call_ollama,
     _parse_json_response,
 )
+from scripts.metadata_generator import generate_social_clip_metadata
 
 logger = logging.getLogger("viral_clips")
 
@@ -236,6 +237,8 @@ def render_viral_clip(
     output_path: Path,
     legend_style: str = "karaoke",
     clip_title: str = "",
+    clip_hook: str = "",
+    topic: str = "",
 ) -> Dict[str, Any]:
     """Corta o vídeo original, converte para 1080x1920 (Shorts) com fundo blur e queima legenda."""
     video_source = Path(video_source_path).resolve()
@@ -344,6 +347,14 @@ def render_viral_clip(
 
     actual_duration = _get_media_duration(output_file)
 
+    # Gera metadados otimizados para TikTok, Instagram Reels e YouTube Shorts
+    social_metadata = generate_social_clip_metadata(clip_title, clip_hook, topic)
+    meta_json_file = output_file.with_suffix(".json")
+    try:
+        meta_json_file.write_text(json.dumps(social_metadata, indent=2, ensure_ascii=False), encoding="utf-8")
+    except Exception as exc:
+        logger.warning("Falha ao salvar metadados sociais: %s", exc)
+
     return {
         "file": output_file.name,
         "path": str(output_file),
@@ -352,4 +363,5 @@ def render_viral_clip(
         "end": actual_end,
         "duration": round(actual_duration, 2),
         "size_bytes": output_file.stat().st_size,
+        "social_metadata": social_metadata,
     }

@@ -23,6 +23,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from scripts.add_subtitles import SUBTITLE_STYLES
+from scripts.bg_music import MUSIC_TRACKS
 from scripts.config_loader import load_config
 from scripts.long_video import JobCancelled, run_long_video
 from scripts.viral_clips import detect_viral_candidates, render_viral_clip
@@ -75,6 +76,14 @@ def get_config_info():
             "background": p.background,
         })
 
+    bg_music_list = [
+        {"id": "space_ambient", "name": "🌌 Espacial & Cósmico (Misterioso)"},
+        {"id": "cinematic_epic", "name": "🎬 Documentário Épico & Ciência"},
+        {"id": "inspirational", "name": "💡 Inspirador & Descobertas"},
+        {"id": "lofi_chill", "name": "☕ Lo-Fi & Foco Relaxante"},
+        {"id": "none", "name": "🔇 Nenhuma Música (Apenas Narração)"},
+    ]
+
     return jsonify({
         "palettes": palettes,
         "default_palette": cfg.video.default_palette,
@@ -82,6 +91,8 @@ def get_config_info():
         "default_voice": cfg.tts.voice,
         "legend_styles": list(SUBTITLE_STYLES.keys()),
         "default_legend_style": "karaoke",
+        "bg_music_options": bg_music_list,
+        "default_bg_music": "space_ambient",
     })
 
 
@@ -172,6 +183,8 @@ def generate_video():
         "voice": data.get("voice"),
         "legend_style": data.get("legend_style", "karaoke"),
         "research": bool(data.get("research", True)),
+        "bg_music": data.get("bg_music", "space_ambient"),
+        "enable_images": bool(data.get("enable_images", True)),
     }
 
     def _worker():
@@ -299,7 +312,16 @@ def render_short(job_id: str):
     start_time = float(data.get("start_time", 0.0))
     end_time = float(data.get("end_time", 30.0))
     title = data.get("title", "Corte Viral")
+    hook = data.get("hook", "")
     legend_style = data.get("legend_style", "karaoke")
+
+    manifest = {}
+    manifest_path = job_dir / "manifest.json"
+    if manifest_path.exists():
+        try:
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        except Exception:
+            pass
 
     shorts_dir = job_dir / "shorts"
     shorts_dir.mkdir(parents=True, exist_ok=True)
@@ -318,6 +340,8 @@ def render_short(job_id: str):
             output_path=out_file,
             legend_style=legend_style,
             clip_title=title,
+            clip_hook=hook,
+            topic=manifest.get("topic", title),
         )
         return jsonify({"success": True, "clip": result})
     except Exception as exc:
@@ -327,16 +351,24 @@ def render_short(job_id: str):
 
 @app.route("/api/jobs/<job_id>/shorts", methods=["GET"])
 def list_shorts(job_id: str):
-    """Lista todos os Shorts já gerados para este job."""
+    """Lista todos os Shorts já gerados para este job, com metadados para redes sociais."""
     job_dir = _get_job_path(job_id)
     shorts_dir = job_dir / "shorts"
     clips = []
     if shorts_dir.exists():
         for f in sorted(shorts_dir.glob("*.mp4")):
+            meta_file = f.with_suffix(".json")
+            social_meta = None
+            if meta_file.exists():
+                try:
+                    social_meta = json.loads(meta_file.read_text(encoding="utf-8"))
+                except Exception:
+                    pass
             clips.append({
                 "file": f.name,
                 "url": f"/media/{job_id}/shorts/{f.name}",
                 "size_bytes": f.stat().st_size,
+                "social_metadata": social_meta,
             })
     return jsonify({"shorts": clips})
 

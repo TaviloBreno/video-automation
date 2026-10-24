@@ -68,6 +68,17 @@ def build_composition(
                 f'<div class="clip-sources">FONTES  /  {citations}</div>'
             )
 
+        # Bloco de imagem com créditos de referência
+        image_src = el.get("image_url") or el.get("image_path") or ""
+        image_html = ""
+        if image_src:
+            credit = html.escape(str(el.get("image_credit") or "Domínio Público / CC"))
+            image_html = f'''
+      <div class="clip-media-container">
+        <img src="{html.escape(image_src)}" alt="Ilustração">
+        <div class="image-credit-badge">Fonte: <b>{credit}</b></div>
+      </div>'''
+
         top = {"top": "27%", "center": "51%", "bottom": "75%"}.get(pos, "51%")
         role = html.escape(role_labels.get(el.get("type"), "EVIDÊNCIA"))
 
@@ -81,6 +92,7 @@ def build_composition(
         <span class="clip-role">{role}</span>
       </div>
       <div class="clip-copy">{content}</div>
+      {image_html}
       {source_line}
     </div>''')
         cursor += dur

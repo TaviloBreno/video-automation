@@ -56,6 +56,9 @@ SCENE_SCHEMA: Dict[str, Any] = {
                         "items": {"type": "string", "minLength": 1},
                         "uniqueItems": True,
                     },
+                    "image_url": {"type": "string"},
+                    "image_path": {"type": "string"},
+                    "image_credit": {"type": "string"},
                 },
                 # Regra condicional: elementos de texto exigem content
                 "allOf": [
