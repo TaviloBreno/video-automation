@@ -122,6 +122,19 @@ async function loadConfig() {
       if (v.id === appConfig.default_voice) opt.selected = true;
       voiceSelect.appendChild(opt);
     });
+
+    // Preenche Músicas de Fundo Royalty-Free
+    const bgMusicSelect = document.getElementById("bgMusicSelect");
+    if (bgMusicSelect && appConfig.bg_music_options) {
+      bgMusicSelect.innerHTML = "";
+      appConfig.bg_music_options.forEach((m) => {
+        const opt = document.createElement("option");
+        opt.value = m.id;
+        opt.textContent = m.name;
+        if (m.id === appConfig.default_bg_music) opt.selected = true;
+        bgMusicSelect.appendChild(opt);
+      });
+    }
   } catch (err) {
     console.error("Erro ao carregar configurações:", err);
   }
@@ -135,6 +148,8 @@ async function handleCreateVideo(e) {
   const voice = document.getElementById("voiceSelect").value;
   const legendStyle = document.getElementById("legendStyleSelect").value;
   const research = document.getElementById("researchCheck").checked;
+  const bgMusic = document.getElementById("bgMusicSelect") ? document.getElementById("bgMusicSelect").value : "space_ambient";
+  const enableImages = document.getElementById("enableImagesCheck") ? document.getElementById("enableImagesCheck").checked : true;
 
   const activePaletteEl = document.querySelector(".palette-item.active");
   const palette = activePaletteEl ? activePaletteEl.dataset.id : appConfig.default_palette;
@@ -164,6 +179,8 @@ async function handleCreateVideo(e) {
         voice,
         legend_style: legendStyle,
         research,
+        bg_music: bgMusic,
+        enable_images: enableImages,
       }),
     });
 
@@ -280,6 +297,9 @@ function onJobCompleted(job) {
   renderChapters(manifest.chapters || []);
   renderSources(manifest.sources || []);
 
+  // Renderiza Pacote Completo de SEO & YouTube
+  renderSeoMetadata(manifest.youtube_metadata || {}, manifest);
+
   // Limpa candidatos anteriores e busca Shorts já gerados
   document.getElementById("viralCandidatesContainer").innerHTML = "";
   loadExistingShorts(currentJobId);
@@ -294,12 +314,28 @@ function renderChapters(chapters) {
     totalWords += (ch.narration || "").split(/\s+/).length;
     const div = document.createElement("div");
     div.className = "chapter-box";
+
+    let imageHtml = "";
+    if (ch.image_path || ch.image_url) {
+      const imgSource = ch.image_path ? `/media/${currentJobId}/${ch.image_path.split(/[\\/]/).pop()}` : ch.image_url;
+      const creditText = escapeHtml(ch.image_credit || "Imagem científica sob licença livre");
+      imageHtml = `
+        <div class="chapter-image-bar">
+          <img src="${imgSource}" alt="${escapeHtml(ch.title)}" class="chapter-thumb-img" onerror="this.style.display='none'">
+          <div class="chapter-image-info">
+            <span>📷 <b>Imagem Ilustrativa:</b> ${creditText}</span>
+          </div>
+        </div>
+      `;
+    }
+
     div.innerHTML = `
       <div class="chapter-box-header">
         <span class="chapter-title">${idx + 1}. ${escapeHtml(ch.title)}</span>
         <span class="chapter-timestamp">${formatTime(ch.start)} - ${formatTime(ch.start + ch.duration)}</span>
       </div>
       <p class="chapter-narration">${escapeHtml(ch.narration)}</p>
+      ${imageHtml}
     `;
     div.addEventListener("click", () => {
       const player = document.getElementById("mainVideoPlayer");
@@ -311,6 +347,67 @@ function renderChapters(chapters) {
   });
 
   document.getElementById("scriptWordCount").textContent = `${totalWords} palavras narradas`;
+}
+
+function renderSeoMetadata(seo, manifest) {
+  // 1. Títulos Alternativos de Alto CTR
+  const titlesList = document.getElementById("seoTitlesList");
+  titlesList.innerHTML = "";
+  const titles = seo.titles && seo.titles.length ? seo.titles : [manifest.title || manifest.topic];
+  titles.forEach((t) => {
+    const row = document.createElement("div");
+    row.className = "seo-title-row";
+    row.innerHTML = `
+      <span>${escapeHtml(t)}</span>
+      <button class="btn-copy">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+        </svg>
+        <span>Copiar</span>
+      </button>
+    `;
+    const btn = row.querySelector(".btn-copy");
+    btn.addEventListener("click", () => copyToClipboard(t, btn));
+    titlesList.appendChild(row);
+  });
+
+  // 2. Descrição Completa
+  const descArea = document.getElementById("seoDescriptionArea");
+  const fullDesc = seo.description || (manifest.chapters || []).map((c, i) => `${formatTime(c.start)} ${c.title}`).join("\n");
+  descArea.value = fullDesc;
+  const btnCopyDesc = document.getElementById("btnCopyDescription");
+  btnCopyDesc.onclick = () => copyToClipboard(fullDesc, btnCopyDesc);
+
+  // 3. Tags & Palavras-Chave
+  const tagsPills = document.getElementById("seoTagsPills");
+  tagsPills.innerHTML = "";
+  const tags = seo.tags || [];
+  tags.forEach((tag) => {
+    const span = document.createElement("span");
+    span.className = "tag-pill";
+    span.textContent = tag;
+    tagsPills.appendChild(span);
+  });
+  const btnCopyTags = document.getElementById("btnCopyTags");
+  btnCopyTags.onclick = () => copyToClipboard(tags.join(", "), btnCopyTags);
+
+  // 4. Hashtags
+  const hashtagsPills = document.getElementById("seoHashtagsPills");
+  hashtagsPills.innerHTML = "";
+  const hashtags = seo.hashtags || [];
+  hashtags.forEach((h) => {
+    const span = document.createElement("span");
+    span.className = "tag-pill";
+    span.textContent = h.startsWith("#") ? h : `#${h}`;
+    hashtagsPills.appendChild(span);
+  });
+  const btnCopyHash = document.getElementById("btnCopyHashtags");
+  btnCopyHash.onclick = () => copyToClipboard(hashtags.map((h) => (h.startsWith("#") ? h : `#${h}`)).join(" "), btnCopyHash);
+
+  // 5. Conceito de Thumbnail
+  const thumbConcept = document.getElementById("seoThumbnailConcept");
+  thumbConcept.textContent = seo.thumbnail_concept || "Crie uma imagem de alto contraste com o elemento central em grande destaque e texto com menos de 5 palavras.";
 }
 
 function renderSources(sources) {
@@ -439,6 +536,7 @@ async function loadExistingShorts(jobId) {
         file: s.file,
         url: s.url,
         title: s.file,
+        social_metadata: s.social_metadata,
       });
     });
     updateShortsBadgeCount();
@@ -453,16 +551,110 @@ function addShortToGrid(clip) {
   card.className = "short-card";
   const videoUrl = clip.url || `/media/${currentJobId}/shorts/${clip.file}`;
 
+  let socialHtml = "";
+  const sm = clip.social_metadata;
+  if (sm) {
+    const tiktokText = (sm.tiktok && sm.tiktok.caption) || "";
+    const reelsText = (sm.instagram_reels && sm.instagram_reels.caption) || "";
+    const ytText = sm.youtube_shorts ? `${sm.youtube_shorts.title || ""}\n\n${sm.youtube_shorts.description || ""}\n\n${(sm.youtube_shorts.hashtags || []).join(" ")}`.trim() : "";
+
+    socialHtml = `
+      <div class="short-social-box">
+        <div class="social-pills-nav">
+          <button type="button" class="social-pill-btn active" data-platform="tiktok">TikTok</button>
+          <button type="button" class="social-pill-btn" data-platform="reels">Reels</button>
+          <button type="button" class="social-pill-btn" data-platform="shorts">Shorts</button>
+        </div>
+        <div class="social-caption-display" data-current="tiktok">${escapeHtml(tiktokText)}</div>
+        <button type="button" class="btn-copy-social">📋 Copiar para TikTok</button>
+      </div>
+    `;
+  }
+
   card.innerHTML = `
     <div class="short-player-wrapper">
       <video src="${videoUrl}" controls playsinline preload="metadata"></video>
     </div>
     <div class="short-actions">
-      <span style="font-size:11px;color:var(--text-dim);">${escapeHtml(clip.title || clip.file)}</span>
+      <span style="font-size:11px;color:var(--text-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px;">
+        ${escapeHtml(clip.title || clip.file)}
+      </span>
       <a href="${videoUrl}" download="${clip.file}">Baixar 9:16</a>
     </div>
+    ${socialHtml}
   `;
+
+  if (sm) {
+    const pillBtns = card.querySelectorAll(".social-pill-btn");
+    const display = card.querySelector(".social-caption-display");
+    const btnCopy = card.querySelector(".btn-copy-social");
+
+    const platformTexts = {
+      tiktok: (sm.tiktok && sm.tiktok.caption) || "",
+      reels: (sm.instagram_reels && sm.instagram_reels.caption) || "",
+      shorts: sm.youtube_shorts ? `${sm.youtube_shorts.title || ""}\n\n${sm.youtube_shorts.description || ""}\n\n${(sm.youtube_shorts.hashtags || []).join(" ")}`.trim() : "",
+    };
+
+    pillBtns.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        pillBtns.forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        const plat = btn.dataset.platform;
+        display.dataset.current = plat;
+        display.textContent = platformTexts[plat] || "";
+        const label = plat === "tiktok" ? "TikTok" : plat === "reels" ? "Instagram Reels" : "YouTube Shorts";
+        btnCopy.textContent = `📋 Copiar para ${label}`;
+      });
+    });
+
+    btnCopy.addEventListener("click", () => {
+      const plat = display.dataset.current;
+      const textToCopy = platformTexts[plat] || "";
+      copyToClipboard(textToCopy, btnCopy);
+    });
+  }
+
   grid.prepend(card);
+}
+
+function copyToClipboard(text, btnElement) {
+  if (!text) return;
+
+  const originalContent = btnElement.innerHTML;
+  const doFeedback = () => {
+    btnElement.classList.add("copied");
+    btnElement.innerHTML = `<span>Copiado! ✓</span>`;
+    setTimeout(() => {
+      btnElement.classList.remove("copied");
+      btnElement.innerHTML = originalContent;
+    }, 2200);
+  };
+
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(doFeedback).catch(() => {
+      fallbackCopy(text);
+      doFeedback();
+    });
+  } else {
+    fallbackCopy(text);
+    doFeedback();
+  }
+}
+
+function fallbackCopy(text) {
+  const textArea = document.createElement("textarea");
+  textArea.value = text;
+  textArea.style.position = "fixed";
+  textArea.style.left = "-9999px";
+  document.body.appendChild(textArea);
+  textArea.focus();
+  textArea.select();
+  try {
+    document.execCommand("copy");
+  } catch (err) {
+    console.error("Falha ao copiar:", err);
+  }
+  document.body.removeChild(textArea);
 }
 
 function updateShortsBadgeCount() {

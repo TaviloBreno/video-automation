@@ -121,6 +121,15 @@
                   </select>
                 </div>
 
+                <!-- Trilha Sonora Royalty-Free -->
+                <div class="form-group">
+                  <label for="bgMusicSelect">Trilha Sonora Sem Direitos Autorais (Royalty-Free)</label>
+                  <select id="bgMusicSelect" class="custom-select">
+                    <!-- Injetado via JS -->
+                  </select>
+                  <span class="field-hint">Auto-Ducking dinâmico: o volume da música é atenuado de forma suave enquanto a voz narra.</span>
+                </div>
+
                 <!-- Estilo de Legenda -->
                 <div class="form-group">
                   <label for="legendStyleSelect">Estilo das Legendas</label>
@@ -131,12 +140,21 @@
                   </select>
                 </div>
 
+                <!-- Imagens Ilustrativas Livres -->
+                <div class="form-group checkbox-group">
+                  <label class="custom-checkbox">
+                    <input type="checkbox" id="enableImagesCheck" checked>
+                    <span class="checkmark"></span>
+                    <span class="label-text">Baixar e inserir imagens científicas reais (com créditos e licenças livres CC)</span>
+                  </label>
+                </div>
+
                 <!-- Pesquisa Web -->
                 <div class="form-group checkbox-group">
                   <label class="custom-checkbox">
                     <input type="checkbox" id="researchCheck" checked>
                     <span class="checkmark"></span>
-                    <span class="label-text">Pesquisa na Web ativa (adiciona referências e citações reais)</span>
+                    <span class="label-text">Pesquisa na Web ativa (adiciona referências e citações científicas reais)</span>
                   </label>
                 </div>
               </div>
@@ -230,7 +248,13 @@
                 <line x1="16" y1="17" x2="8" y2="17"></line>
                 <polyline points="10 9 9 9 8 9"></polyline>
               </svg>
-              Roteiro & Fontes
+              Roteiro & Imagens
+            </button>
+            <button class="tab-btn" data-tab="tabSeo">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+              </svg>
+              🚀 SEO & YouTube
             </button>
           </div>
 
@@ -289,7 +313,7 @@
           <div id="tabScript" class="tab-pane">
             <div class="script-view">
               <div class="script-header">
-                <h3>Estrutura do Roteiro</h3>
+                <h3>Estrutura do Roteiro & Imagens</h3>
                 <span id="scriptWordCount" class="badge">0 palavras</span>
               </div>
               <div id="chaptersList" class="chapters-accordion">
@@ -303,6 +327,78 @@
                   <!-- Fontes via JS -->
                 </div>
               </div>
+            </div>
+          </div>
+
+          <!-- Aba 4: SEO & Metadados YouTube -->
+          <div id="tabSeo" class="tab-pane">
+            <div class="seo-view">
+              <div class="seo-header-banner">
+                <div>
+                  <h3>Kit Completo de Publicação & SEO YouTube</h3>
+                  <p>Títulos com alto CTR, descrição otimizada com timestamps dos capítulos, créditos de imagem e tags prontas para colar no YouTube Studio.</p>
+                </div>
+              </div>
+
+              <!-- Títulos Alternativos CTR -->
+              <div class="seo-card">
+                <div class="seo-card-header">
+                  <h4>💡 Títulos de Alto Impacto (CTR Hooks)</h4>
+                  <span class="field-hint">Escolha o que melhor se adapta à sua linha editorial</span>
+                </div>
+                <div id="seoTitlesList" class="seo-titles-list">
+                  <!-- Injetado via JS -->
+                </div>
+              </div>
+
+              <!-- Descrição Completa -->
+              <div class="seo-card">
+                <div class="seo-card-header">
+                  <h4>📝 Descrição Completa (com Timestamps e Créditos)</h4>
+                  <button id="btnCopyDescription" class="btn-copy">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    <span>Copiar Descrição</span>
+                  </button>
+                </div>
+                <textarea id="seoDescriptionArea" class="seo-textarea" rows="12" readonly></textarea>
+              </div>
+
+              <!-- Tags e Hashtags -->
+              <div class="seo-grid-two">
+                <div class="seo-card">
+                  <div class="seo-card-header">
+                    <h4>🏷️ Tags & Palavras-Chave</h4>
+                    <button id="btnCopyTags" class="btn-copy">
+                      <span>Copiar Tags</span>
+                    </button>
+                  </div>
+                  <div id="seoTagsPills" class="tags-cloud"></div>
+                </div>
+
+                <div class="seo-card">
+                  <div class="seo-card-header">
+                    <h4>#️⃣ Hashtags Recomendadas</h4>
+                    <button id="btnCopyHashtags" class="btn-copy">
+                      <span>Copiar Hashtags</span>
+                    </button>
+                  </div>
+                  <div id="seoHashtagsPills" class="tags-cloud"></div>
+                </div>
+              </div>
+
+              <!-- Conceito de Thumbnail -->
+              <div class="seo-card">
+                <div class="seo-card-header">
+                  <h4>🎨 Ideia Visual para Thumbnail (Capa)</h4>
+                </div>
+                <div id="seoThumbnailConcept" class="thumbnail-concept-box">
+                  <!-- Injetado via JS -->
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
