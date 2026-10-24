@@ -25,7 +25,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from scripts.config_loader import load_config, ConfigError, AppConfig
+from scripts.config_loader import load_config, AppConfig
 
 ALLOWED_TYPES = {"title", "subtitle", "body", "image", "shape"}
 ALLOWED_POSITIONS = {"top", "center", "bottom"}
@@ -210,7 +210,7 @@ def parse_scene(description: str, cfg: AppConfig | None = None) -> Dict[str, Any
 
     - Usa Ollama local se OLLAMA_ENABLED=true.
     - Faz fallback para Groq se OLLAMA_ENABLED=false.
-    - Retry 2x em timeouts/erros de conexão.
+    - Retry 2x em timeouts, erros de conexão, JSON inválido e cena fora do schema.
     - Valida o schema mínimo antes de retornar.
 
     Lança RuntimeError se todas as tentativas falharem.
@@ -241,6 +241,12 @@ def parse_scene(description: str, cfg: AppConfig | None = None) -> Dict[str, Any
                 continue
             break
         except json.JSONDecodeError as exc:
+            last_error = exc
+            if attempt < MAX_RETRIES:
+                time.sleep(RETRY_DELAY_SECONDS * attempt)
+                continue
+            break
+        except ValueError as exc:
             last_error = exc
             if attempt < MAX_RETRIES:
                 time.sleep(RETRY_DELAY_SECONDS * attempt)

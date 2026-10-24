@@ -1,8 +1,13 @@
-#!/usr/bin/env python3
-"""Testes unitários do scene_validator (T1.3)."""
+"""Unit tests for scene and schema validation."""
+
+import json
+import sys
 
 import pytest
-from scripts.scene_validator import validate_scene, SceneValidationError
+from jsonschema import Draft202012Validator
+
+from scripts import scene_validator
+from scripts.scene_validator import SceneValidationError, validate_scene
 
 
 def _valid_scene():
@@ -71,3 +76,62 @@ def test_invalid_palette_and_content():
     messages = "\n".join(exc_info.value.errors)
     assert "palette" in messages
     assert "content" in messages
+
+
+@pytest.mark.parametrize("scene", [None, [], "scene", 42])
+def test_rejects_non_object_scene(scene):
+    with pytest.raises(SceneValidationError, match="esperado objeto"):
+        validate_scene(scene)
+
+
+def test_supports_custom_schema():
+    value = {"title": "custom value"}
+    assert validate_scene(value, {"type": "object", "required": ["title"]}) is value
+
+
+@pytest.mark.parametrize(
+    ("schema", "instance", "expected"),
+    [
+        ({"type": "object", "required": ["title"]}, {}, "campo obrigatório ausente"),
+        ({"enum": ["ok"]}, "bad", "valor inválido"),
+        ({"type": "string"}, 2, "tipo inválido"),
+        ({"type": "array", "minItems": 1}, [], "pelo menos 1"),
+        ({"type": "string", "minLength": 1}, "", "não pode ser vazio"),
+        ({"type": "number", "exclusiveMinimum": 0}, 0, "deve ser maior que 0"),
+        ({"type": "number", "minimum": 1}, 0, "maior ou igual a 1"),
+        ({"type": "number", "maximum": 1}, 2, "menor ou igual a 1"),
+        ({"type": "object", "additionalProperties": False}, {"extra": 1}, "Additional properties"),
+    ],
+)
+def test_formats_schema_errors(schema, instance, expected):
+    error = next(Draft202012Validator(schema).iter_errors(instance))
+    message = scene_validator._build_specific_message(error)
+    assert expected.lower() in message.lower()
+
+
+def test_formats_nested_error_path():
+    error = next(
+        Draft202012Validator(
+            {"type": "object", "properties": {"items": {"type": "array", "items": {"type": "string"}}}}
+        ).iter_errors({"items": [1]})
+    )
+    assert scene_validator._format_error_path(error) == "items[0]"
+
+
+def test_scene_validator_cli_reports_missing_invalid_and_valid_files(tmp_path, monkeypatch, capsys):
+    scene_path = tmp_path / "scene.json"
+    monkeypatch.setattr(sys, "argv", ["scene_validator.py", str(scene_path)])
+    assert scene_validator.main() == 1
+    assert "Arquivo não encontrado" in capsys.readouterr().out
+
+    scene_path.write_text("{", encoding="utf-8")
+    assert scene_validator.main() == 1
+    assert "JSON inválido" in capsys.readouterr().out
+
+    scene_path.write_text(json.dumps({"elements": []}), encoding="utf-8")
+    assert scene_validator.main() == 1
+    assert "Cena inválida" in capsys.readouterr().out
+
+    scene_path.write_text(json.dumps(_valid_scene()), encoding="utf-8")
+    assert scene_validator.main() == 0
+    assert "Cena válida" in capsys.readouterr().out

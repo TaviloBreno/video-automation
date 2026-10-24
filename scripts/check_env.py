@@ -5,10 +5,9 @@ Uso: python scripts/check_env.py
 """
 
 import platform
-import shutil
 import subprocess
 import sys
-from typing import Optional, Tuple
+from typing import Tuple
 
 MIN_PYTHON = (3, 11)
 
@@ -113,18 +112,18 @@ def main() -> int:
 
     for name, ok, version, help_text in checks:
         if ok:
-            print(f"✅ {name:8} {version}")
+            print(f"[OK]    {name:8} {version}")
         else:
             all_ok = False
-            print(f"❌ {name:8} {version}")
+            print(f"[ERRO]  {name:8} {version}")
             print(f"   Instalação:\n{help_text}\n")
 
     print("=" * 55)
     if all_ok:
-        print("✅ Todas as dependências estão OK.")
+        print("[OK] Todas as dependências estão instaladas.")
         return 0
     else:
-        print("❌ Uma ou mais dependências precisam de atenção.")
+        print("[ERRO] Uma ou mais dependências precisam de atenção.")
         return 1
 
 
