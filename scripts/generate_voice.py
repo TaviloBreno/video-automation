@@ -40,12 +40,26 @@ DEFAULT_FALLBACK_VOICE = "pt-BR-AntonioNeural"
 
 
 def _run_subreel_tts(text: str, voice: str, rate: str, pitch: str, mp3_path: Path, words_path: Path) -> subprocess.CompletedProcess:
+    # Garante formatação com sinal (+ ou -) e unidade
+    clean_rate = str(rate).strip()
+    if not clean_rate.endswith("%"):
+        clean_rate = f"{clean_rate}%"
+    if not (clean_rate.startswith("+") or clean_rate.startswith("-")):
+        clean_rate = f"+{clean_rate}"
+
+    clean_pitch = str(pitch).strip()
+    if not clean_pitch.endswith("Hz"):
+        clean_pitch = f"{clean_pitch}Hz"
+    if not (clean_pitch.startswith("+") or clean_pitch.startswith("-")):
+        clean_pitch = f"+{clean_pitch}"
+
+    # Usa --flag=valor para evitar que argparse trate taxas negativas como novos flags
     cmd = [
         "subreel", "tts",
         "--text-inline", text.strip(),
-        "--voice", voice,
-        "--rate", rate,
-        "--pitch", pitch,
+        f"--voice={voice}",
+        f"--rate={clean_rate}",
+        f"--pitch={clean_pitch}",
         "--out", str(mp3_path),
         "--timings", str(words_path),
     ]
