@@ -13,7 +13,10 @@ from urllib.parse import parse_qs, urlencode, urlsplit, urlunsplit
 import requests
 
 SEARCH_URL = "https://www.bing.com/search"
-USER_AGENT = "Mozilla/5.0 (compatible; VideoAutomationResearch/1.0)"
+USER_AGENT = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+)
 MAX_SNIPPET_LENGTH = 700
 MAX_TOPIC_LENGTH = 500
 _STOP_WORDS = {
@@ -25,7 +28,7 @@ _STOP_WORDS = {
     "historia", "importante", "importantes", "introduza", "portugues", "porque",
     "reels", "roteiro", "shorts", "simples", "video", "videos", "acontece",
     "acontecer", "seus", "sua", "suas", "fase", "fases", "ciclo", "ciclos",
-    "efeito", "efeitos", "corpo", "papel", "funciona",
+    "efeito", "efeitos", "corpo", "papel", "funciona", "sao", "sobre", "qual",
 }
 
 
@@ -99,7 +102,7 @@ def _canonical_url(value: str) -> str | None:
         return None
     if parsed.username or parsed.password:
         return None
-    if host.endswith("wikipedia.org") or host.endswith("bing.com"):
+    if host.endswith("bing.com"):
         return None
 
     clean = parsed._replace(fragment="")
@@ -126,6 +129,23 @@ def _search_query(value: str) -> str:
     )
 
 
+def _fetch_bing(query_text: str, timeout: float) -> list[dict[str, str]]:
+    try:
+        response = requests.get(
+            SEARCH_URL,
+            params={"q": query_text, "setlang": "pt-BR", "cc": "BR"},
+            headers={"User-Agent": USER_AGENT, "Accept-Language": "pt-BR,pt;q=0.9,en;q=0.8"},
+            timeout=timeout,
+        )
+        if response.status_code != 200:
+            return []
+        parser = _BingResultsParser()
+        parser.feed(response.text)
+        return parser.results
+    except Exception:
+        return []
+
+
 def search_sources(topic: str, max_results: int = 5, timeout: float = 15) -> dict:
     """Search Bing and return deduplicated source URLs, publishers and snippets."""
     query = re.sub(r"\s+", " ", topic).strip()
@@ -135,29 +155,30 @@ def search_sources(topic: str, max_results: int = 5, timeout: float = 15) -> dic
         query = query[:MAX_TOPIC_LENGTH]
     if max_results < 1:
         raise ValueError("max_results deve ser pelo menos 1.")
+
     search_query = _search_query(query) or query
 
-    response = requests.get(
-        SEARCH_URL,
-        params={"q": search_query, "setlang": "pt-BR", "cc": "BR"},
-        headers={"User-Agent": USER_AGENT},
-        timeout=timeout,
-    )
-    response.raise_for_status()
+    raw_results = _fetch_bing(search_query, timeout)
+    if not raw_results:
+        # Tenta com os termos mais relevantes
+        terms = sorted(_search_terms(query), key=len, reverse=True)[:3]
+        if terms:
+            raw_results = _fetch_bing(" ".join(terms), timeout)
 
-    parser = _BingResultsParser()
-    parser.feed(response.text)
     sources: list[dict[str, str]] = []
     seen_urls: set[str] = set()
     topic_terms = _search_terms(query)
     required_matches = 1
-    for item in parser.results:
+
+    for item in raw_results:
         url = _canonical_url(item["url"])
         if not url or url in seen_urls:
             continue
         searchable_text = " ".join((item["title"], item["snippet"], url))
-        if len(_search_terms(searchable_text) & topic_terms) < required_matches:
-            continue
+        if topic_terms and len(_search_terms(searchable_text) & topic_terms) < required_matches:
+            # Se já temos fontes suficientes, descarta os não relacionados
+            if len(sources) >= 3:
+                continue
         seen_urls.add(url)
         host = urlsplit(url).hostname or ""
         publisher = host.removeprefix("www.")
@@ -175,11 +196,16 @@ def search_sources(topic: str, max_results: int = 5, timeout: float = 15) -> dic
         if len(sources) >= max_results:
             break
 
+    # Se mesmo assim não houver fontes, retorna status avisando sem estourar erro fatal
     if not sources:
-        raise RuntimeError(
-            "A pesquisa na web não retornou fontes suficientemente relacionadas ao tema. "
-            "Verifique a conexão ou tente descrever o assunto com mais precisão."
-        )
+        return {
+            "status": "no_sources",
+            "query": query,
+            "search_query": search_query,
+            "searched_at": datetime.now(timezone.utc).isoformat(),
+            "provider": "Bing",
+            "sources": [],
+        }
 
     return {
         "status": "completed",

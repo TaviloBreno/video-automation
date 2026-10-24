@@ -15,11 +15,17 @@ from scripts.compute_duration import compute_scene_duration
 from scripts.config_loader import load_config, get_palette
 
 
-def build_composition(scene_path: str, words_path: str, template_path: str, output_path: str):
+def build_composition(
+    scene_path: str,
+    words_path: str,
+    template_path: str,
+    output_path: str,
+    padding: float = 0.3,
+):
     scene = json.loads(Path(scene_path).read_text(encoding="utf-8"))
     cfg = load_config()
     palette = get_palette(scene["palette"], cfg)
-    scene_duration = compute_scene_duration(words_path, padding=0.3)
+    scene_duration = compute_scene_duration(words_path, padding=padding)
 
     template = Path(template_path).read_text(encoding="utf-8")
     sources = {source["id"]: source for source in scene.get("sources", [])}

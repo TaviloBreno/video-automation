@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html data-composition-variables='[]'>
+<head>
+  <meta charset="utf-8">
+  <style>
+    :root {
+      --palettePrimary: {{PALETTE_PRIMARY}};
+      --paletteAccent: {{PALETTE_ACCENT}};
+      --paletteText: {{PALETTE_TEXT}};
+      --paletteBackground: {{PALETTE_BACKGROUND}};
+      --surface: color-mix(in srgb, var(--paletteBackground) 88%, white);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--paletteBackground);
+      color: var(--paletteText);
+      font-family: Inter, "Aptos", "Arial", sans-serif;
+    }
+    #root {
+      width: 1920px;
+      height: 1080px;
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse at 82% 18%, color-mix(in srgb, var(--paletteAccent) 18%, transparent), transparent 48%),
+        linear-gradient(160deg, var(--paletteBackground), var(--surface));
+    }
+    #root::before {
+      content: "";
+      position: absolute;
+      inset: 40px;
+      border: 1px solid color-mix(in srgb, var(--paletteText) 16%, transparent);
+      pointer-events: none;
+    }
+    #root::after {
+      content: "ESTÚDIO DE CIÊNCIA  /  EXPLICAÇÃO EM CAMADAS";
+      position: absolute;
+      top: 66px;
+      left: 90px;
+      color: var(--paletteAccent);
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 3px;
+    }
+    .explainer-clip {
+      position: absolute;
+      top: var(--clip-top);
+      left: 9%;
+      width: 82%;
+      padding: 30px 44px 34px;
+      transform: translateY(-50%);
+      border-left: 6px solid var(--paletteAccent);
+      background: color-mix(in srgb, var(--paletteBackground) 78%, transparent);
+    }
+    .clip-heading {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 20px;
+      color: var(--paletteAccent);
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 3px;
+    }
+    .clip-index {
+      display: inline-flex;
+      width: 46px;
+      height: 46px;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--paletteAccent);
+      border-radius: 50%;
+      font-size: 18px;
+      letter-spacing: 0;
+    }
+    .clip-copy {
+      font-size: 62px;
+      font-weight: 650;
+      line-height: 1.15;
+      text-wrap: balance;
+    }
+    .clip-sources {
+      margin-top: 26px;
+      color: color-mix(in srgb, var(--paletteText) 70%, transparent);
+      font-size: 18px;
+      line-height: 1.5;
+      letter-spacing: .4px;
+    }
+    .citation b { color: var(--paletteAccent); }
+    .citation i { font-style: normal; }
+  </style>
+</head>
+<body>
+  <div id="root" data-composition-id="main" data-start="0"
+       data-width="1920" data-height="1080" data-duration="{{SCENE_DURATION}}">
+    {{CLIPS}}
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+  <script src="animations/animations.js"></script>
+    <script>
+    window.HF_ANIMATIONS = {
+      "fade-in": (el, tl, at) => { tl.from(el, { opacity: 0, duration: 0.4, ease: "power2.out" }, at); },
+      "slide-up": (el, tl, at) => { tl.from(el, { y: 150, opacity: 0, ease: "power4.out", duration: 0.6 }, at); },
+      "slide-left": (el, tl, at) => { tl.from(el, { x: -200, opacity: 0, ease: "power4.out", duration: 0.6 }, at); },
+      "scale-in": (el, tl, at) => { tl.from(el, { scale: 0, opacity: 0, duration: 0.6, ease: "power2.out" }, at); },
+      "typewriter": (el, tl, at) => {
+        el.style.overflow = "hidden"; el.style.whiteSpace = "nowrap";
+        tl.from(el, { width: 0, duration: 1.2, ease: "steps(20)" }, at);
+      },
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    document.querySelectorAll("[data-animation]").forEach((el) => {
+      const recipe = window.HF_ANIMATIONS && window.HF_ANIMATIONS[el.dataset.animation];
+      if (recipe) recipe(el, tl, parseFloat(el.dataset.start || "0"));
+    });
+    window.__timelines = window.__timelines || {};
+    window.__timelines["main"] = tl;
+  </script>
+</body>
+</html>

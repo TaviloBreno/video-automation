@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Studio AI — Automação de Vídeos Longos e Cortes Virais</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <div class="app-background"></div>
+  
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>Studio AI <span>Video</span></h1>
+          <p class="subtitle">YouTube Long-Form & Viral Shorts Generator</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <div class="status-pill online">
+          <span class="status-dot"></span>
+          <span>Pipeline & Ollama Conectados</span>
+        </div>
+        <button id="btnHistory" class="btn-secondary" title="Histórico de Gerações">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          Histórico
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Grid -->
+    <main class="main-content">
+      <!-- Coluna da Esquerda: Configuração e Criação -->
+      <section class="creation-panel">
+        <div class="panel-card glass">
+          <div class="card-header">
+            <h2>Criar Novo Vídeo</h2>
+            <span class="badge">YouTube + Shorts</span>
+          </div>
+
+          <form id="createVideoForm" class="video-form">
+            <!-- Campo de Tema -->
+            <div class="form-group">
+              <label for="topicInput">Tema ou Ideia do Vídeo <span class="required">*</span></label>
+              <textarea 
+                id="topicInput" 
+                rows="3" 
+                placeholder="Ex: Quasars: os monstros cósmicos mais brilhantes e vorazes do universo..."
+                required
+              >Quasars: o que são, por que brilham tanto e os segredos do universo primitivo</textarea>
+              <span class="field-hint">A IA pesquisará fontes científicas confiáveis e estruturará os capítulos.</span>
+            </div>
+
+            <!-- Duração do Vídeo -->
+            <div class="form-group">
+              <div class="label-with-value">
+                <label for="durationInput">Duração Desejada (Vídeo Principal)</label>
+                <span id="durationBadge" class="duration-highlight">2.0 min (120s)</span>
+              </div>
+              
+              <!-- Quick Duration Pills -->
+              <div class="duration-pills">
+                <button type="button" class="pill-btn" data-min="1">1 min</button>
+                <button type="button" class="pill-btn active" data-min="2">2 min</button>
+                <button type="button" class="pill-btn" data-min="5">5 min</button>
+                <button type="button" class="pill-btn" data-min="10">10 min</button>
+                <button type="button" class="pill-btn" data-min="15">15 min</button>
+              </div>
+
+              <input 
+                type="range" 
+                id="durationRange" 
+                min="0.5" 
+                max="20" 
+                step="0.5" 
+                value="2" 
+                class="range-slider"
+              >
+              <div class="range-labels">
+                <span>30 seg</span>
+                <span>5 min</span>
+                <span>10 min</span>
+                <span>20 min</span>
+              </div>
+            </div>
+
+            <!-- Opções Avançadas Expansíveis -->
+            <details class="advanced-accordion">
+              <summary class="accordion-header">
+                <span>⚙️ Ajustes de Voz, Estilo & Cores</span>
+                <span class="chevron">▾</span>
+              </summary>
+              <div class="accordion-content">
+                <!-- Paleta de Cores -->
+                <div class="form-group">
+                  <label>Paleta Visual da Cena</label>
+                  <div id="paletteList" class="palette-grid">
+                    <!-- Injetado via JS -->
+                  </div>
+                </div>
+
+                <!-- Voz da Narração -->
+                <div class="form-group">
+                  <label for="voiceSelect">Voz Neural (Edge TTS pt-BR)</label>
+                  <select id="voiceSelect" class="custom-select">
+                    <!-- Injetado via JS -->
+                  </select>
+                </div>
+
+                <!-- Estilo de Legenda -->
+                <div class="form-group">
+                  <label for="legendStyleSelect">Estilo das Legendas</label>
+                  <select id="legendStyleSelect" class="custom-select">
+                    <option value="karaoke" selected>Karaokê Dinâmico (Destaque em Amarelo)</option>
+                    <option value="clean">Clean Minimalista</option>
+                    <option value="bold">Bold Impacto Visual</option>
+                  </select>
+                </div>
+
+                <!-- Pesquisa Web -->
+                <div class="form-group checkbox-group">
+                  <label class="custom-checkbox">
+                    <input type="checkbox" id="researchCheck" checked>
+                    <span class="checkmark"></span>
+                    <span class="label-text">Pesquisa na Web ativa (adiciona referências e citações reais)</span>
+                  </label>
+                </div>
+              </div>
+            </details>
+
+            <!-- Botão de Ação -->
+            <button type="submit" id="btnSubmit" class="btn-primary glow">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+              </svg>
+              <span>Gerar Roteiro e Vídeo Completo</span>
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Coluna da Direita: Visualizador, Progresso & Cortes Virais -->
+      <section class="results-panel">
+        
+        <!-- Estado: Progresso em Tempo Real -->
+        <div id="progressCard" class="panel-card glass progress-card hidden">
+          <div class="card-header">
+            <h3>Produzindo seu Vídeo...</h3>
+            <span id="progressPercentage" class="progress-badge">0%</span>
+          </div>
+
+          <div class="progress-bar-container">
+            <div id="progressBar" class="progress-bar-fill" style="width: 0%"></div>
+          </div>
+
+          <div class="stage-info">
+            <span class="stage-icon">⚡</span>
+            <span id="stageDescription" class="stage-text">Iniciando...</span>
+          </div>
+
+          <!-- Stepper Visual -->
+          <div class="pipeline-stepper">
+            <div class="step-item" id="step1">
+              <div class="step-dot"></div>
+              <span>Pesquisa</span>
+            </div>
+            <div class="step-item" id="step2">
+              <div class="step-dot"></div>
+              <span>Roteiro</span>
+            </div>
+            <div class="step-item" id="step3">
+              <div class="step-dot"></div>
+              <span>Voz e Timings</span>
+            </div>
+            <div class="step-item" id="step4">
+              <div class="step-dot"></div>
+              <span>Render Capítulos</span>
+            </div>
+            <div class="step-item" id="step5">
+              <div class="step-dot"></div>
+              <span>Montagem</span>
+            </div>
+          </div>
+
+          <!-- Log Expansível -->
+          <details class="logs-accordion">
+            <summary>Ver logs do processo em tempo real</summary>
+            <div id="logContainer" class="log-terminal">
+              <!-- Logs adicionados via JS -->
+            </div>
+          </details>
+
+          <button id="btnCancelJob" class="btn-danger-outline">Cancelar Geração</button>
+        </div>
+
+        <!-- Estado: Vídeo Concluído & Estúdio de Cortes Virais -->
+        <div id="videoReadyCard" class="panel-card glass ready-card hidden">
+          <!-- Abas de Navegação -->
+          <div class="tab-nav">
+            <button class="tab-btn active" data-tab="tabYoutube">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+              </svg>
+              Vídeo Principal (YouTube 16:9)
+            </button>
+            <button class="tab-btn highlight-tab" data-tab="tabViral">
+              <span class="fire-icon">🔥</span>
+              Cortes Virais (Shorts 9:16)
+              <span id="shortsCountBadge" class="mini-badge">0</span>
+            </button>
+            <button class="tab-btn" data-tab="tabScript">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+              Roteiro & Fontes
+            </button>
+          </div>
+
+          <!-- Aba 1: Vídeo YouTube -->
+          <div id="tabYoutube" class="tab-pane active">
+            <div class="video-player-wrapper">
+              <video id="mainVideoPlayer" controls playsinline preload="metadata">
+                Seu navegador não suporta este vídeo.
+              </video>
+            </div>
+            
+            <div class="video-meta-bar">
+              <div>
+                <h3 id="videoTitleDisplay">Título do Vídeo</h3>
+                <p id="videoDurationDisplay" class="meta-sub">Duração: 00:00</p>
+              </div>
+              <a id="btnDownloadMain" href="#" download class="btn-primary-small">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                Baixar MP4 (1080p)
+              </a>
+            </div>
+          </div>
+
+          <!-- Aba 2: Estúdio de Cortes Virais -->
+          <div id="tabViral" class="tab-pane">
+            <div class="shorts-header-banner">
+              <div>
+                <h3>Gerador Inteligente de Shorts & Reels</h3>
+                <p>A IA analisa o vídeo completo e recorta os momentos com maior taxa de retenção e ganchos virais.</p>
+              </div>
+              <button id="btnDetectShorts" class="btn-gradient">
+                <span class="magic-icon">✨</span>
+                Detectar Melhores Trechos com IA
+              </button>
+            </div>
+
+            <!-- Lista de Candidatos Detectados -->
+            <div id="viralCandidatesContainer" class="candidates-grid">
+              <!-- Cards inseridos via JS -->
+            </div>
+
+            <!-- Galeria de Shorts Gerados -->
+            <div class="rendered-shorts-section">
+              <h4>Shorts Prontos para Postar (9:16 Vertical)</h4>
+              <div id="renderedShortsGrid" class="shorts-grid">
+                <!-- Videos verticais inseridos via JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Aba 3: Roteiro & Capítulos -->
+          <div id="tabScript" class="tab-pane">
+            <div class="script-view">
+              <div class="script-header">
+                <h3>Estrutura do Roteiro</h3>
+                <span id="scriptWordCount" class="badge">0 palavras</span>
+              </div>
+              <div id="chaptersList" class="chapters-accordion">
+                <!-- Capítulos gerados via JS -->
+              </div>
+
+              <!-- Seção de Fontes Bibliográficas -->
+              <div class="sources-section">
+                <h4>Fontes Pesquisadas e Evidências Citadas</h4>
+                <div id="sourcesContainer" class="sources-grid">
+                  <!-- Fontes via JS -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Placeholder Inicial quando nenhum vídeo foi gerado -->
+        <div id="emptyStateCard" class="panel-card glass empty-state">
+          <div class="empty-icon">🎬</div>
+          <h3>Pronto para produzir vídeos em alta escala</h3>
+          <p>Digite o tema do vídeo à esquerda, escolha a duração desejada e clique em <strong>Gerar Roteiro e Vídeo Completo</strong>.</p>
+          <div class="features-list">
+            <div class="feature-item">
+              <span class="feature-icon">🔍</span>
+              <span>Pesquisa científica em tempo real</span>
+            </div>
+            <div class="feature-item">
+              <span class="feature-icon">🎙️</span>
+              <span>Narração neural ultra-realista</span>
+            </div>
+            <div class="feature-item">
+              <span class="feature-icon">⏱️</span>
+              <span>Sincronização milimétrica de tempo</span>
+            </div>
+            <div class="feature-item">
+              <span class="feature-icon">📱</span>
+              <span>Cortes verticais virais automáticos</span>
+            </div>
+          </div>
+        </div>
+
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal de Histórico -->
+  <div id="historyModal" class="modal-backdrop hidden">
+    <div class="modal-card glass">
+      <div class="modal-header">
+        <h3>Histórico de Vídeos Gerados</h3>
+        <button id="btnCloseHistory" class="btn-close">&times;</button>
+      </div>
+      <div id="historyList" class="history-list">
+        <!-- Injetado via JS -->
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

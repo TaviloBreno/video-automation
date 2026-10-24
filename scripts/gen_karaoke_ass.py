@@ -24,6 +24,9 @@ def generate_karaoke_ass(
     font_size: int = 64,
     primary_color: str = "&H00FFFFFF",
     highlight_color: str = "&H0000FFFF",
+    play_res_x: int = 1080,
+    play_res_y: int = 1920,
+    margin_v: int = 150,
 ) -> Path:
     words_file = Path(words_path)
     if not words_file.is_absolute():
@@ -34,12 +37,12 @@ def generate_karaoke_ass(
     ass_lines = [
         "[Script Info]",
         "ScriptType: v4.00+",
-        "PlayResX: 1080",
-        "PlayResY: 1920",
+        f"PlayResX: {play_res_x}",
+        f"PlayResY: {play_res_y}",
         "",
         "[V4+ Styles]",
         "Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding",
-        f"Style: Default,Arial,{font_size},{primary_color},{highlight_color},&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,3,1,2,50,50,150,1",
+        f"Style: Default,Arial,{font_size},{primary_color},{highlight_color},&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,3,1,2,50,50,{margin_v},1",
         "",
         "[Events]",
         "Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text",

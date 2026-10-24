@@ -33,6 +33,9 @@ def add_subtitles(
     out_video: str = "output/final_legendas.mp4",
     legend_style: str = "karaoke",
     audio_path: str | None = None,
+    play_res_x: int = 1080,
+    play_res_y: int = 1920,
+    margin_v: int = 150,
 ) -> Path:
     """Gera ASS karaokê e queima no vídeo. Retorna caminho do vídeo final."""
     if legend_style not in SUBTITLE_STYLES:
@@ -40,7 +43,14 @@ def add_subtitles(
             f"Estilo de legenda inválido: {legend_style!r}. "
             f"Disponíveis: {', '.join(SUBTITLE_STYLES)}"
         )
-    generate_karaoke_ass(words_path, ass_path, **SUBTITLE_STYLES[legend_style])
+    generate_karaoke_ass(
+        words_path,
+        ass_path,
+        **SUBTITLE_STYLES[legend_style],
+        play_res_x=play_res_x,
+        play_res_y=play_res_y,
+        margin_v=margin_v,
+    )
     result = burn_ass(video_path, ass_path, out_video, audio_path=audio_path)
     print(f"Legendas aplicadas: {result}")
     return result

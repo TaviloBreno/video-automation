@@ -75,7 +75,16 @@ Se a política do PowerShell impedir a ativação do ambiente virtual, use
 `.\.venv\Scripts\python.exe` em vez de ativá-lo. FFmpeg deve disponibilizar
 `ffmpeg.exe` e `ffprobe.exe` no `PATH`.
 
-## Configuração e uso
+## Interface Web (Studio AI)
+
+Para usar a tela interativa com criação de roteiro por tema, controle de duração em minutos e gerador de cortes virais para Shorts/Reels/TikTok:
+
+```powershell
+python run_studio.py
+```
+ou dê um duplo clique em `start_studio.bat`. A tela abre automaticamente no seu navegador em `http://localhost:5000`.
+
+## Configuração e uso via CLI
 
 Inicie o Ollama em outro terminal (`ollama serve`, caso ele não inicie como
 serviço) e verifique as dependências:
