@@ -20,9 +20,9 @@ from scripts.gen_karaoke_ass import generate_karaoke_ass
 from scripts.burn_subtitles import burn_ass
 
 SUBTITLE_STYLES = {
-    "karaoke": {"font_size": 64, "primary_color": "&H00FFFFFF", "highlight_color": "&H0000FFFF"},
-    "clean": {"font_size": 56, "primary_color": "&H00FFFFFF", "highlight_color": "&H00FFFF00"},
-    "bold": {"font_size": 72, "primary_color": "&H00FFFFFF", "highlight_color": "&H00FF00FF"},
+    "karaoke": {"font_size": 56, "primary_color": "&H0000D7FF", "highlight_color": "&H00FFFFFF"},
+    "clean": {"font_size": 50, "primary_color": "&H00FFF500", "highlight_color": "&H00E0E0E0"},
+    "bold": {"font_size": 64, "primary_color": "&H0000FFFF", "highlight_color": "&H00FFFFFF"},
 }
 
 

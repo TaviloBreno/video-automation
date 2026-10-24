@@ -78,6 +78,7 @@ SCENE_SCHEMA: Dict[str, Any] = {
         },
         "suggested_duration_hint": {"type": "number", "minimum": 5, "maximum": 120},
         "narration_text": {"type": "string", "minLength": 1},
+        "topic": {"type": "string"},
         "sources": {
             "type": "array",
             "items": {

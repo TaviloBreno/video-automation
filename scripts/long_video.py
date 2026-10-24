@@ -539,6 +539,7 @@ def build_chapter_scene(
     palette: str,
     sources: list[dict[str, str]] | None,
     image_info: dict[str, Any] | None = None,
+    topic: str = "",
 ) -> dict[str, Any]:
     """Cria a cena de um capítulo: título + frases-chave sincronizadas à fala.
 
@@ -600,6 +601,7 @@ def build_chapter_scene(
         "palette": palette,
         "suggested_duration_hint": min(120.0, max(5.0, round(slot_seconds, 2))),
         "narration_text": chapter["narration"],
+        "topic": topic or chapter.get("title", ""),
     }
     if sources:
         scene["sources"] = sources
@@ -771,10 +773,10 @@ def run_long_video(
         sig_path = d / "chapter.sig"
         slot = compute_scene_duration(words_path, padding=pad)
         ch_img = images_info[i] if i < len(images_info) else None
-        scene = build_chapter_scene(ch, read_words(words_path), slot, palette, sources, image_info=ch_img)
+        scene = build_chapter_scene(ch, read_words(words_path), slot, palette, sources, image_info=ch_img, topic=topic)
         _save_json(scene_path, scene)
         img_sig = ch_img.get("filename", "") if ch_img else ""
-        sig = _signature(scene_path, words_path, d / "voice.mp3", WIDE_TEMPLATE, extra=f"{pad:.3f}|{palette}|{img_sig}|split_motion_v2")
+        sig = _signature(scene_path, words_path, d / "voice.mp3", WIDE_TEMPLATE, extra=f"{pad:.3f}|{palette}|{img_sig}|split_motion_v3")
         pct = 0.45 + 0.43 * (i / n)
         if video_path.exists() and sig_path.exists() and sig_path.read_text().strip() == sig:
             progress(pct, f"Capítulo {i + 1}/{n} já renderizado.")

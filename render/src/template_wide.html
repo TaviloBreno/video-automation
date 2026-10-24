@@ -177,15 +177,128 @@
       color: var(--palettePrimary);
     }
 
-    /* Mídia: Motion Design Vetorial Procedural */
+    /* Mídia: Motion Design Vetorial Procedural Temático */
     .motion-design-graphic {
       position: relative;
-      width: 440px;
-      height: 440px;
+      width: 460px;
+      height: 460px;
       display: flex;
       align-items: center;
       justify-content: center;
     }
+
+    /* 1. Tema Astronomia / Buracos Negros / Quasars */
+    .motion-astro .plasma-jet {
+      position: absolute;
+      width: 6px;
+      height: 400px;
+      background: linear-gradient(to bottom, transparent, var(--paletteAccent), #ffffff, var(--paletteAccent), transparent);
+      box-shadow: 0 0 25px var(--paletteAccent);
+      border-radius: 3px;
+      z-index: 1;
+    }
+    .motion-astro .accretion-disk {
+      position: absolute;
+      border-radius: 50%;
+      border: 3px solid color-mix(in srgb, var(--palettePrimary) 70%, transparent);
+      box-shadow: 0 0 40px var(--palettePrimary), inset 0 0 30px var(--paletteAccent);
+      transform: rotateX(68deg);
+    }
+    .motion-astro .disk-outer { width: 420px; height: 420px; }
+    .motion-astro .disk-inner { width: 260px; height: 260px; border-style: dashed; }
+    .motion-astro .event-horizon {
+      position: absolute;
+      width: 140px;
+      height: 140px;
+      background: #000000;
+      border-radius: 50%;
+      box-shadow: 0 0 24px var(--paletteAccent), 0 0 60px color-mix(in srgb, var(--palettePrimary) 40%, transparent);
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      z-index: 2;
+    }
+
+    /* 2. Tema Biologia / Células / Câncer / DNA / Imunoterapia */
+    .motion-bio .cell-membrane {
+      position: absolute;
+      width: 380px;
+      height: 380px;
+      border-radius: 50%;
+      border: 2px dashed color-mix(in srgb, var(--palettePrimary) 60%, transparent);
+      background: radial-gradient(circle, color-mix(in srgb, var(--palettePrimary) 12%, transparent) 0%, transparent 70%);
+      box-shadow: 0 0 35px color-mix(in srgb, var(--palettePrimary) 25%, transparent);
+    }
+    .motion-bio .dna-helix {
+      position: absolute;
+      width: 280px;
+      height: 280px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .motion-bio .dna-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 2px solid var(--paletteAccent);
+      box-shadow: 0 0 20px var(--paletteAccent);
+    }
+    .motion-bio .ring-a { width: 240px; height: 160px; transform: rotate(35deg); }
+    .motion-bio .ring-b { width: 240px; height: 160px; transform: rotate(-35deg); border-style: dashed; }
+    .motion-bio .cell-nucleus {
+      position: absolute;
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #ffffff 0%, var(--palettePrimary) 45%, color-mix(in srgb, var(--paletteAccent) 70%, transparent) 85%);
+      box-shadow: 0 0 45px var(--palettePrimary), 0 0 75px var(--paletteAccent);
+      z-index: 2;
+    }
+
+    /* 3. Tema Rede Neural / IA / Tecnologia */
+    .motion-neural .neural-grid {
+      position: absolute;
+      width: 360px;
+      height: 360px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .motion-neural .neural-core {
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      background: radial-gradient(circle, var(--paletteAccent) 0%, var(--palettePrimary) 70%, transparent 100%);
+      border-radius: 50%;
+      box-shadow: 0 0 50px var(--paletteAccent);
+    }
+    .motion-neural .synapse-orbit {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px dashed color-mix(in srgb, var(--palettePrimary) 50%, transparent);
+    }
+    .motion-neural .syn-1 { width: 340px; height: 340px; }
+    .motion-neural .syn-2 { width: 220px; height: 220px; }
+
+    /* 4. Tema Física Quântica / Átomos */
+    .motion-quantum .quantum-orbit {
+      position: absolute;
+      border-radius: 50%;
+      border: 2px solid color-mix(in srgb, var(--paletteAccent) 60%, transparent);
+      box-shadow: 0 0 25px color-mix(in srgb, var(--paletteAccent) 20%, transparent);
+    }
+    .motion-quantum .q-1 { width: 380px; height: 140px; transform: rotate(0deg); }
+    .motion-quantum .q-2 { width: 380px; height: 140px; transform: rotate(60deg); }
+    .motion-quantum .q-3 { width: 380px; height: 140px; transform: rotate(120deg); }
+    .motion-quantum .quantum-nucleus {
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      background: radial-gradient(circle, #ffffff 0%, var(--palettePrimary) 60%, transparent 100%);
+      border-radius: 50%;
+      box-shadow: 0 0 45px var(--palettePrimary);
+      z-index: 2;
+    }
+
+    /* Anéis Procedurais Gerais */
     .orbit-ring {
       position: absolute;
       border-radius: 50%;
@@ -218,15 +331,20 @@
     }
     .hud-label {
       position: absolute;
-      bottom: -10px;
+      bottom: -16px;
       font-size: 13px;
       font-weight: 700;
       letter-spacing: 3px;
       color: var(--palettePrimary);
-      background: rgba(0, 0, 0, 0.6);
-      padding: 4px 12px;
-      border-radius: 4px;
-      border: 1px solid color-mix(in srgb, var(--palettePrimary) 30%, transparent);
+      background: rgba(4, 7, 16, 0.85);
+      backdrop-filter: blur(8px);
+      padding: 6px 16px;
+      border-radius: 6px;
+      border: 1px solid color-mix(in srgb, var(--palettePrimary) 40%, transparent);
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.6);
+      text-transform: uppercase;
+      white-space: nowrap;
+      z-index: 3;
     }
   </style>
 </head>
@@ -281,7 +399,7 @@
           }, start + 0.1);
         }
 
-        // 3. Movimento Contínuo (Ken Burns ou Motion Design Dinâmico)
+        // 3. Movimento Contínuo (Ken Burns ou Motion Design Temático)
         if (img) {
           tl.fromTo(img, { scale: 1.0 }, { scale: 1.07, duration: dur, ease: "none" }, start);
         }
@@ -294,6 +412,31 @@
         if (core) {
           tl.fromTo(core, { scale: 0.9 }, { scale: 1.15, yoyo: true, repeat: Math.ceil(dur), duration: 0.9, ease: "sine.inOut" }, start);
         }
+
+        // Animações Temáticas Específicas
+        const astroDisk = el.querySelector(".accretion-disk");
+        if (astroDisk) {
+          tl.fromTo(astroDisk, { rotation: 0 }, { rotation: 360, duration: dur, ease: "none" }, start);
+        }
+        const plasmaJet = el.querySelector(".plasma-jet");
+        if (plasmaJet) {
+          tl.fromTo(plasmaJet, { scaleY: 0.9, opacity: 0.8 }, { scaleY: 1.1, opacity: 1, yoyo: true, repeat: Math.ceil(dur * 2), duration: 0.6, ease: "sine.inOut" }, start);
+        }
+        const dnaA = el.querySelector(".ring-a");
+        const dnaB = el.querySelector(".ring-b");
+        if (dnaA && dnaB) {
+          tl.fromTo(dnaA, { rotation: 35 }, { rotation: 215, duration: dur, ease: "none" }, start);
+          tl.fromTo(dnaB, { rotation: -35 }, { rotation: -215, duration: dur, ease: "none" }, start);
+        }
+        const cellMembrane = el.querySelector(".cell-membrane");
+        if (cellMembrane) {
+          tl.fromTo(cellMembrane, { scale: 0.96 }, { scale: 1.04, yoyo: true, repeat: Math.ceil(dur), duration: 1.4, ease: "sine.inOut" }, start);
+        }
+        const qOrbits = el.querySelectorAll(".quantum-orbit");
+        qOrbits.forEach((qOrb, qIdx) => {
+          const dir = qIdx % 2 === 0 ? 1 : -1;
+          tl.fromTo(qOrb, { rotation: qIdx * 60 }, { rotation: qIdx * 60 + 360 * dir, duration: dur, ease: "none" }, start);
+        });
 
         // 4. Animação de Saída Suave antes de trocar para o próximo clipe
         const exitStart = Math.max(start + 0.3, start + dur - 0.45);

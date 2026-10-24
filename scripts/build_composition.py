@@ -57,6 +57,104 @@ def _clean_source_title(title: str, publisher: str = "") -> str:
     return cleaned[:42]
 
 
+def detect_visual_theme(topic: str, content: str, chapter_title: str = "") -> tuple[str, str]:
+    """Detecta o campo da ciência e subtema para gerar Motion Design contextualizado."""
+    text = f"{topic} {chapter_title} {content}".lower()
+
+    if re.search(r"(câncer|tumor|carcinoma|oncol|célula|biópsia|dna|genoma|mutação|gene|imunoterap|imune|anticorpo|linfócit|vírus|vacina|biolog|sangue|medicin)", text):
+        if re.search(r"(imunoterap|imune|anticorpo|linfócit|t-cell)", text):
+            label = "IMUNOTERAPIA & DEFESA"
+        elif re.search(r"(dna|genoma|mutação|gene|crispr)", text):
+            label = "GENÉTICA & DNA"
+        elif re.search(r"(tumor|carcinoma|metástase)", text):
+            label = "ONCOLOGIA CELULAR"
+        else:
+            label = "BIOLOGIA & CÉLULAS"
+        return "biology", label
+
+    if re.search(r"(quasar|quásar|buraco negro|singularidade|acrec|horizonte de eventos|espaço|astro|galáxia|universo|estrela|supernova|hubble|james webb|telescópio|relativid)", text):
+        if re.search(r"(buraco negro|singularidade|horizonte)", text):
+            label = "BURACO NEGRO & SINGULARIDADE"
+        elif re.search(r"(quasar|quásar|acrec)", text):
+            label = "QUASAR & ENERGIA RELATIVÍSTICA"
+        elif re.search(r"(supernova|estrela)", text):
+            label = "EVOLUÇÃO ESTELAR"
+        else:
+            label = "ASTROFÍSICA & COSMO"
+        return "astronomy", label
+
+    if re.search(r"(inteligência artificial|ia|rede neural|algoritmo|computador|software|dados|deep learning|robô|chip|silício)", text):
+        return "neural_tech", "REDES NEURAIS & IA"
+
+    if re.search(r"(átomo|quântic|elétron|próton|fóton|física|partícula|radiação)", text):
+        return "quantum_physics", "FÍSICA QUÂNTICA & ÁTOMOS"
+
+    clean_sub = re.sub(r"[^\w\s]", "", chapter_title or topic).strip()
+    return "science_general", (clean_sub[:24].upper() if clean_sub else "EXPLORAÇÃO CIENTÍFICA")
+
+
+def generate_thematic_motion_html(theme: str, label: str) -> str:
+    """Retorna Motion Design vetorial procedural específico do assunto falado."""
+    if theme == "astronomy":
+        return f'''
+      <div class="clip-right-media">
+        <div class="motion-design-graphic motion-astro">
+          <div class="plasma-jet"></div>
+          <div class="accretion-disk disk-outer"></div>
+          <div class="accretion-disk disk-inner"></div>
+          <div class="event-horizon"></div>
+          <div class="hud-label">ASTROFÍSICA // {label}</div>
+        </div>
+      </div>'''
+    elif theme == "biology":
+        return f'''
+      <div class="clip-right-media">
+        <div class="motion-design-graphic motion-bio">
+          <div class="cell-membrane"></div>
+          <div class="dna-helix">
+            <div class="dna-ring ring-a"></div>
+            <div class="dna-ring ring-b"></div>
+          </div>
+          <div class="cell-nucleus"></div>
+          <div class="hud-label">BIOLOGIA CELULAR // {label}</div>
+        </div>
+      </div>'''
+    elif theme == "neural_tech":
+        return f'''
+      <div class="clip-right-media">
+        <div class="motion-design-graphic motion-neural">
+          <div class="neural-grid">
+            <div class="synapse-orbit syn-1"></div>
+            <div class="synapse-orbit syn-2"></div>
+            <div class="neural-core"></div>
+          </div>
+          <div class="hud-label">SISTEMAS NEURAIS // {label}</div>
+        </div>
+      </div>'''
+    elif theme == "quantum_physics":
+        return f'''
+      <div class="clip-right-media">
+        <div class="motion-design-graphic motion-quantum">
+          <div class="quantum-orbit q-1"></div>
+          <div class="quantum-orbit q-2"></div>
+          <div class="quantum-orbit q-3"></div>
+          <div class="quantum-nucleus"></div>
+          <div class="hud-label">ESTRUTURA ATÔMICA // {label}</div>
+        </div>
+      </div>'''
+    else:
+        return f'''
+      <div class="clip-right-media">
+        <div class="motion-design-graphic">
+          <div class="orbit-ring ring-outer"></div>
+          <div class="orbit-ring ring-mid"></div>
+          <div class="orbit-ring ring-inner"></div>
+          <div class="pulse-core"></div>
+          <div class="hud-label">CIÊNCIA & DADOS // {label}</div>
+        </div>
+      </div>'''
+
+
 def build_composition(
     scene_path: str,
     words_path: str,
@@ -84,6 +182,8 @@ def build_composition(
 
     elements = scene.get("elements", [])
     total_elements = len(elements)
+    narration_text = scene.get("narration_text", "")
+    topic_text = scene.get("topic", "")
 
     for index, el in enumerate(elements, start=1):
         dur = float(el.get("duration_seconds", 4.0))
@@ -117,17 +217,9 @@ def build_composition(
         </div>
       </div>'''
         else:
-            # Motion Design Procedural Neon Dinâmico
-            media_html = '''
-      <div class="clip-right-media">
-        <div class="motion-design-graphic">
-          <div class="orbit-ring ring-outer"></div>
-          <div class="orbit-ring ring-mid"></div>
-          <div class="orbit-ring ring-inner"></div>
-          <div class="pulse-core"></div>
-          <div class="hud-label">MOTION DESIGN // CIÊNCIA</div>
-        </div>
-      </div>'''
+            # Motion Design Procedural Neon Temático e Específico do Assunto Falado
+            theme_key, theme_label = detect_visual_theme(topic_text, el.get("content", ""), narration_text)
+            media_html = generate_thematic_motion_html(theme_key, theme_label)
 
         role = html.escape(role_labels.get(el.get("type"), "EXPLICAÇÃO"))
 

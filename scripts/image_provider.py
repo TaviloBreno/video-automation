@@ -102,19 +102,94 @@ def search_wikimedia_image(query: str, timeout: float = 12.0) -> Optional[Dict[s
     return None
 
 
-def search_free_image(query: str) -> Optional[Dict[str, Any]]:
-    """Tenta Wikimedia Commons com query exata e simplificada."""
-    # 1. Tentativa com a query
+# Mapeamento semântico de termos científicos para conceitos visuais de alta fidelidade
+SCIENTIFIC_CONCEPTS_MAP = [
+    (r"(câncer|tumor|carcinoma|oncol|célula|biópsia|mutação celular)", ["Cancer_cell", "Mitosis", "Tumor", "Cell_biology"]),
+    (r"(imunoterap|sistema imune|anticorpo|linfócit|t-cell|car-t)", ["Immunotherapy", "T_cell", "Antibody", "Immune_system"]),
+    (r"(dna|genoma|mutação|gene|genétic|crispr|código genético)", ["DNA", "Gene_editing", "Chromosome", "Mutation"]),
+    (r"(quasar|quásar|buraco negro|singularidade|acrec|horizonte de eventos)", ["Quasar", "Black_hole", "Accretion_disk", "Supermassive_black_hole"]),
+    (r"(galáxia|universo|hubble|james webb|telescópio|estrela|supernova|nebulosa)", ["Galaxy", "James_Webb_Space_Telescope", "Supernova", "Nebula", "Milky_Way"]),
+    (r"(inteligência artificial|rede neural|algoritmo|deep learning|robô|computação)", ["Artificial_intelligence", "Artificial_neural_network", "Robotics"]),
+    (r"(átomo|quântic|elétron|próton|física de partículas|fóton)", ["Atom", "Quantum_mechanics", "Particle_physics"]),
+    (r"(cérebro|neurônio|sinapse|neurociência|cogni)", ["Neuron", "Brain", "Synapse"]),
+]
+
+
+def extract_scientific_terms(topic: str, title: str, narration: str = "") -> list[str]:
+    """Extrai entidades científicas específicas para encontrar imagens fidedignas ao tema falado."""
+    combined = f"{topic} {title} {narration}".lower()
+    candidates: list[str] = []
+    for pattern, terms in SCIENTIFIC_CONCEPTS_MAP:
+        if re.search(pattern, combined):
+            for t in terms:
+                if t not in candidates:
+                    candidates.append(t)
+
+    # Se não houver correspondência nas categorias principais, extrai substantivos-chave
+    if not candidates:
+        words = [w for w in re.sub(r"[^\w\s]", " ", title).split() if len(w) > 3]
+        if words:
+            candidates.append(words[0].capitalize())
+    return candidates
+
+
+def search_wikipedia_image(term: str, lang: str = "en", timeout: float = 8.0) -> Optional[Dict[str, Any]]:
+    """Busca imagem oficial e representativa de um conceito científico na Wikipedia REST API."""
+    clean_term = term.strip().replace(" ", "_")
+    url = f"https://{lang}.wikipedia.org/api/rest_v1/page/summary/{urllib.parse.quote(clean_term)}"
+    try:
+        resp = requests.get(url, headers={"User-Agent": USER_AGENT}, timeout=timeout)
+        if resp.status_code == 200:
+            data = resp.json()
+            img_data = data.get("originalimage") or data.get("thumbnail")
+            if img_data and img_data.get("source"):
+                title = data.get("title", clean_term).replace("_", " ")
+                desc = data.get("description", "Ilustração Científica Oficial")
+                author = "Wikipedia / Wikimedia Commons"
+                return {
+                    "source": f"wikipedia_{lang}",
+                    "title": f"{title} ({desc})",
+                    "image_url": img_data["source"],
+                    "page_url": data.get("content_urls", {}).get("desktop", {}).get("page", ""),
+                    "author": author,
+                    "license": "Domínio Público / CC-BY-SA",
+                    "width": img_data.get("width", 1920),
+                    "height": img_data.get("height", 1080),
+                }
+    except Exception as exc:
+        logger.debug("Wikipedia image falhou para '%s': %s", term, exc)
+    return None
+
+
+def search_free_image(
+    query: str,
+    topic: str = "",
+    chapter_title: str = "",
+    narration: str = "",
+) -> Optional[Dict[str, Any]]:
+    """Busca imagem de alta fidelidade ligada exatamente ao assunto falado."""
+    # 1. Tenta conceitos científicos específicos via Wikipedia REST API (qualidade máxima)
+    terms = extract_scientific_terms(topic or query, chapter_title or query, narration)
+    for t in terms[:4]:
+        # Tenta em inglês (maior acervo de imagens científicas da NASA/NIH)
+        res = search_wikipedia_image(t, lang="en")
+        if res:
+            return res
+        # Tenta em português
+        res = search_wikipedia_image(t, lang="pt")
+        if res:
+            return res
+
+    # 2. Tenta termos extraídos no Wikimedia Commons Search
+    for t in terms[:2]:
+        res = search_wikimedia_image(t)
+        if res:
+            return res
+
+    # 3. Tentativa com a query limpa no Wikimedia Commons
     res = search_wikimedia_image(query)
     if res:
         return res
-
-    # 2. Tentativa com as palavras-chave principais em inglês se for astronomia/ciência
-    terms = [w.lower() for w in query.split() if len(w) > 3]
-    if terms:
-        res = search_wikimedia_image(terms[0])
-        if res:
-            return res
 
     return None
 
@@ -175,8 +250,10 @@ def collect_chapter_images(
     dest_dir.mkdir(parents=True, exist_ok=True)
 
     for i, ch in enumerate(chapters):
-        query = f"{topic} {ch.get('title', '')}"
-        info = search_free_image(query)
+        ch_title = ch.get("title", "")
+        ch_narration = ch.get("narration", "")
+        query = f"{topic} {ch_title}"
+        info = search_free_image(query, topic=topic, chapter_title=ch_title, narration=ch_narration)
         if info:
             local = download_image(info, dest_dir, filename_prefix=f"ch_{i+1:02d}")
             if local:
