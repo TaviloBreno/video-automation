@@ -62,10 +62,10 @@ def get_config_info():
     cfg = load_config()
     voices = [
         {"id": "pt-BR-FranciscaNeural", "name": "Francisca (Feminina, Natural) - Padrão", "gender": "Feminina"},
-        {"id": "pt-BR-AntonioNeural", "name": "Antônio (Masculino, Firme)", "gender": "Masculina"},
-        {"id": "pt-BR-ThalitaNeural", "name": "Thalita (Feminina, Jovem)", "gender": "Feminina"},
-        {"id": "pt-BR-NicolauNeural", "name": "Nicolau (Masculino, Calmo)", "gender": "Masculina"},
-        {"id": "pt-BR-FabioNeural", "name": "Fábio (Masculino, Dinâmico)", "gender": "Masculina"},
+        {"id": "pt-BR-AntonioNeural", "name": "Antônio (Masculino, Firme) - Recomendada", "gender": "Masculina"},
+        {"id": "pt-BR-ThalitaMultilingualNeural", "name": "Thalita (Feminina, Jovem)", "gender": "Feminina"},
+        {"id": "pt-PT-DuarteNeural", "name": "Duarte (Masculino, pt-PT)", "gender": "Masculina"},
+        {"id": "pt-PT-RaquelNeural", "name": "Raquel (Feminina, pt-PT)", "gender": "Feminina"},
     ]
     palettes = []
     for name, p in cfg.palettes.items():

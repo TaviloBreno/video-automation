@@ -28,6 +28,36 @@ from scripts.config_loader import load_config, ConfigError
 logger = logging.getLogger("generate_voice")
 
 
+# Mapeamento de vozes descontinuadas pela Microsoft para suas equivalentes ativas
+VOICE_ALIASES: dict[str, str] = {
+    "pt-BR-NicolauNeural": "pt-BR-AntonioNeural",
+    "pt-BR-FabioNeural": "pt-BR-AntonioNeural",
+    "pt-BR-ThalitaNeural": "pt-BR-ThalitaMultilingualNeural",
+    "pt-BR-BrendaNeural": "pt-BR-FranciscaNeural",
+}
+
+DEFAULT_FALLBACK_VOICE = "pt-BR-AntonioNeural"
+
+
+def _run_subreel_tts(text: str, voice: str, rate: str, pitch: str, mp3_path: Path, words_path: Path) -> subprocess.CompletedProcess:
+    cmd = [
+        "subreel", "tts",
+        "--text-inline", text.strip(),
+        "--voice", voice,
+        "--rate", rate,
+        "--pitch", pitch,
+        "--out", str(mp3_path),
+        "--timings", str(words_path),
+    ]
+    return subprocess.run(
+        cmd,
+        capture_output=True,
+        text=True,
+        timeout=180,
+        check=False,
+    )
+
+
 def generate_voice(
     text: str,
     voice: str,
@@ -37,9 +67,9 @@ def generate_voice(
 ) -> Tuple[Path, Path]:
     """
     Gera voice.mp3 e voice.words.json usando `subreel tts`.
+    Inclui mapeamento e fallback resiliente automático caso a voz solicitada tenha sido descontinuada.
 
     Retorna (mp3_path, words_json_path).
-    Lança RuntimeError se o subreel falhar ou não gerar os arquivos.
     """
     if not text or not text.strip():
         raise ValueError("'text' não pode ser vazio")
@@ -50,24 +80,22 @@ def generate_voice(
     mp3_path = out_path / "voice.mp3"
     words_path = out_path / "voice.words.json"
 
-    cmd = [
-        "subreel", "tts",
-        "--text-inline", text.strip(),
-        "--voice", voice,
-        "--rate", rate,
-        "--pitch", pitch,
-        "--out", str(mp3_path),
-        "--timings", str(words_path),
-    ]
+    # Mapeia se for voz legada conhecida
+    target_voice = VOICE_ALIASES.get(voice, voice)
+    if target_voice != voice:
+        logger.info("Voz '%s' foi descontinuada pela Microsoft; mapeada para '%s'", voice, target_voice)
 
-    logger.info("Executando subreel tts...")
-    result = subprocess.run(
-        cmd,
-        capture_output=True,
-        text=True,
-        timeout=180,
-        check=False,
-    )
+    logger.info("Executando subreel tts com voz '%s'...", target_voice)
+    result = _run_subreel_tts(text, target_voice, rate, pitch, mp3_path, words_path)
+
+    # Se falhou por voz descontinuada ou NoAudioReceived, tenta fallback
+    if result.returncode != 0 and ("NoAudioReceived" in result.stderr or "retired" in result.stderr or target_voice != DEFAULT_FALLBACK_VOICE):
+        fallback_voice = "pt-BR-FranciscaNeural" if "Femin" in target_voice else "pt-BR-AntonioNeural"
+        logger.warning(
+            "subreel tts falhou com a voz '%s'. Tentando voz de contingência '%s'...",
+            target_voice, fallback_voice
+        )
+        result = _run_subreel_tts(text, fallback_voice, rate, pitch, mp3_path, words_path)
 
     if result.returncode != 0:
         raise RuntimeError(
@@ -81,8 +109,8 @@ def generate_voice(
     if not words_path.exists() or words_path.stat().st_size == 0:
         raise RuntimeError(f"words.json não gerado ou vazio: {words_path}")
 
-    logger.info("MP3 gerado: %s (%d bytes)", mp3_path, mp3_path.stat().st_size)
-    logger.info("Words gerado: %s (%d bytes)", words_path, words_path.stat().st_size)
+    logger.info("MP3 gerado com sucesso: %s (%d bytes)", mp3_path, mp3_path.stat().st_size)
+    logger.info("Words gerado com sucesso: %s (%d bytes)", words_path, words_path.stat().st_size)
 
     return mp3_path, words_path
 
