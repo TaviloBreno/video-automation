@@ -1,0 +1,50 @@
+{
+  "dark-neon": {
+    "primary": "#00E5FF",
+    "accent": "#FF00E5",
+    "text": "#FFFFFF",
+    "background": "#0A0A0A"
+  },
+  "clean-light": {
+    "primary": "#1E88E5",
+    "accent": "#FF7043",
+    "text": "#212121",
+    "background": "#FAFAFA"
+  },
+  "corporate-blue": {
+    "primary": "#0D47A1",
+    "accent": "#42A5F5",
+    "text": "#FFFFFF",
+    "background": "#0B1E3A"
+  },
+  "warm-sunset": {
+    "primary": "#FF6F00",
+    "accent": "#FFC107",
+    "text": "#3E2723",
+    "background": "#FFF3E0"
+  },
+  "tiktok-bold": {
+    "primary": "#FE2C55",
+    "accent": "#25F4EE",
+    "text": "#FFFFFF",
+    "background": "#000000"
+  },
+  "forest-green": {
+    "primary": "#2E7D32",
+    "accent": "#A5D6A7",
+    "text": "#F1F8E9",
+    "background": "#1B5E20"
+  },
+  "purple-haze": {
+    "primary": "#7B1FA2",
+    "accent": "#E040FB",
+    "text": "#F3E5F5",
+    "background": "#1A0025"
+  },
+  "mono-contrast": {
+    "primary": "#FFFFFF",
+    "accent": "#BDBDBD",
+    "text": "#FFFFFF",
+    "background": "#121212"
+  }
+}

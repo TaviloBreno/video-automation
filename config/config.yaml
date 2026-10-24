@@ -1,0 +1,41 @@
+# ============================================================
+# Configuração central do pipeline de automação de vídeo
+# Alterar valores aqui NÃO exige mudança de código.
+# ============================================================
+
+paths:
+  input_dir: "input"        # onde ficam assets/roteiros de entrada
+  output_dir: "output"      # onde o pipeline grava vídeos/áudios
+  prompts_dir: "prompts"    # templates de prompt para o LLM
+  temp_dir: "output/tmp"    # arquivos intermediários (limpos a cada run)
+
+llm:
+  provider: "ollama"        # por enquanto só ollama; futuro: openai, etc.
+  model: "llama3.2"         # modelo puxado no Ollama
+  base_url: "http://localhost:11434"
+  temperature: 0.7
+  max_tokens: 1024
+  timeout_seconds: 120
+
+tts:
+  provider: "edge-tts"      # edge-tts é gratuito e tem vozes pt-BR decentes
+  voice: "pt-BR-FranciscaNeural"   # <- trocar aqui muda a voz do pipeline
+  rate: "+0%"               # velocidade (ex.: "+10%", "-5%")
+  volume: "+0%"
+  pitch: "+0Hz"
+  sample_rate: 24000
+
+video:
+  default_palette: "dark-neon"     # nome de uma paleta em config/palettes.json
+  resolution: "1080x1920"          # vertical (Reels/Shorts/TikTok)
+  fps: 30
+  video_bitrate: "4M"
+  audio_bitrate: "128k"
+  subtitle_font: "Arial"
+  subtitle_font_size: 48
+
+resolutions:
+  vertical_1080p: "1080x1920"
+  vertical_720p:  "720x1280"
+  square_1080:    "1080x1080"
+  horizontal_1080p: "1920x1080"
