@@ -147,7 +147,7 @@ def mix_voice_and_music(
     voice_path: Path,
     music_path: Optional[Path],
     output_path: Path,
-    music_volume: float = 0.16,
+    music_volume: float = 0.18,
 ) -> Path:
     """Mixagem profissional de narração + música com compressão sidechain (Audio Ducking)."""
     voice_p = Path(voice_path).resolve()
@@ -161,12 +161,12 @@ def mix_voice_and_music(
 
     music_p = Path(music_path).resolve()
 
-    # Filtro FFmpeg Ducking:
-    # A voz (input 0) aciona a compressão da música (input 1), reduzindo seu volume quando a voz fala
+    # Filtro FFmpeg Ducking Suave:
+    # A música fica em volume discreto (0.18) e reduz para nível de fundo sutil (ratio 4) durante a narração
     filter_complex = (
         f"[1:a]volume={music_volume:.3f}[bg];"
-        "[0:a][bg]sidechaincompress=threshold=0.08:ratio=4:attack=200:release=600[compressed_bg];"
-        "[0:a][compressed_bg]amix=inputs=2:duration=first:dropout_transition=2[outa]"
+        "[bg][0:a]sidechaincompress=threshold=0.08:ratio=4:attack=80:release=500[ducked_bg];"
+        "[0:a][ducked_bg]amix=inputs=2:duration=first:dropout_transition=2[outa]"
     )
 
     cmd = [

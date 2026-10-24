@@ -61,11 +61,10 @@ def get_config_info():
     """Retorna opções disponíveis de paletas, vozes e estilos."""
     cfg = load_config()
     voices = [
-        {"id": "pt-BR-FranciscaNeural", "name": "Francisca (Feminina, Natural) - Padrão", "gender": "Feminina"},
-        {"id": "pt-BR-AntonioNeural", "name": "Antônio (Masculino, Firme) - Recomendada", "gender": "Masculina"},
-        {"id": "pt-BR-ThalitaMultilingualNeural", "name": "Thalita (Feminina, Jovem)", "gender": "Feminina"},
-        {"id": "pt-PT-DuarteNeural", "name": "Duarte (Masculino, pt-PT)", "gender": "Masculina"},
-        {"id": "pt-PT-RaquelNeural", "name": "Raquel (Feminina, pt-PT)", "gender": "Feminina"},
+        {"id": "pt-BR-AntonioDoc", "name": "🇧🇷 Antônio (Documentarista Brasileiro, Barítono com Pausas) - Padrão", "gender": "Masculina"},
+        {"id": "pt-BR-AntonioNeural", "name": "🇧🇷 Antônio (Brasileiro, Tom Firme e Natural)", "gender": "Masculina"},
+        {"id": "pt-BR-FranciscaNeural", "name": "🇧🇷 Francisca (Brasileira, Feminina Natural)", "gender": "Feminina"},
+        {"id": "pt-BR-ThalitaMultilingualNeural", "name": "🇧🇷 Thalita (Brasileira, Feminina Jovem)", "gender": "Feminina"},
     ]
     palettes = []
     for name, p in cfg.palettes.items():

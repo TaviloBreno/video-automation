@@ -240,15 +240,18 @@ def generate_outline(
 ) -> dict[str, Any]:
     known_ids = {s["id"] for s in sources} if sources else None
     prompt = (
-        "Você é roteirista de um canal de YouTube de divulgação científica em português do Brasil.\n"
-        f"Tema do vídeo: {topic}\n"
-        f"Planeje um vídeo com exatamente {n_chapters} capítulos de cerca de "
-        f"{int(chapter_seconds)} segundos cada. O capítulo 1 é a abertura com um gancho forte; "
-        "o último capítulo é a conclusão. Os capítulos do meio devem progredir de forma lógica, "
-        "sem repetir assunto.\n"
-        'Responda em JSON: {"title": "título atraente do vídeo", "chapters": ['
-        '{"title": "título curto (até 60 caracteres)", '
-        '"summary": "o que será explicado, em 1 ou 2 frases"'
+        "Você é roteirista sênior e diretor criativo de documentários científicos de alto impacto no YouTube "
+        "(no estilo Carl Sagan / Cosmos, Kurzgesagt, Neil deGrasse Tyson e Veritasium).\n"
+        f"Tema do documentário: {topic}\n"
+        f"Planeje um documentário fascinante estruturado em exatamente {n_chapters} capítulos narrativos "
+        f"de cerca de {int(chapter_seconds)} segundos cada.\n\n"
+        "Diretrizes de Storytelling e Empatia:\n"
+        "1. Capítulo 1 (Abertura / Gancho Magnético): Não comece com definições secas de dicionário. Abra com um mistério instigante, uma pergunta que desafia o senso comum ou uma cena sensorial de tirar o fôlego que capture imediatamente a curiosidade do espectador.\n"
+        "2. Capítulos Intermediários (Jornada de Descoberta): Desenvolva uma investigação progressiva e envolvente. Use analogias visuais humanas e conecte cada fato com o cosmos e nossa própria existência.\n"
+        "3. Capítulo Final (Conclusão Filosófica & Chamada): Amarre a reflexão final com emoção e maravilhamento, convidando o espectador calorosamente a curtir, compartilhar e se inscrever no canal.\n\n"
+        'Responda em JSON: {"title": "título magnético e irresistível para o YouTube", "chapters": ['
+        '{"title": "título curto do capítulo (até 60 caracteres)", '
+        '"summary": "direção narrativa e emocional do que será explorado"'
         + (', "source_ids": ["S1"]' if known_ids else "")
         + "}]}\n"
         + (
@@ -311,35 +314,39 @@ def write_chapter(
     n = len(chapters)
     lo, hi = max(15, int(target_words * 0.75)), int(target_words * 1.3) + 1
     if index == 0 and n == 1:
-        role = "Este é o único capítulo: abra com um gancho forte e feche convidando a curtir e se inscrever."
+        role = "Este é o único capítulo: abra com um gancho misterioso e fascinante e feche convidando calorosamente a curtir e se inscrever."
     elif index == 0:
-        role = "Este é o capítulo de abertura: comece com um gancho forte nas primeiras frases."
+        role = "Este é o capítulo de abertura: comece com um gancho misterioso e magnético que capture a atenção do público de imediato."
     elif index == n - 1:
-        role = "Este é o capítulo final: conclua o raciocínio e termine convidando a curtir e se inscrever."
+        role = "Este é o capítulo final: conclua o raciocínio com uma reflexão profunda sobre o tema e termine convidando calorosamente a curtir e se inscrever no canal."
     else:
-        role = "Continue de forma fluida a partir do capítulo anterior, sem se reapresentar."
+        role = "Continue de forma fluida e envolvente a partir do capítulo anterior, mantendo a curiosidade sem se reapresentar."
     outline_text = "\n".join(f"{i + 1}. {c['title']} — {c['summary']}" for i, c in enumerate(chapters))
     chapter_sources = None
     if sources:
         wanted = set(chapter.get("source_ids", []))
         chapter_sources = [s for s in sources if s["id"] in wanted] or sources
     prompt = (
-        "Você é roteirista de um canal de YouTube de divulgação científica em português do Brasil.\n"
-        f"Tema do vídeo: {topic}\nTítulo do vídeo: {outline['title']}\n"
-        f"Estrutura completa:\n{outline_text}\n\n"
-        f'Escreva SOMENTE o capítulo {index + 1} de {n}: "{chapter["title"]}" — {chapter["summary"]}.\n'
-        f"{role}\n"
-        "Regras:\n"
-        f"- A narração deve ter aproximadamente {target_words} palavras (entre {lo} e {hi}).\n"
-        "- Texto corrido para ser falado em voz alta: sem listas, emojis, markdown, "
-        "títulos ou indicações de cena.\n"
-        "- Linguagem natural e envolvente, com frases curtas e médias.\n"
-        "- Não repita o que já foi dito nos outros capítulos."
-        + (f' O capítulo anterior terminou assim: "{prev_tail}".' if prev_tail else "")
-        + "\n- Baseie as afirmações factuais nas fontes fornecidas e não invente dados.\n"
-        '- "key_points": de 1 a 3 frases curtíssimas (até 80 caracteres cada) que resumem '
-        "as ideias para aparecer escritas na tela.\n"
-        'Responda em JSON: {"narration": "texto falado do capítulo", "key_points": ["..."]}'
+        "Você é o narrador de um consagrado documentário de divulgação científica no YouTube em português do Brasil "
+        "(estilo Cosmos com Carl Sagan e Neil deGrasse Tyson, Kurzgesagt e BBC Earth).\n"
+        f"Tema do documentário: {topic}\nTítulo: {outline['title']}\n"
+        f"Arco narrativo completo:\n{outline_text}\n\n"
+        f'Escreva a narração falada do capítulo {index + 1} de {n}: "{chapter["title"]}".\n'
+        f"Objetivo deste capítulo: {chapter['summary']}\n"
+        f"{role}\n\n"
+        "DIRETRIZES FUNDAMENTAIS DE NARRATIVA HUMANA, EMPÁTICA E ENVOLVENTE:\n"
+        "1. Conexão e Empatia com o Espectador: Fale diretamente com quem está assistindo ('você', 'imagine por um instante...', 'olhe ao seu redor...'). Trate o público como um parceiro de exploração cósmica.\n"
+        "2. Cadência e Pontuação para Voz Neural Natural: O texto será sintetizado em áudio. Use pontuação expressiva para ditar o ritmo da fala humana:\n"
+        "   - Use reticências (...) para pausas dramáticas de expectativa, suspense ou admiração reflexiva.\n"
+        "   - Use vírgulas com frequência para criar respiração e cadência tranquila.\n"
+        "   - Use perguntas retóricas instigantes para provocar reflexão ('Mas como algo assim pode existir?').\n"
+        "3. Zero Academicismo Frio: Em vez de definições enciclopédicas secas, use metáforas sensoriais vívidas e analogias visuais que façam o espectador visualizar a cena mentalmente.\n"
+        "4. Sem Clichês Mecânicos: NUNCA diga 'Olá pessoal', 'Neste vídeo vamos ver', nem coloque títulos, subtítulos ou tópicos dentro da narração.\n"
+        f"5. Tamanho do texto: Aproximadamente {target_words} palavras (entre {lo} e {hi}).\n"
+        + (f' O capítulo anterior encerrou com: "{prev_tail}". Faça uma ponte de transição elegante.' if prev_tail else "")
+        + "\n6. Fidelidade factual: Ancore os dados nas fontes científicas sem inventar fatos.\n"
+        '- "key_points": 1 a 3 frases sínteses curtas e marcantes (até 80 caracteres) para tipografia em tela.\n\n'
+        'Responda em JSON: {"narration": "texto falado do capítulo com pontuação expressiva e pausas", "key_points": ["..."]}'
         + _evidence_block(chapter_sources)
     )
 
@@ -647,10 +654,18 @@ def run_long_video(
         progress(0.01, "Pesquisando fontes na web…")
         try:
             research_data = search_sources(topic, max_results=8)
-            sources = research_data.get("sources") or None
+            raw_sources = research_data.get("sources") or []
+            sources = []
+            for s in raw_sources:
+                t = s.get("title", "")
+                if re.search(r"[\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff\uac00-\ud7af\u0400-\u04ff\u0600-\u06ff]", t):
+                    cleaned_t = re.sub(r"[\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff\uac00-\ud7af\u0400-\u04ff\u0600-\u06ff]+", "", t).strip(" -·|:")
+                    s["title"] = cleaned_t if len(cleaned_t) >= 3 else s.get("publisher", "Artigo Científico")
+                sources.append(s)
+            sources = sources or None
             _save_json(job_dir / "research.json", research_data)
             if sources:
-                progress(0.03, f"{len(sources)} fontes encontradas na web.")
+                progress(0.03, f"{len(sources)} fontes brasileiras encontradas na web.")
             else:
                 progress(0.03, "Sem fontes web utilizáveis; gerando com conhecimento da IA.")
         except Exception as exc:
@@ -808,7 +823,7 @@ def run_long_video(
             music_file = get_or_create_music(bg_music, total_dur, job_dir)
             if music_file:
                 mixed_audio = job_dir / "master_audio.m4a"
-                mix_voice_and_music(long_audio, music_file, mixed_audio, music_volume=0.16)
+                mix_voice_and_music(long_audio, music_file, mixed_audio, music_volume=0.18)
                 master_audio = mixed_audio
         except Exception as exc:
             logger.warning("Falha ao mixar música de fundo: %s, prosseguindo com narração pura", exc)

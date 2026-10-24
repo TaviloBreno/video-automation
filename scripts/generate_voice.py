@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import argparse
 import logging
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -28,12 +29,14 @@ from scripts.config_loader import load_config, ConfigError
 logger = logging.getLogger("generate_voice")
 
 
-# Mapeamento de vozes descontinuadas pela Microsoft para suas equivalentes ativas
+# Mapeamento de vozes para garantir 100% Português do Brasil e compatibilidade
 VOICE_ALIASES: dict[str, str] = {
-    "pt-BR-NicolauNeural": "pt-BR-AntonioNeural",
-    "pt-BR-FabioNeural": "pt-BR-AntonioNeural",
+    "pt-BR-NicolauNeural": "pt-BR-AntonioDoc",
+    "pt-BR-FabioNeural": "pt-BR-AntonioDoc",
     "pt-BR-ThalitaNeural": "pt-BR-ThalitaMultilingualNeural",
     "pt-BR-BrendaNeural": "pt-BR-FranciscaNeural",
+    "pt-PT-DuarteNeural": "pt-BR-AntonioDoc",
+    "pt-PT-RaquelNeural": "pt-BR-FranciscaNeural",
 }
 
 DEFAULT_FALLBACK_VOICE = "pt-BR-AntonioNeural"
@@ -72,6 +75,20 @@ def _run_subreel_tts(text: str, voice: str, rate: str, pitch: str, mp3_path: Pat
     )
 
 
+def insert_breaths(text: str) -> str:
+    """Insere respirações e pausas contemplativas naturais (...) no texto da narração para o TTS."""
+    t = re.sub(r"\s+", " ", text).strip()
+    # Adiciona pausas reflexivas (...) nos pontos finais e exclamações seguidos de nova oração
+    t = re.sub(r"([.?!])\s+([A-ZÀ-Ú])", r"\1... \2", t)
+    # Adiciona pausas respiratórias antes de conjunções reflexivas e de impacto
+    t = re.sub(r"(\s+)(mas|porém|contudo|no entanto|todavia|ou seja|imagine|repare|observe)(\s+)", r" — \2\3", t, flags=re.IGNORECASE)
+    # Substitui dois pontos por pausa reflexiva
+    t = t.replace(":", "... ")
+    # Normaliza pontuação
+    t = re.sub(r"\.{4,}", "...", t)
+    return t
+
+
 def generate_voice(
     text: str,
     voice: str,
@@ -81,7 +98,7 @@ def generate_voice(
 ) -> Tuple[Path, Path]:
     """
     Gera voice.mp3 e voice.words.json usando `subreel tts`.
-    Inclui mapeamento e fallback resiliente automático caso a voz solicitada tenha sido descontinuada.
+    Inclui inserção de pausas respiratórias, afinação de barítono maduro e fallback automático.
 
     Retorna (mp3_path, words_json_path).
     """
@@ -94,13 +111,25 @@ def generate_voice(
     mp3_path = out_path / "voice.mp3"
     words_path = out_path / "voice.words.json"
 
-    # Mapeia se for voz legada conhecida
-    target_voice = VOICE_ALIASES.get(voice, voice)
-    if target_voice != voice:
-        logger.info("Voz '%s' foi descontinuada pela Microsoft; mapeada para '%s'", voice, target_voice)
+    # Perfil especial de documentarista maduro
+    target_pitch = pitch
+    target_rate = rate
+    if voice == "pt-BR-AntonioDoc":
+        target_voice = "pt-BR-AntonioNeural"
+        if pitch == "+0Hz" or not pitch:
+            target_pitch = "-5Hz"
+        if rate == "+0%" or not rate:
+            target_rate = "-8%"
+    else:
+        target_voice = VOICE_ALIASES.get(voice, voice)
+        if target_voice != voice:
+            logger.info("Voz '%s' foi descontinuada pela Microsoft; mapeada para '%s'", voice, target_voice)
 
-    logger.info("Executando subreel tts com voz '%s'...", target_voice)
-    result = _run_subreel_tts(text, target_voice, rate, pitch, mp3_path, words_path)
+    # Formata texto com pausas respiratórias naturais
+    spoken_text = insert_breaths(text)
+
+    logger.info("Executando subreel tts com voz '%s' (pitch: %s, rate: %s)...", target_voice, target_pitch, target_rate)
+    result = _run_subreel_tts(spoken_text, target_voice, target_rate, target_pitch, mp3_path, words_path)
 
     # Se falhou por voz descontinuada ou NoAudioReceived, tenta fallback
     if result.returncode != 0 and ("NoAudioReceived" in result.stderr or "retired" in result.stderr or target_voice != DEFAULT_FALLBACK_VOICE):
@@ -109,7 +138,7 @@ def generate_voice(
             "subreel tts falhou com a voz '%s'. Tentando voz de contingência '%s'...",
             target_voice, fallback_voice
         )
-        result = _run_subreel_tts(text, fallback_voice, rate, pitch, mp3_path, words_path)
+        result = _run_subreel_tts(spoken_text, fallback_voice, target_rate, target_pitch, mp3_path, words_path)
 
     if result.returncode != 0:
         raise RuntimeError(

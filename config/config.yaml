@@ -19,10 +19,10 @@ llm:
 
 tts:
   provider: "edge-tts"      # edge-tts é gratuito e tem vozes pt-BR decentes
-  voice: "pt-BR-FranciscaNeural"   # <- trocar aqui muda a voz do pipeline
-  rate: "+0%"               # velocidade (ex.: "+10%", "-5%")
+  voice: "pt-BR-AntonioDoc" # Perfil Documentarista Maduro (Barítono com pausas)
+  rate: "-8%"               # velocidade pausada cinematográfica
   volume: "+0%"
-  pitch: "+0Hz"
+  pitch: "-5Hz"             # tom mais grave e maduro
   sample_rate: 24000
 
 video:

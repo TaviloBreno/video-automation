@@ -129,12 +129,22 @@ def _search_query(value: str) -> str:
     )
 
 
+def _has_foreign_script(text: str) -> bool:
+    """Detecta caracteres chineses, japoneses, coreanos, cirílicos ou árabes."""
+    return bool(
+        re.search(
+            r"[\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff\uac00-\ud7af\u0400-\u04ff\u0600-\u06ff]",
+            text,
+        )
+    )
+
+
 def _fetch_bing(query_text: str, timeout: float) -> list[dict[str, str]]:
     try:
         response = requests.get(
             SEARCH_URL,
-            params={"q": query_text, "setlang": "pt-BR", "cc": "BR"},
-            headers={"User-Agent": USER_AGENT, "Accept-Language": "pt-BR,pt;q=0.9,en;q=0.8"},
+            params={"q": query_text, "setlang": "pt-BR", "cc": "BR", "lr": "lang_pt"},
+            headers={"User-Agent": USER_AGENT, "Accept-Language": "pt-BR,pt;q=0.9"},
             timeout=timeout,
         )
         if response.status_code != 200:
@@ -171,10 +181,16 @@ def search_sources(topic: str, max_results: int = 5, timeout: float = 15) -> dic
     required_matches = 1
 
     for item in raw_results:
+        title_raw = re.sub(r"\s+", " ", item.get("title", "")).strip()
+        snippet_raw = re.sub(r"\s+", " ", item.get("snippet", "")).strip()
+        # Descarta fontes com caracteres chineses, japoneses, coreanos ou cirílicos
+        if _has_foreign_script(title_raw) or _has_foreign_script(snippet_raw):
+            continue
+
         url = _canonical_url(item["url"])
         if not url or url in seen_urls:
             continue
-        searchable_text = " ".join((item["title"], item["snippet"], url))
+        searchable_text = " ".join((title_raw, snippet_raw, url))
         if topic_terms and len(_search_terms(searchable_text) & topic_terms) < required_matches:
             # Se já temos fontes suficientes, descarta os não relacionados
             if len(sources) >= 3:
@@ -185,12 +201,10 @@ def search_sources(topic: str, max_results: int = 5, timeout: float = 15) -> dic
         sources.append(
             {
                 "id": f"S{len(sources) + 1}",
-                "title": re.sub(r"\s+", " ", item["title"]).strip(),
+                "title": title_raw,
                 "url": url,
                 "publisher": publisher,
-                "snippet": re.sub(r"\s+", " ", item["snippet"]).strip()[
-                    :MAX_SNIPPET_LENGTH
-                ],
+                "snippet": snippet_raw[:MAX_SNIPPET_LENGTH],
             }
         )
         if len(sources) >= max_results:

@@ -74,10 +74,12 @@ def search_wikimedia_image(query: str, timeout: float = 12.0) -> Optional[Dict[s
             meta = info.get("extmetadata", {})
 
             artist = meta.get("Artist", {}).get("value", "")
-            # Limpa tags HTML do autor
-            artist = re.sub(r"<[^>]+>", "", artist).strip() or "Wikimedia Commons"
+            # Limpa tags HTML do autor e caracteres não-latinos
+            artist = re.sub(r"<[^>]+>", "", artist).strip()
+            artist = re.sub(r"[\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff\uac00-\ud7af\u0400-\u04ff\u0600-\u06ff]+", "", artist).strip() or "Wikimedia Commons"
             license_name = meta.get("LicenseShortName", {}).get("value", "Domínio Público / CC")
             title = page.get("title", "").replace("File:", "").replace("_", " ")
+            title = re.sub(r"[\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff\uac00-\ud7af\u0400-\u04ff\u0600-\u06ff]+", "", title).strip() or "Ilustração Científica"
 
             width = info.get("thumbwidth") or info.get("width", 0)
             height = info.get("thumbheight") or info.get("height", 0)

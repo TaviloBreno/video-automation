@@ -10,6 +10,7 @@ import base64
 import html
 import json
 import logging
+import re
 import sys
 from pathlib import Path
 
@@ -43,6 +44,17 @@ def _image_to_data_uri(image_path_or_url: str) -> str:
             logger.warning("Falha ao converter imagem para base64: %s", exc)
 
     return image_path_or_url
+
+
+def _clean_source_title(title: str, publisher: str = "") -> str:
+    """Remove caracteres asiáticos/orientais e higieniza títulos para exibição em português."""
+    if not title:
+        return publisher or "Fonte Confiável"
+    cleaned = re.sub(r"[\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff\uac00-\ud7af\u0400-\u04ff\u0600-\u06ff]+", "", title)
+    cleaned = re.sub(r"\s+", " ", cleaned).strip(" -·|:")
+    if len(cleaned) < 3:
+        cleaned = publisher or "Artigo Científico"
+    return cleaned[:42]
 
 
 def build_composition(
@@ -85,7 +97,7 @@ def build_composition(
                 (
                     f'<span class="citation" title="{html.escape(s.get("url", ""), quote=True)}">'
                     f'<b>[{html.escape(s.get("id", ""))}</b> '
-                    f'{html.escape(s.get("title", ""))}</i></span>'
+                    f'<i>{html.escape(_clean_source_title(s.get("title", ""), s.get("publisher", "")))}</i></span>'
                 )
                 for s in cited_sources
             )
