@@ -157,6 +157,19 @@ async function loadConfig() {
       voiceSelect.appendChild(opt);
     });
 
+    // Preenche Velocidades / Ritmos de Narração
+    const voiceRateSelect = document.getElementById("voiceRateSelect");
+    if (voiceRateSelect && appConfig.voice_rates) {
+      voiceRateSelect.innerHTML = "";
+      appConfig.voice_rates.forEach((r) => {
+        const opt = document.createElement("option");
+        opt.value = r.id;
+        opt.textContent = r.name;
+        if (r.id === appConfig.default_voice_rate) opt.selected = true;
+        voiceRateSelect.appendChild(opt);
+      });
+    }
+
     // Preenche Músicas de Fundo Royalty-Free
     const bgMusicSelect = document.getElementById("bgMusicSelect");
     if (bgMusicSelect && appConfig.bg_music_options) {
@@ -180,6 +193,7 @@ async function handleCreateVideo(e) {
   const topic = document.getElementById("topicInput").value.trim();
   const minutes = parseFloat(document.getElementById("durationRange").value);
   const voice = document.getElementById("voiceSelect").value;
+  const voiceRate = document.getElementById("voiceRateSelect") ? document.getElementById("voiceRateSelect").value : "-20%";
   const legendStyle = document.getElementById("legendStyleSelect").value;
   const research = document.getElementById("researchCheck").checked;
   const bgMusic = document.getElementById("bgMusicSelect") ? document.getElementById("bgMusicSelect").value : "space_ambient";
@@ -212,6 +226,7 @@ async function handleCreateVideo(e) {
         minutes,
         palette,
         voice,
+        voice_rate: voiceRate,
         legend_style: legendStyle,
         research,
         bg_music: bgMusic,
@@ -971,10 +986,14 @@ async function saveJobEdits(jobId, rebuild = false) {
 
     if (rebuild) {
       modal.classList.add("hidden");
+      const currentRate = document.getElementById("voiceRateSelect") ? document.getElementById("voiceRateSelect").value : "-20%";
       const rebuildRes = await fetch(`/api/jobs/${jobId}/rebuild`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: newTitle }),
+        body: JSON.stringify({
+          title: newTitle,
+          voice_rate: currentRate,
+        }),
       });
       const data = await rebuildRes.json();
       if (rebuildRes.ok && data.job_id) {

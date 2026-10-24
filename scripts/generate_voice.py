@@ -119,7 +119,7 @@ def generate_voice(
         if pitch == "+0Hz" or not pitch:
             target_pitch = "-5Hz"
         if rate == "+0%" or not rate:
-            target_rate = "-8%"
+            target_rate = "-20%"
     else:
         target_voice = VOICE_ALIASES.get(voice, voice)
         if target_voice != voice:

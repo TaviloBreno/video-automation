@@ -20,7 +20,7 @@ llm:
 tts:
   provider: "edge-tts"      # edge-tts é gratuito e tem vozes pt-BR decentes
   voice: "pt-BR-AntonioDoc" # Perfil Documentarista Maduro (Barítono com pausas)
-  rate: "-8%"               # velocidade pausada cinematográfica
+  rate: "-20%"              # velocidade lenta cinematográfica de documentário (-20%)
   volume: "+0%"
   pitch: "-5Hz"             # tom mais grave e maduro
   sample_rate: 24000

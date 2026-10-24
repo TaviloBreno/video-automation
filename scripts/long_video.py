@@ -455,6 +455,7 @@ def fit_narration_to_duration(
     cancelled: CancelFn,
     base: float,
     span: float,
+    voice_rate: str | None = None,
 ) -> tuple[int, float]:
     """Converge a narração para a duração pedida.
 
@@ -463,7 +464,7 @@ def fit_narration_to_duration(
     tempo curto é distribuída como pausas entre capítulos. Retorna (rate, pad).
     """
     n = len(chapters)
-    base_rate = _parse_rate(cfg.tts.rate)
+    base_rate = _parse_rate(voice_rate or cfg.tts.rate)
     rate = base_rate
     rewrites = 0
     generated_rate: int | None = None
@@ -480,7 +481,17 @@ def fit_narration_to_duration(
             break
         speech_target = max(target_seconds - BASE_PAD * n, 1.0)
         needed = int(round((speech * (1 + rate / 100) / speech_target - 1) * 100))
-        if -RATE_LIMIT <= needed <= RATE_LIMIT:
+
+        # Se o usuário configurou uma taxa lenta (ex: <= -10%), não permitimos que o ajuste
+        # acelere a voz descontroladamente para estragar o clima solene de documentário.
+        if base_rate <= -10:
+            max_rate_allowed = min(base_rate + 3, -10)
+            min_rate_allowed = max(-30, base_rate - 6)
+        else:
+            max_rate_allowed = min(base_rate + 5, RATE_LIMIT)
+            min_rate_allowed = max(-RATE_LIMIT, base_rate - 5)
+
+        if min_rate_allowed <= needed <= max_rate_allowed:
             if needed == rate:
                 break
             rate = needed
@@ -504,7 +515,7 @@ def fit_narration_to_duration(
                 chapters[i]["key_points"] = written["key_points"]
                 prev_tail = " ".join(written["narration"].split()[-18:])
             continue
-        rate = max(-RATE_LIMIT, min(RATE_LIMIT, needed))
+        rate = max(min_rate_allowed, min(max_rate_allowed, needed))
         if rate == generated_rate:
             break
     if generated_rate != rate:
@@ -513,7 +524,7 @@ def fit_narration_to_duration(
     pad = BASE_PAD
     total = speech + pad * n
     if total < target_seconds * (1 - DURATION_TOLERANCE):
-        pad = BASE_PAD + min(MAX_EXTRA_PAD, (target_seconds - total) / n)
+        pad = BASE_PAD + min(3.5, (target_seconds - total) / n)
     return rate, pad
 
 
@@ -686,7 +697,10 @@ def run_long_video(
         outline = generate_outline(topic, n_chapters, target / n_chapters, sources, cfg, cancelled)
         chapters = outline["chapters"]
         n = len(chapters)
-        words_per_second = 2.5
+        base_rate_num = _parse_rate(params.get("voice_rate") or cfg.tts.rate or "-20%")
+        # Calibra palavras/segundo com base na taxa lenta para que o roteiro não fique longo demais:
+        # A -20%, ~1.55 palavras/s (~93 wpm); a -15%, ~1.65 palavras/s; a 0%, ~1.95 palavras/s.
+        words_per_second = max(1.35, min(2.2, round(1.95 * (1.0 + base_rate_num / 100), 2)))
         per_chapter = max(20, int(round((target - BASE_PAD * n) / n * words_per_second)))
         prev_tail = ""
         for i in range(n):
@@ -708,6 +722,7 @@ def run_long_video(
     rate, pad = fit_narration_to_duration(
         topic, outline, chapters, sources, target, job_dir, voice, cfg,
         progress, cancelled, base=0.30, span=0.15,
+        voice_rate=params.get("voice_rate"),
     )
     _save_json(
         script_path,

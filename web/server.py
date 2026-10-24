@@ -102,11 +102,20 @@ def get_config_info():
         },
     ]
 
+    voice_rates = [
+        {"id": "-20%", "name": "🐢 Bem Lenta & Imersiva (-20%) — Estilo Documentário BBC / Carl Sagan"},
+        {"id": "-15%", "name": "🎙️ Lenta & Reflexiva (-15%) — Pausada e Solene"},
+        {"id": "-8%", "name": "📖 Moderada (-8%) — Narração Equilibrada"},
+        {"id": "+0%", "name": "⚡ Padrão (+0%) — Mais Rápida"},
+    ]
+
     return jsonify({
         "palettes": palettes,
         "default_palette": cfg.video.default_palette,
         "voices": voices,
         "default_voice": cfg.tts.voice,
+        "voice_rates": voice_rates,
+        "default_voice_rate": cfg.tts.rate or "-20%",
         "legend_styles": list(SUBTITLE_STYLES.keys()),
         "default_legend_style": "karaoke",
         "bg_music_options": bg_music_list,
@@ -278,6 +287,7 @@ def rebuild_job(job_id: str):
         "minutes": minutes,
         "palette": data.get("palette") or base_data.get("palette"),
         "voice": data.get("voice") or base_data.get("voice"),
+        "voice_rate": data.get("voice_rate") or base_data.get("voice_rate") or cfg.tts.rate or "-20%",
         "legend_style": data.get("legend_style") or base_data.get("legend_style", "karaoke"),
         "research": False,
         "bg_music": data.get("bg_music") or base_data.get("bg_music", "space_ambient"),
@@ -371,6 +381,7 @@ def generate_video():
         "minutes": minutes,
         "palette": data.get("palette"),
         "voice": data.get("voice"),
+        "voice_rate": data.get("voice_rate") or cfg.tts.rate or "-20%",
         "legend_style": data.get("legend_style", "karaoke"),
         "research": bool(data.get("research", True)),
         "bg_music": data.get("bg_music", "space_ambient"),
