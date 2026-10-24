@@ -17,6 +17,50 @@ async function initApp() {
 }
 
 function setupEventListeners() {
+  // Navegação Principal do Header (Estúdio vs Meus Vídeos)
+  const navStudioBtn = document.getElementById("navStudioBtn");
+  const navGalleryBtn = document.getElementById("navGalleryBtn");
+  const studioView = document.getElementById("studioView");
+  const galleryView = document.getElementById("galleryView");
+
+  if (navStudioBtn && navGalleryBtn) {
+    navStudioBtn.addEventListener("click", () => {
+      navStudioBtn.classList.add("active");
+      navGalleryBtn.classList.remove("active");
+      studioView.classList.remove("hidden");
+      galleryView.classList.add("hidden");
+    });
+
+    navGalleryBtn.addEventListener("click", () => {
+      navGalleryBtn.classList.add("active");
+      navStudioBtn.classList.remove("active");
+      studioView.classList.add("hidden");
+      galleryView.classList.remove("hidden");
+      loadGallery();
+    });
+
+    document.getElementById("btnGalleryNewVideo")?.addEventListener("click", () => {
+      navStudioBtn.click();
+    });
+
+    document.getElementById("btnRefreshGallery")?.addEventListener("click", loadGallery);
+
+    document.getElementById("gallerySearchInput")?.addEventListener("input", (e) => {
+      filterGallery(e.target.value);
+    });
+  }
+
+  // Seletor de Estilo Visual dos Capítulos (Motion Design vs Imagens)
+  const visualCards = document.querySelectorAll(".visual-mode-card");
+  visualCards.forEach((card) => {
+    card.addEventListener("click", () => {
+      visualCards.forEach((c) => c.classList.remove("active"));
+      card.classList.add("active");
+      const radio = card.querySelector('input[type="radio"]');
+      if (radio) radio.checked = true;
+    });
+  });
+
   // Slider & Duração
   const durationRange = document.getElementById("durationRange");
   const durationBadge = document.getElementById("durationBadge");
@@ -47,7 +91,7 @@ function setupEventListeners() {
   // Botão Cancelar
   document.getElementById("btnCancelJob").addEventListener("click", handleCancelJob);
 
-  // Tabs
+  // Tabs do Estúdio
   const tabBtns = document.querySelectorAll(".tab-btn");
   tabBtns.forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -64,18 +108,8 @@ function setupEventListeners() {
   // Botão Detectar Cortes Virais
   document.getElementById("btnDetectShorts").addEventListener("click", handleDetectShorts);
 
-  // Histórico Modal
-  const modal = document.getElementById("historyModal");
-  document.getElementById("btnHistory").addEventListener("click", () => {
-    modal.classList.remove("hidden");
-    loadHistoryList();
-  });
-  document.getElementById("btnCloseHistory").addEventListener("click", () => {
-    modal.classList.add("hidden");
-  });
-  modal.addEventListener("click", (e) => {
-    if (e.target === modal) modal.classList.add("hidden");
-  });
+  // Modais de Edição e Exclusão
+  setupModals();
 }
 
 function updateDurationDisplay(minutes) {
@@ -149,7 +183,8 @@ async function handleCreateVideo(e) {
   const legendStyle = document.getElementById("legendStyleSelect").value;
   const research = document.getElementById("researchCheck").checked;
   const bgMusic = document.getElementById("bgMusicSelect") ? document.getElementById("bgMusicSelect").value : "space_ambient";
-  const enableImages = document.getElementById("enableImagesCheck") ? document.getElementById("enableImagesCheck").checked : true;
+  const visualMode = document.querySelector('input[name="visualModeRadio"]:checked')?.value || "motion_design";
+  const enableImages = (visualMode !== "motion_design");
 
   const activePaletteEl = document.querySelector(".palette-item.active");
   const palette = activePaletteEl ? activePaletteEl.dataset.id : appConfig.default_palette;
@@ -180,6 +215,7 @@ async function handleCreateVideo(e) {
         legend_style: legendStyle,
         research,
         bg_music: bgMusic,
+        visual_mode: visualMode,
         enable_images: enableImages,
       }),
     });
@@ -663,71 +699,339 @@ function updateShortsBadgeCount() {
 }
 
 // ---------------------------------------------------------------------------
-// Histórico
+// Galeria & Gerenciamento de Vídeos Criados (Meus Vídeos)
 // ---------------------------------------------------------------------------
 
+let cachedJobs = [];
+let jobToDelete = null;
+
 async function loadRecentJobs() {
-  try {
-    const res = await fetch("/api/jobs");
-    const data = await res.json();
-    if (data.jobs && data.jobs.length > 0) {
-      // Se houver job recente já concluído, podemos abrir direto
-      const latest = data.jobs[0];
-      if (latest.has_video) {
-        currentJobId = latest.id;
-        const statusRes = await fetch(`/api/status/${latest.id}`);
-        if (statusRes.ok) {
-          const status = await statusRes.json();
-          document.getElementById("emptyStateCard").classList.add("hidden");
-          onJobCompleted(status);
-        }
+  await loadGallery();
+  if (cachedJobs.length > 0) {
+    const latest = cachedJobs[0];
+    if (latest.has_video) {
+      currentJobId = latest.id;
+      const statusRes = await fetch(`/api/status/${latest.id}`);
+      if (statusRes.ok) {
+        const status = await statusRes.json();
+        document.getElementById("emptyStateCard")?.classList.add("hidden");
+        onJobCompleted(status);
       }
     }
-  } catch (err) {
-    console.warn("Sem histórico carregado:", err);
   }
 }
 
-async function loadHistoryList() {
-  const container = document.getElementById("historyList");
-  container.innerHTML = "Carregando...";
+async function loadGallery() {
+  const container = document.getElementById("galleryGrid");
+  const badge = document.getElementById("galleryCountBadge");
+  if (!container) return;
 
   try {
     const res = await fetch("/api/jobs");
     const data = await res.json();
-    container.innerHTML = "";
+    cachedJobs = data.jobs || [];
 
-    if (!data.jobs || !data.jobs.length) {
-      container.innerHTML = "<p style='color:var(--text-dim)'>Nenhum vídeo no histórico.</p>";
+    if (badge) badge.textContent = cachedJobs.length;
+
+    const searchInput = document.getElementById("gallerySearchInput");
+    const query = searchInput ? searchInput.value.trim() : "";
+    if (query) {
+      filterGallery(query);
+    } else {
+      renderGalleryCards(cachedJobs);
+    }
+  } catch (err) {
+    console.error("Erro ao carregar galeria:", err);
+    container.innerHTML = `<p style="color:var(--text-dim);padding:20px;">Falha ao carregar galeria de vídeos.</p>`;
+  }
+}
+
+function filterGallery(query) {
+  if (!query) {
+    renderGalleryCards(cachedJobs);
+    return;
+  }
+  const q = query.toLowerCase();
+  const filtered = cachedJobs.filter((j) => {
+    return (j.title && j.title.toLowerCase().includes(q)) ||
+           (j.topic && j.topic.toLowerCase().includes(q));
+  });
+  renderGalleryCards(filtered);
+}
+
+function renderGalleryCards(jobs) {
+  const container = document.getElementById("galleryGrid");
+  if (!container) return;
+  container.innerHTML = "";
+
+  if (!jobs || !jobs.length) {
+    container.innerHTML = `
+      <div style="grid-column: 1 / -1; text-align: center; padding: 48px 20px; color: var(--text-dim);">
+        <p style="font-size: 32px; margin-bottom: 8px;">🎬</p>
+        <h4 style="font-size: 16px; color: var(--text-muted); margin-bottom: 6px;">Nenhum vídeo encontrado</h4>
+        <p style="font-size: 13px;">Crie seu primeiro vídeo no Estúdio de Criação à esquerda!</p>
+      </div>
+    `;
+    return;
+  }
+
+  jobs.forEach((j) => {
+    const card = document.createElement("div");
+    card.className = "gallery-card";
+    card.id = `gallery-card-${j.id}`;
+
+    const videoUrl = j.video_url || `/media/${j.id}/video.mp4`;
+    const mediaHtml = j.has_video
+      ? `<div class="gallery-thumb-wrapper">
+           <video src="${videoUrl}" controls playsinline preload="metadata"></video>
+         </div>`
+      : `<div class="gallery-thumb-wrapper" style="display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:13px;">
+           <span>⚠️ Vídeo em processamento</span>
+         </div>`;
+
+    const modeLabels = {
+      motion_design: "🎨 Motion Design",
+      images: "📷 Imagens Reais",
+      hybrid: "⚡ Híbrido",
+    };
+    const modeLabel = modeLabels[j.visual_mode] || "🎨 Motion Design";
+
+    const shortsBadge = j.shorts_count > 0
+      ? `<span class="gallery-badge highlight">🔥 ${j.shorts_count} Shorts</span>`
+      : "";
+
+    const dateStr = j.created_at ? new Date(j.created_at * 1000).toLocaleDateString("pt-BR", { hour: "2-digit", minute: "2-digit" }) : "";
+
+    card.innerHTML = `
+      ${mediaHtml}
+      <div class="gallery-card-body">
+        <h4 class="gallery-title">${escapeHtml(j.title || j.topic)}</h4>
+        <div class="gallery-meta">
+          <span>⏱️ ${j.minutes} min</span>
+          <span>📅 ${dateStr}</span>
+        </div>
+        <div class="gallery-badges-row">
+          <span class="gallery-badge">${modeLabel}</span>
+          ${shortsBadge}
+        </div>
+        <div class="gallery-actions-row">
+          <button type="button" class="btn-gallery-action btn-open-job" title="Abrir vídeo e cortes no estúdio">
+            👁️ Abrir
+          </button>
+          <button type="button" class="btn-gallery-action btn-edit-job" title="Editar título e roteiro">
+            ✏️ Editar
+          </button>
+          <button type="button" class="btn-gallery-action danger btn-delete-job" title="Excluir vídeo definitivamente">
+            🗑️ Apagar
+          </button>
+        </div>
+      </div>
+    `;
+
+    card.querySelector(".btn-open-job").addEventListener("click", () => openJobInStudio(j.id));
+    card.querySelector(".btn-edit-job").addEventListener("click", () => openEditModal(j.id));
+    card.querySelector(".btn-delete-job").addEventListener("click", () => confirmDeleteJob(j.id, j.title || j.topic));
+
+    container.appendChild(card);
+  });
+}
+
+async function openJobInStudio(jobId) {
+  currentJobId = jobId;
+  const navStudioBtn = document.getElementById("navStudioBtn");
+  if (navStudioBtn) navStudioBtn.click();
+
+  document.getElementById("emptyStateCard")?.classList.add("hidden");
+  const progressCard = document.getElementById("progressCard");
+  progressCard.classList.remove("hidden");
+  document.getElementById("stageDescription").textContent = "Carregando projeto do estúdio...";
+
+  try {
+    const res = await fetch(`/api/status/${jobId}`);
+    if (res.ok) {
+      const status = await res.json();
+      onJobCompleted(status);
+    } else {
+      alert("Não foi possível carregar os dados deste vídeo.");
+    }
+  } catch (err) {
+    console.error("Erro ao abrir no estúdio:", err);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Modais de Edição e Exclusão
+// ---------------------------------------------------------------------------
+
+function setupModals() {
+  // Modal de Edição
+  const editModal = document.getElementById("editJobModal");
+  document.getElementById("btnCloseEditModal")?.addEventListener("click", () => {
+    editModal.classList.add("hidden");
+  });
+  document.getElementById("btnCancelEdit")?.addEventListener("click", () => {
+    editModal.classList.add("hidden");
+  });
+
+  // Salvar Roteiro Apenas
+  document.getElementById("btnSaveScriptOnly")?.addEventListener("click", () => {
+    const jobId = document.getElementById("editJobId").value;
+    if (jobId) saveJobEdits(jobId, false);
+  });
+
+  // Salvar e Reconstruir Vídeo
+  document.getElementById("editJobForm")?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const jobId = document.getElementById("editJobId").value;
+    if (jobId) saveJobEdits(jobId, true);
+  });
+
+  // Modal de Exclusão
+  const deleteModal = document.getElementById("deleteConfirmModal");
+  document.getElementById("btnCloseDeleteModal")?.addEventListener("click", () => {
+    deleteModal.classList.add("hidden");
+  });
+  document.getElementById("btnCancelDelete")?.addEventListener("click", () => {
+    deleteModal.classList.add("hidden");
+  });
+  document.getElementById("btnConfirmDelete")?.addEventListener("click", executeDeleteJob);
+}
+
+async function openEditModal(jobId) {
+  const modal = document.getElementById("editJobModal");
+  const container = document.getElementById("editChaptersContainer");
+  modal.classList.remove("hidden");
+  container.innerHTML = `<p style="color:var(--text-dim)">Carregando roteiro...</p>`;
+
+  try {
+    const res = await fetch(`/api/jobs/${jobId}/manifest`);
+    if (!res.ok) {
+      alert("Roteiro do projeto ainda não disponível para edição.");
+      modal.classList.add("hidden");
+      return;
+    }
+    const manifest = await res.json();
+
+    document.getElementById("editJobId").value = jobId;
+    document.getElementById("editJobTitle").value = manifest.title || manifest.topic || "";
+
+    container.innerHTML = "";
+    (manifest.chapters || []).forEach((ch, idx) => {
+      const card = document.createElement("div");
+      card.className = "edit-chapter-card";
+      card.innerHTML = `
+        <label>Capítulo ${idx + 1}</label>
+        <input type="text" class="custom-input chapter-title-input" value="${escapeHtml(ch.title)}" placeholder="Título do capítulo">
+        <textarea class="custom-input chapter-narration-input" rows="3" placeholder="Texto falado pela narração neural...">${escapeHtml(ch.narration)}</textarea>
+      `;
+      container.appendChild(card);
+    });
+  } catch (err) {
+    container.innerHTML = `<p style="color:#ef4444">Erro ao carregar dados do projeto.</p>`;
+  }
+}
+
+async function saveJobEdits(jobId, rebuild = false) {
+  const modal = document.getElementById("editJobModal");
+  const newTitle = document.getElementById("editJobTitle").value.trim();
+
+  const chapterCards = document.querySelectorAll("#editChaptersContainer .edit-chapter-card");
+  const chapters = [];
+  chapterCards.forEach((c) => {
+    chapters.push({
+      title: c.querySelector(".chapter-title-input").value.trim(),
+      narration: c.querySelector(".chapter-narration-input").value.trim(),
+    });
+  });
+
+  const btnSaveOnly = document.getElementById("btnSaveScriptOnly");
+  const btnRebuild = document.getElementById("btnSaveAndRebuild");
+  if (rebuild) {
+    btnRebuild.disabled = true;
+    btnRebuild.textContent = "⏳ Iniciando Re-renderização...";
+  } else {
+    btnSaveOnly.disabled = true;
+    btnSaveOnly.textContent = "Salvando...";
+  }
+
+  try {
+    const updateRes = await fetch(`/api/jobs/${jobId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: newTitle,
+        chapters,
+      }),
+    });
+
+    if (!updateRes.ok) {
+      alert("Erro ao salvar alterações do projeto.");
       return;
     }
 
-    data.jobs.forEach((j) => {
-      const div = document.createElement("div");
-      div.className = "history-item";
-      div.innerHTML = `
-        <div>
-          <strong>${escapeHtml(j.title || j.topic)}</strong>
-          <div style="font-size:12px;color:var(--text-dim);margin-top:4px;">
-            ${j.minutes} min • Status: ${j.status}
-          </div>
-        </div>
-        <button class="btn-secondary" style="padding:6px 12px;font-size:12px;">Abrir</button>
-      `;
-      div.addEventListener("click", async () => {
-        document.getElementById("historyModal").classList.add("hidden");
-        currentJobId = j.id;
-        const statusRes = await fetch(`/api/status/${j.id}`);
-        if (statusRes.ok) {
-          const status = await statusRes.json();
-          document.getElementById("emptyStateCard").classList.add("hidden");
-          onJobCompleted(status);
-        }
+    if (rebuild) {
+      modal.classList.add("hidden");
+      const rebuildRes = await fetch(`/api/jobs/${jobId}/rebuild`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: newTitle }),
       });
-      container.appendChild(div);
-    });
+      const data = await rebuildRes.json();
+      if (rebuildRes.ok && data.job_id) {
+        currentJobId = data.job_id;
+        document.getElementById("navStudioBtn").click();
+        document.getElementById("emptyStateCard").classList.add("hidden");
+        document.getElementById("videoReadyCard").classList.add("hidden");
+        document.getElementById("progressCard").classList.remove("hidden");
+        startPolling(currentJobId);
+      }
+    } else {
+      btnSaveOnly.textContent = "Salvo com Sucesso! ✓";
+      setTimeout(() => {
+        btnSaveOnly.textContent = "Salvar Alterações";
+        btnSaveOnly.disabled = false;
+        modal.classList.add("hidden");
+        loadGallery();
+      }, 1200);
+    }
   } catch (err) {
-    container.innerHTML = "Erro ao carregar histórico.";
+    alert("Falha de conexão com o servidor local.");
+  } finally {
+    btnRebuild.disabled = false;
+    btnRebuild.textContent = "Salvar & Re-renderizar Vídeo";
+  }
+}
+
+function confirmDeleteJob(jobId, title) {
+  jobToDelete = jobId;
+  document.getElementById("deleteTargetTitle").textContent = `"${title}"`;
+  document.getElementById("deleteConfirmModal").classList.remove("hidden");
+}
+
+async function executeDeleteJob() {
+  if (!jobToDelete) return;
+  const btn = document.getElementById("btnConfirmDelete");
+  btn.disabled = true;
+  btn.textContent = "Excluindo...";
+
+  try {
+    const res = await fetch(`/api/jobs/${jobToDelete}`, { method: "DELETE" });
+    if (res.ok) {
+      document.getElementById("deleteConfirmModal").classList.add("hidden");
+      // Se for o job que está no player atualmente, reseta a visualização
+      if (currentJobId === jobToDelete) {
+        resetUI();
+      }
+      loadGallery();
+    } else {
+      alert("Erro ao excluir o vídeo.");
+    }
+  } catch (err) {
+    alert("Falha ao se comunicar com o servidor.");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Sim, Excluir Definitivamente";
+    jobToDelete = null;
   }
 }
 

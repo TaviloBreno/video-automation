@@ -27,23 +27,39 @@
         </div>
       </div>
 
+      <div class="main-nav-tabs">
+        <button type="button" id="navStudioBtn" class="nav-tab active">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+          <span>Estúdio de Criação</span>
+        </button>
+        <button type="button" id="navGalleryBtn" class="nav-tab">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+            <line x1="7" y1="2" x2="7" y2="22"></line>
+            <line x1="17" y1="2" x2="17" y2="22"></line>
+            <line x1="2" y1="12" x2="22" y2="12"></line>
+            <line x1="2" y1="7" x2="7" y2="7"></line>
+            <line x1="2" y1="17" x2="7" y2="17"></line>
+            <line x1="17" y1="17" x2="22" y2="17"></line>
+            <line x1="17" y1="7" x2="22" y2="7"></line>
+          </svg>
+          <span>Meus Vídeos Criados</span>
+          <span id="galleryCountBadge" class="nav-badge">0</span>
+        </button>
+      </div>
+
       <div class="header-actions">
         <div class="status-pill online">
           <span class="status-dot"></span>
           <span>Pipeline & Ollama Conectados</span>
         </div>
-        <button id="btnHistory" class="btn-secondary" title="Histórico de Gerações">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"></circle>
-            <polyline points="12 6 12 12 16 14"></polyline>
-          </svg>
-          Histórico
-        </button>
       </div>
     </header>
 
-    <!-- Main Grid -->
-    <main class="main-content">
+    <!-- Main Grid: Estúdio de Criação -->
+    <main id="studioView" class="main-content">
       <!-- Coluna da Esquerda: Configuração e Criação -->
       <section class="creation-panel">
         <div class="panel-card glass">
@@ -63,6 +79,43 @@
                 required
               >Quasars: o que são, por que brilham tanto e os segredos do universo primitivo</textarea>
               <span class="field-hint">A IA pesquisará fontes científicas confiáveis e estruturará os capítulos.</span>
+            </div>
+
+            <!-- Estilo Visual dos Capítulos: Motion Design vs Imagens -->
+            <div class="form-group">
+              <label>Estilo Visual dos Capítulos</label>
+              <div class="visual-mode-selector">
+                <label class="visual-mode-card active">
+                  <input type="radio" name="visualModeRadio" value="motion_design" checked>
+                  <div class="visual-mode-body">
+                    <span class="mode-icon">🎨</span>
+                    <div>
+                      <div class="mode-title">Motion Design Neon</div>
+                      <div class="mode-desc">Tipografia cinética, efeitos visuais vetoriais e gradientes</div>
+                    </div>
+                  </div>
+                </label>
+                <label class="visual-mode-card">
+                  <input type="radio" name="visualModeRadio" value="images">
+                  <div class="visual-mode-body">
+                    <span class="mode-icon">📷</span>
+                    <div>
+                      <div class="mode-title">Imagens Reais & Créditos</div>
+                      <div class="mode-desc">Fotografias científicas reais com referências de autoria e licença</div>
+                    </div>
+                  </div>
+                </label>
+                <label class="visual-mode-card">
+                  <input type="radio" name="visualModeRadio" value="hybrid">
+                  <div class="visual-mode-body">
+                    <span class="mode-icon">⚡</span>
+                    <div>
+                      <div class="mode-title">Híbrido Inteligente</div>
+                      <div class="mode-desc">Motion Design na abertura e fotos reais nos capítulos centrais</div>
+                    </div>
+                  </div>
+                </label>
+              </div>
             </div>
 
             <!-- Duração do Vídeo -->
@@ -101,7 +154,7 @@
             <!-- Opções Avançadas Expansíveis -->
             <details class="advanced-accordion">
               <summary class="accordion-header">
-                <span>⚙️ Ajustes de Voz, Estilo & Cores</span>
+                <span>⚙️ Ajustes de Voz, Trilha Sonora & Cores</span>
                 <span class="chevron">▾</span>
               </summary>
               <div class="accordion-content">
@@ -430,17 +483,91 @@
 
       </section>
     </main>
+
+    <!-- Galeria de Vídeos Criados (Meus Vídeos) -->
+    <section id="galleryView" class="gallery-view hidden">
+      <div class="gallery-header-bar">
+        <div>
+          <h2>📁 Meus Vídeos Criados</h2>
+          <p class="subtitle">Gerencie, edite roteiros, baixe ou exclua seus vídeos e cortes virais gerados.</p>
+        </div>
+        <div class="gallery-actions">
+          <div class="search-box">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" id="gallerySearchInput" placeholder="Buscar por tema ou título...">
+          </div>
+          <button id="btnRefreshGallery" class="btn-secondary" title="Recarregar Lista">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <polyline points="1 20 1 14 7 14"></polyline>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+            </svg>
+            <span>Atualizar</span>
+          </button>
+          <button id="btnGalleryNewVideo" class="btn-primary-small">
+            <span>+ Criar Novo Vídeo</span>
+          </button>
+        </div>
+      </div>
+
+      <div id="galleryGrid" class="gallery-grid">
+        <!-- Injetado dinamicamente via JS -->
+      </div>
+    </section>
   </div>
 
-  <!-- Modal de Histórico -->
-  <div id="historyModal" class="modal-backdrop hidden">
-    <div class="modal-card glass">
+  <!-- Modal de Edição de Projeto -->
+  <div id="editJobModal" class="modal-backdrop hidden">
+    <div class="modal-card glass edit-modal-card">
       <div class="modal-header">
-        <h3>Histórico de Vídeos Gerados</h3>
-        <button id="btnCloseHistory" class="btn-close">&times;</button>
+        <div>
+          <h3>✏️ Editar Roteiro do Projeto</h3>
+          <p class="meta-sub">Ajuste o título ou o texto narrado de cada capítulo.</p>
+        </div>
+        <button id="btnCloseEditModal" class="btn-close">&times;</button>
       </div>
-      <div id="historyList" class="history-list">
-        <!-- Injetado via JS -->
+
+      <form id="editJobForm" class="edit-form">
+        <input type="hidden" id="editJobId">
+
+        <div class="form-group">
+          <label for="editJobTitle">Título do Vídeo</label>
+          <input type="text" id="editJobTitle" class="custom-input" required>
+        </div>
+
+        <div class="form-group">
+          <label>Capítulos e Roteiro Narrado</label>
+          <div id="editChaptersContainer" class="edit-chapters-list">
+            <!-- Capítulos injetados via JS -->
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" id="btnCancelEdit" class="btn-secondary">Cancelar</button>
+          <button type="button" id="btnSaveScriptOnly" class="btn-secondary">Salvar Alterações</button>
+          <button type="submit" id="btnSaveAndRebuild" class="btn-primary glow">Salvar & Re-renderizar Vídeo</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal de Confirmação de Exclusão -->
+  <div id="deleteConfirmModal" class="modal-backdrop hidden">
+    <div class="modal-card glass delete-modal-card">
+      <div class="modal-header">
+        <h3>🗑️ Confirmar Exclusão</h3>
+        <button id="btnCloseDeleteModal" class="btn-close">&times;</button>
+      </div>
+      <div class="delete-modal-body">
+        <p>Tem certeza de que deseja apagar o vídeo <strong id="deleteTargetTitle">...</strong>?</p>
+        <p class="warning-text">Essa ação removerá o vídeo completo em 1080p, áudios e todos os cortes virais associados. Não é possível desfazer.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="btnCancelDelete" class="btn-secondary">Cancelar</button>
+        <button type="button" id="btnConfirmDelete" class="btn-danger">Sim, Excluir Definitivamente</button>
       </div>
     </div>
   </div>

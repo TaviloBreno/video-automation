@@ -674,18 +674,30 @@ def run_long_video(
         },
     )
 
-    # 4) Imagens e Render por capítulo ----------------------------------------
-    enable_images = bool(params.get("enable_images", True))
+    # 4) Estilo Visual (Imagens Reais vs Motion Design) e Render por capítulo -
+    visual_mode = str(params.get("visual_mode", "images" if params.get("enable_images", True) else "motion_design"))
+    enable_images = (visual_mode != "motion_design") and bool(params.get("enable_images", True))
     bg_music = str(params.get("bg_music", "space_ambient"))
-    images_info: list[dict[str, Any] | None] = []
+    images_info: list[dict[str, Any] | None] = [None] * len(chapters)
 
     if enable_images:
-        progress(0.42, "Buscando imagens livres (Wikimedia Commons) para cada capítulo…")
+        progress(0.42, "Buscando imagens livres e dados visuais para os capítulos…")
         try:
-            images_info = collect_chapter_images(chapters, topic, job_dir / "images")
+            raw_images = collect_chapter_images(chapters, topic, job_dir / "images")
+            if visual_mode == "hybrid":
+                # No modo híbrido: primeiro capítulo (gancho) e último (conclusão) têm motion design; intermediários têm fotos
+                for idx in range(len(chapters)):
+                    if idx == 0 or idx == len(chapters) - 1:
+                        images_info[idx] = None  # Motion design puro
+                    else:
+                        images_info[idx] = raw_images[idx] if idx < len(raw_images) else None
+            else:
+                images_info = raw_images
         except Exception as exc:
             logger.warning("Falha ao coletar imagens: %s", exc)
             images_info = [None] * len(chapters)
+    else:
+        progress(0.42, "Estilo Motion Design selecionado: gerando layouts vetoriais dinâmicos…")
 
     chapter_videos: list[Path] = []
     for i, ch in enumerate(chapters):
@@ -793,6 +805,7 @@ def run_long_video(
         "voice_rate": rate,
         "legend_style": legend_style,
         "bg_music": bg_music,
+        "visual_mode": visual_mode,
         "target_seconds": target,
         "actual_seconds": round(actual, 2),
         "video": "video.mp4",

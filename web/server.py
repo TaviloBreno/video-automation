@@ -9,6 +9,7 @@ import json
 import logging
 import os
 import re
+import shutil
 import sys
 import threading
 import time
@@ -84,6 +85,24 @@ def get_config_info():
         {"id": "none", "name": "🔇 Nenhuma Música (Apenas Narração)"},
     ]
 
+    visual_modes = [
+        {
+            "id": "motion_design",
+            "name": "🎨 Motion Design (Gráficos Animados & Neon)",
+            "description": "Tipografia cinética, efeitos visuais vetoriais, gradientes e formas neon.",
+        },
+        {
+            "id": "images",
+            "name": "📷 Imagens Científicas Reais",
+            "description": "Fotografias e ilustrações científicas de alta qualidade com referências e licenças livres CC.",
+        },
+        {
+            "id": "hybrid",
+            "name": "⚡ Híbrido Inteligente",
+            "description": "Motion Design impactante na introdução/conclusão e Imagens Reais nos capítulos centrais.",
+        },
+    ]
+
     return jsonify({
         "palettes": palettes,
         "default_palette": cfg.video.default_palette,
@@ -93,12 +112,14 @@ def get_config_info():
         "default_legend_style": "karaoke",
         "bg_music_options": bg_music_list,
         "default_bg_music": "space_ambient",
+        "visual_modes": visual_modes,
+        "default_visual_mode": "motion_design",
     })
 
 
 @app.route("/api/jobs", methods=["GET"])
 def list_jobs():
-    """Lista todos os jobs existentes no disco e em memória."""
+    """Lista todos os jobs existentes no disco e em memória com metadados completos."""
     jobs = []
     if JOBS_DIR.exists():
         for job_path in sorted(JOBS_DIR.iterdir(), key=lambda p: p.stat().st_mtime, reverse=True):
@@ -111,13 +132,17 @@ def list_jobs():
                 topic = info.get("topic")
                 title = info.get("title")
                 target_min = info.get("minutes")
+                visual_mode = "motion_design"
+                bg_music = "space_ambient"
 
                 if not topic and manifest_path.exists():
                     try:
                         m = json.loads(manifest_path.read_text(encoding="utf-8"))
                         topic = m.get("topic")
                         title = m.get("title")
-                        target_min = round(m.get("target_seconds", 0) / 60, 1)
+                        target_min = round(m.get("actual_seconds", m.get("target_seconds", 0)) / 60, 1)
+                        visual_mode = m.get("visual_mode", "motion_design")
+                        bg_music = m.get("bg_music", "space_ambient")
                     except Exception:
                         pass
                 elif not topic and script_path.exists():
@@ -129,16 +154,181 @@ def list_jobs():
                     except Exception:
                         pass
 
+                shorts_dir = job_path / "shorts"
+                shorts_count = len(list(shorts_dir.glob("*.mp4"))) if shorts_dir.exists() else 0
+
+                has_video = (job_path / "video.mp4").exists()
                 jobs.append({
                     "id": job_id,
                     "topic": topic or job_id,
                     "title": title or topic or "Vídeo",
                     "status": status,
                     "minutes": target_min or 0,
-                    "has_video": (job_path / "video.mp4").exists(),
+                    "has_video": has_video,
+                    "video_url": f"/media/{job_id}/video.mp4" if has_video else None,
+                    "shorts_count": shorts_count,
+                    "visual_mode": visual_mode,
+                    "bg_music": bg_music,
                     "created_at": job_path.stat().st_mtime,
                 })
     return jsonify({"jobs": jobs})
+
+
+@app.route("/api/jobs/<job_id>", methods=["DELETE"])
+def delete_job(job_id: str):
+    """Exclui completamente o vídeo e todos os arquivos do projeto."""
+    if job_id in CANCEL_FLAGS:
+        CANCEL_FLAGS[job_id].set()
+    ACTIVE_JOBS.pop(job_id, None)
+
+    job_dir = _get_job_path(job_id)
+    if job_dir.exists():
+        try:
+            shutil.rmtree(job_dir, ignore_errors=True)
+            logger.info("Job %s excluído com sucesso do disco", job_id)
+            return jsonify({"success": True, "message": "Vídeo e projeto excluídos com sucesso."})
+        except Exception as exc:
+            logger.error("Erro ao excluir job %s: %s", job_id, exc)
+            return jsonify({"error": f"Erro ao apagar arquivos: {exc}"}), 500
+
+    return jsonify({"error": "Projeto não encontrado"}), 404
+
+
+@app.route("/api/jobs/<job_id>", methods=["PUT"])
+def update_job(job_id: str):
+    """Atualiza título, tema e capítulos do roteiro de um projeto existente."""
+    job_dir = _get_job_path(job_id)
+    manifest_path = job_dir / "manifest.json"
+    script_path = job_dir / "script.json"
+
+    if not job_dir.exists():
+        return jsonify({"error": "Projeto não encontrado"}), 404
+
+    data = request.json or {}
+    new_title = data.get("title")
+    new_topic = data.get("topic")
+    new_chapters = data.get("chapters")
+
+    if manifest_path.exists():
+        try:
+            m = json.loads(manifest_path.read_text(encoding="utf-8"))
+            if new_title:
+                m["title"] = new_title
+            if new_topic:
+                m["topic"] = new_topic
+            if new_chapters and isinstance(new_chapters, list):
+                for i, ch_data in enumerate(new_chapters):
+                    if i < len(m.get("chapters", [])):
+                        if "title" in ch_data:
+                            m["chapters"][i]["title"] = ch_data["title"]
+                        if "narration" in ch_data:
+                            m["chapters"][i]["narration"] = ch_data["narration"]
+            manifest_path.write_text(json.dumps(m, indent=2, ensure_ascii=False), encoding="utf-8")
+        except Exception as exc:
+            return jsonify({"error": f"Erro ao atualizar manifest: {exc}"}), 500
+
+    if script_path.exists():
+        try:
+            s = json.loads(script_path.read_text(encoding="utf-8"))
+            if new_title:
+                s["title"] = new_title
+            if new_topic:
+                s["topic"] = new_topic
+            if new_chapters and isinstance(new_chapters, list):
+                for i, ch_data in enumerate(new_chapters):
+                    if i < len(s.get("chapters", [])):
+                        if "title" in ch_data:
+                            s["chapters"][i]["title"] = ch_data["title"]
+                        if "narration" in ch_data:
+                            s["chapters"][i]["narration"] = ch_data["narration"]
+            script_path.write_text(json.dumps(s, indent=2, ensure_ascii=False), encoding="utf-8")
+        except Exception:
+            pass
+
+    return jsonify({"success": True, "message": "Projeto atualizado com sucesso."})
+
+
+@app.route("/api/jobs/<job_id>/rebuild", methods=["POST"])
+def rebuild_job(job_id: str):
+    """Re-renderiza o vídeo a partir do roteiro salvo ou com novas opções visuais."""
+    job_dir = _get_job_path(job_id)
+    if not job_dir.exists():
+        return jsonify({"error": "Projeto não encontrado"}), 404
+
+    data = request.json or {}
+    manifest_path = job_dir / "manifest.json"
+    script_path = job_dir / "script.json"
+    base_data = {}
+    if manifest_path.exists():
+        try:
+            base_data = json.loads(manifest_path.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+    elif script_path.exists():
+        try:
+            base_data = json.loads(script_path.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+
+    topic = data.get("topic") or base_data.get("topic", "Vídeo")
+    minutes = float(data.get("minutes") or (base_data.get("actual_seconds", base_data.get("target_seconds", 120)) / 60))
+    visual_mode = data.get("visual_mode") or base_data.get("visual_mode", "motion_design")
+
+    params = {
+        "topic": topic,
+        "minutes": minutes,
+        "palette": data.get("palette") or base_data.get("palette"),
+        "voice": data.get("voice") or base_data.get("voice"),
+        "legend_style": data.get("legend_style") or base_data.get("legend_style", "karaoke"),
+        "research": False,
+        "bg_music": data.get("bg_music") or base_data.get("bg_music", "space_ambient"),
+        "visual_mode": visual_mode,
+        "enable_images": (visual_mode != "motion_design"),
+    }
+
+    cancel_event = threading.Event()
+    CANCEL_FLAGS[job_id] = cancel_event
+
+    job_state = {
+        "id": job_id,
+        "topic": topic,
+        "title": "Reconstruindo vídeo...",
+        "minutes": minutes,
+        "status": "running",
+        "progress": 0.0,
+        "stage": "Re-renderizando capítulos...",
+        "logs": ["Iniciando re-renderização..."],
+        "error": None,
+        "manifest": None,
+        "started_at": time.time(),
+    }
+    ACTIVE_JOBS[job_id] = job_state
+
+    def _worker():
+        def _prog(pct: float, msg: str):
+            job_state["progress"] = round(pct * 100, 1)
+            job_state["stage"] = msg
+            job_state["logs"].append(f"[{time.strftime('%H:%M:%S')}] {msg}")
+            if len(job_state["logs"]) > 100:
+                job_state["logs"].pop(0)
+
+        try:
+            manifest = run_long_video(job_dir, params, progress=_prog, cancelled=lambda: cancel_event.is_set())
+            job_state["status"] = "completed"
+            job_state["progress"] = 100.0
+            job_state["stage"] = "Vídeo atualizado com sucesso!"
+            job_state["title"] = manifest.get("title", topic)
+            job_state["manifest"] = manifest
+        except JobCancelled:
+            job_state["status"] = "cancelled"
+            job_state["stage"] = "Cancelado."
+        except Exception as exc:
+            logger.exception("Rebuild falhou: %s", exc)
+            job_state["status"] = "failed"
+            job_state["error"] = str(exc)
+
+    threading.Thread(target=_worker, daemon=True).start()
+    return jsonify({"job_id": job_id, "status": "running"})
 
 
 @app.route("/api/generate", methods=["POST"])
@@ -176,6 +366,7 @@ def generate_video():
     }
     ACTIVE_JOBS[job_id] = job_state
 
+    visual_mode = data.get("visual_mode", "motion_design")
     params = {
         "topic": topic,
         "minutes": minutes,
@@ -184,7 +375,8 @@ def generate_video():
         "legend_style": data.get("legend_style", "karaoke"),
         "research": bool(data.get("research", True)),
         "bg_music": data.get("bg_music", "space_ambient"),
-        "enable_images": bool(data.get("enable_images", True)),
+        "visual_mode": visual_mode,
+        "enable_images": (visual_mode != "motion_design") and bool(data.get("enable_images", True)),
     }
 
     def _worker():
