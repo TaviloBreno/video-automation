@@ -4,33 +4,143 @@
   <meta charset="utf-8">
   <style>
     :root {
-      --palettePrimary: #FE2C55;
-      --paletteAccent: #25F4EE;
+      --palettePrimary: #00E5FF;
+      --paletteAccent: #FF00E5;
       --paletteText: #FFFFFF;
-      --paletteBackground: #000000;
+      --paletteBackground: #0A0A0A;
+      --surface: color-mix(in srgb, var(--paletteBackground) 88%, white);
     }
-    body { margin: 0; background: var(--paletteBackground); }
-    #root { width: 1080px; height: 1920px; position: relative; overflow: hidden; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--paletteBackground);
+      color: var(--paletteText);
+      font-family: Inter, "Aptos", "Arial", sans-serif;
+    }
+    #root {
+      width: 1080px;
+      height: 1920px;
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse at 82% 18%, color-mix(in srgb, var(--paletteAccent) 18%, transparent), transparent 48%),
+        linear-gradient(160deg, var(--paletteBackground), var(--surface));
+    }
+    #root::before {
+      content: "";
+      position: absolute;
+      inset: 48px;
+      border: 1px solid color-mix(in srgb, var(--paletteText) 16%, transparent);
+      pointer-events: none;
+    }
+    #root::after {
+      content: "ESTÚDIO DE CIÊNCIA  /  EXPLICAÇÃO EM CAMADAS";
+      position: absolute;
+      top: 78px;
+      left: 84px;
+      color: var(--paletteAccent);
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 3px;
+    }
+    .explainer-clip {
+      position: absolute;
+      top: var(--clip-top);
+      left: 8%;
+      width: 84%;
+      padding: 30px 34px 34px;
+      transform: translateY(-50%);
+      border-left: 5px solid var(--paletteAccent);
+      background: color-mix(in srgb, var(--paletteBackground) 78%, transparent);
+    }
+    .clip-heading {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 20px;
+      color: var(--paletteAccent);
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 3px;
+    }
+    .clip-index {
+      display: inline-flex;
+      width: 42px;
+      height: 42px;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--paletteAccent);
+      border-radius: 50%;
+      font-size: 16px;
+      letter-spacing: 0;
+    }
+    .clip-copy {
+      font-size: 54px;
+      font-weight: 650;
+      line-height: 1.15;
+      text-wrap: balance;
+    }
+    .clip-sources {
+      margin-top: 26px;
+      color: color-mix(in srgb, var(--paletteText) 70%, transparent);
+      font-size: 15px;
+      line-height: 1.5;
+      letter-spacing: .4px;
+    }
+    .citation b { color: var(--paletteAccent); }
+    .citation i { font-style: normal; }
   </style>
 </head>
 <body>
   <div id="root" data-composition-id="main" data-start="0" 
-       data-width="1080" data-height="1920" data-duration="15.525">
+       data-width="1080" data-height="1920" data-duration="6.9125">
     
-    <div id="el-0" class="clip" 
-         data-start="0.0" data-duration="4" 
-         data-animation="fade"
-         style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); 
-                color:var(--paletteText); font-size:64px; text-align:center; width:90%;">
-      LANçAMENTO
+    <div id="el-1" class="clip explainer-clip"
+         data-start="0.0" data-duration="4"
+         data-animation="fade-in"
+         style="--clip-top:51%; --clip-index:'1'">
+      <div class="clip-heading">
+        <span class="clip-index">01</span>
+        <span class="clip-role">A PERGUNTA</span>
+      </div>
+      <div class="clip-copy">Quasars: o que são e como eles são tão brilhantes</div>
+      
     </div>
 
-    <div id="el-1" class="clip" 
-         data-start="4.0" data-duration="3" 
-         data-animation="slide-up"
-         style="position:absolute; top:85%; left:50%; transform:translate(-50%,-50%); 
-                color:var(--paletteText); font-size:64px; text-align:center; width:90%;">
-      Conheº o novo produto
+    <div id="el-2" class="clip explainer-clip"
+         data-start="4.0" data-duration="8"
+         data-animation="fade-in"
+         style="--clip-top:51%; --clip-index:'2'">
+      <div class="clip-heading">
+        <span class="clip-index">02</span>
+        <span class="clip-role">MECANISMO</span>
+      </div>
+      <div class="clip-copy">Quasars são núcleos ativos de galáxias alimentados por buracos negros supermassivos. Esses objetos celestes são extremamente brilhantes devido à grande quantidade de matéria quente e em movimento dentro deles.</div>
+      <div class="clip-sources">FONTES  /  <span class="citation" title="https://www.dicio.com.br/educativo/"><b>[S1]</b> Educativo - Dicio, Dicionário Online de Português<i> — dicio.com.br</i></span>  ·  <span class="citation" title="https://www.ludoeducativo.com.br/pt/"><b>[S2]</b> Ludo Educativo - Portal de Jogos Educativos<i> — ludoeducativo.com.br</i></span></div>
+    </div>
+
+    <div id="el-3" class="clip explainer-clip"
+         data-start="12.0" data-duration="5"
+         data-animation="fade-in"
+         style="--clip-top:51%; --clip-index:'3'">
+      <div class="clip-heading">
+        <span class="clip-index">03</span>
+        <span class="clip-role">MECANISMO</span>
+      </div>
+      <div class="clip-copy">A distância em que os quasars são observados varia devido à dispersão da luz, tornando impossível determinar a origem exata desses objetos.</div>
+      <div class="clip-sources">FONTES  /  <span class="citation" title="https://dmaiseducativo.com.br/"><b>[S3]</b> D+ Educativo -<i> — dmaiseducativo.com.br</i></span></div>
+    </div>
+
+    <div id="el-4" class="clip explainer-clip"
+         data-start="17.0" data-duration="8"
+         data-animation="fade-in"
+         style="--clip-top:51%; --clip-index:'4'">
+      <div class="clip-heading">
+        <span class="clip-index">04</span>
+        <span class="clip-role">MECANISMO</span>
+      </div>
+      <div class="clip-copy">Os quasars revelam informações valiosas sobre o universo primitivo, como a composição primordial e a formação de galáxias.</div>
+      <div class="clip-sources">FONTES  /  <span class="citation" title="https://www.ludoeducativo.com.br/pt/activities"><b>[S4]</b> Atividades Destaques - Ludo Educativo<i> — ludoeducativo.com.br</i></span>  ·  <span class="citation" title="https://www.significadosdepalavras.com/educativo"><b>[S5]</b> Significado de educativo: o que é, definição, exemplos e sinônimos<i> — significadosdepalavras.com</i></span></div>
     </div>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>

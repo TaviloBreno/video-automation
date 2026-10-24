@@ -39,7 +39,7 @@ OLLAMA_ENABLED = os.getenv("OLLAMA_ENABLED", "true").lower() == "true"
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
 
-MAX_RETRIES = 2
+MAX_RETRIES = 4
 RETRY_DELAY_SECONDS = 2
 
 
