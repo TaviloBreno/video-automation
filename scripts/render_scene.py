@@ -69,13 +69,13 @@ def render_scene(composition_path: str, out_mp4: str, timeout: int = 600) -> Pat
                 check=False,
             )
             if result.returncode == 0 and out_path.exists():
-                print(f"✅ Render concluído: {out_path}")
+                print(f"Render concluído: {out_path}")
                 return out_path
             else:
                 stderr_tail = (result.stderr or "")[-800:]
-                print(f"⚠️ Falha (exit {result.returncode}): {stderr_tail}")
+                print(f"Falha (exit {result.returncode}): {stderr_tail}")
         except subprocess.TimeoutExpired:
-            print(f"⚠️ Timeout de {timeout}s")
+            print(f"Timeout de {timeout}s")
 
         if attempt < 2:
             time.sleep(5)

@@ -8,6 +8,7 @@ import subprocess
 import sys
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+from typing import Sequence
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 if str(PROJECT_ROOT) not in sys.path:
@@ -24,12 +25,21 @@ def export_all(
     audio_path: str = "output/voice.mp3",
     youtube_output: str = "output-youtube.mp4",
     vertical_output: str = "output-vertical.mp4",
+    formats: str | Sequence[str] = ("youtube", "vertical"),
 ) -> None:
-    """Launch both format-specific exporters and report any failures."""
+    """Launch the requested format exporters and report any failures."""
+    requested = formats.split(",") if isinstance(formats, str) else formats
+    selected = tuple(dict.fromkeys(item.strip() for item in requested if item.strip()))
+    unknown = set(selected) - {"youtube", "vertical"}
+    if unknown or not selected:
+        raise ValueError(
+            "formats deve conter youtube e/ou vertical; "
+            f"recebido: {', '.join(selected) or '(vazio)'}"
+        )
     if project_path(youtube_output) == project_path(vertical_output):
         raise ValueError("Os caminhos de saída horizontal e vertical devem ser diferentes.")
 
-    commands = {
+    all_commands = {
         "YouTube horizontal": [
             sys.executable, str(YOUTUBE_SCRIPT),
             "--input", input_path, "--audio", audio_path, "--out", youtube_output,
@@ -38,6 +48,12 @@ def export_all(
             sys.executable, str(VERTICAL_SCRIPT),
             "--input", input_path, "--audio", audio_path, "--out", vertical_output,
         ],
+    }
+    commands = {
+        name: command
+        for name, command in all_commands.items()
+        if (name == "YouTube horizontal" and "youtube" in selected)
+        or (name == "Shorts/Reels vertical" and "vertical" in selected)
     }
 
     with ThreadPoolExecutor(max_workers=2) as executor:
@@ -79,8 +95,14 @@ def main() -> int:
     parser.add_argument(
         "--out-vertical", default="output-vertical.mp4", help="Saída vertical"
     )
+    parser.add_argument(
+        "--formats",
+        default="youtube,vertical",
+        help="Formatos separados por vírgula: youtube,vertical",
+    )
     args = parser.parse_args()
-    export_all(args.input, args.audio, args.out_youtube, args.out_vertical)
+    formats = [item.strip() for item in args.formats.split(",") if item.strip()]
+    export_all(args.input, args.audio, args.out_youtube, args.out_vertical, formats)
     return 0
 
 

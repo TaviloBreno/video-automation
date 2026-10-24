@@ -25,7 +25,10 @@ def generate_karaoke_ass(
     primary_color: str = "&H00FFFFFF",
     highlight_color: str = "&H0000FFFF",
 ) -> Path:
-    data = json.loads((PROJECT_ROOT / words_path).read_text(encoding="utf-8"))
+    words_file = Path(words_path)
+    if not words_file.is_absolute():
+        words_file = PROJECT_ROOT / words_file
+    data = json.loads(words_file.read_text(encoding="utf-8"))
     words = data["words"] if isinstance(data, dict) else data
 
     ass_lines = [
@@ -66,10 +69,12 @@ def generate_karaoke_ass(
             f"Dialogue: 0,{_fmt_time(start)},{_fmt_time(end)},Default,,0,0,0,,{karaoke_text.strip()}"
         )
 
-    out = PROJECT_ROOT / output_path
+    out = Path(output_path)
+    if not out.is_absolute():
+        out = PROJECT_ROOT / out
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text("\n".join(ass_lines), encoding="utf-8")
-    print(f"✅ ASS karaokê gerado: {out}")
+    print(f"ASS karaokê gerado: {out}")
     return out
 
 

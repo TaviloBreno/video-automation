@@ -19,17 +19,30 @@ if str(PROJECT_ROOT) not in sys.path:
 from scripts.gen_karaoke_ass import generate_karaoke_ass
 from scripts.burn_subtitles import burn_ass
 
+SUBTITLE_STYLES = {
+    "karaoke": {"font_size": 64, "primary_color": "&H00FFFFFF", "highlight_color": "&H0000FFFF"},
+    "clean": {"font_size": 56, "primary_color": "&H00FFFFFF", "highlight_color": "&H00FFFF00"},
+    "bold": {"font_size": 72, "primary_color": "&H00FFFFFF", "highlight_color": "&H00FF00FF"},
+}
+
 
 def add_subtitles(
     words_path: str = "output/voice.words.json",
     video_path: str = "output/final.mp4",
     ass_path: str = "output/subs/karaoke.ass",
     out_video: str = "output/final_legendas.mp4",
+    legend_style: str = "karaoke",
+    audio_path: str | None = None,
 ) -> Path:
     """Gera ASS karaokê e queima no vídeo. Retorna caminho do vídeo final."""
-    generate_karaoke_ass(words_path, ass_path)
-    result = burn_ass(video_path, ass_path, out_video)
-    print(f"✅ Legendas aplicadas: {result}")
+    if legend_style not in SUBTITLE_STYLES:
+        raise ValueError(
+            f"Estilo de legenda inválido: {legend_style!r}. "
+            f"Disponíveis: {', '.join(SUBTITLE_STYLES)}"
+        )
+    generate_karaoke_ass(words_path, ass_path, **SUBTITLE_STYLES[legend_style])
+    result = burn_ass(video_path, ass_path, out_video, audio_path=audio_path)
+    print(f"Legendas aplicadas: {result}")
     return result
 
 

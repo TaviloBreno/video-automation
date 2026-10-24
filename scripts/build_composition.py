@@ -53,7 +53,7 @@ def build_composition(scene_path: str, words_path: str, template_path: str, outp
     html = html.replace("{{PALETTE_BACKGROUND}}", palette.background)
 
     Path(output_path).write_text(html, encoding="utf-8")
-    print(f"✅ Composição gerada: {output_path} (duração: {scene_duration:.2f}s)")
+    print(f"Composição gerada: {output_path} (duração: {scene_duration:.2f}s)")
     return scene_duration
 
 
