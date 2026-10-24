@@ -1,7 +1,7 @@
 {
   "version": 1,
   "historyId": "8d4187f1-fb29-45c7-90b0-47f2dd063f88",
-  "currentRevision": "4a8e1ef0-80e7-471f-ac41-b6cba9a0c6cd",
+  "currentRevision": "7483fc91-4ac4-4326-89dc-06a6a70c79de",
   "pendingChanges": false,
   "files": {
     "AGENTS.md": {
@@ -17,8 +17,8 @@
       "content": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\53\\53dbce1e19aa713cbb12ee0bc4d206143b45ab15e6ffbfcaa8f69572d4d24d50"
     },
     "index.html": {
-      "hash": "9cd2c383c24477ac312ca932a1e5fe31f44768c9c6f2937422b9a1fda6469238",
-      "content": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\9c\\9cd2c383c24477ac312ca932a1e5fe31f44768c9c6f2937422b9a1fda6469238"
+      "hash": "6aa94f53518ae99d78eae84e547897fc8e908e88580c7822a17fd1c51ea76af2",
+      "content": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\6a\\6aa94f53518ae99d78eae84e547897fc8e908e88580c7822a17fd1c51ea76af2"
     },
     "meta.json": {
       "hash": "a98496daea3fdeab65a83404bcbc034263c25d5571e5eaf23caa4b7c9eced945",
@@ -31,6 +31,22 @@
     "vars.json": {
       "hash": "77df81f4d6555961fa59e7ed43b3d909ef56b330b3adca871795c17e1cdf97ef",
       "content": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\77\\77df81f4d6555961fa59e7ed43b3d909ef56b330b3adca871795c17e1cdf97ef"
+    },
+    "src/animations/animations.js": {
+      "hash": "f0d4397f41d82a51b3c8ce59fe939bb9f53d219d4ff13b781360866923e2768e",
+      "content": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\f0\\f0d4397f41d82a51b3c8ce59fe939bb9f53d219d4ff13b781360866923e2768e"
+    },
+    "src/animations/README.md": {
+      "hash": "0a5534f4bc38473b1f28dfe51f92ef725399f660649c84c6570d87fb3c0ce4b5",
+      "content": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\0a\\0a5534f4bc38473b1f28dfe51f92ef725399f660649c84c6570d87fb3c0ce4b5"
+    },
+    "src/composition.html": {
+      "hash": "3c123a0679668a2b23f934acf96f7aef1f653b992311d0041c934f1a0e0dee76",
+      "content": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\3c\\3c123a0679668a2b23f934acf96f7aef1f653b992311d0041c934f1a0e0dee76"
+    },
+    "src/template.html": {
+      "hash": "57b6e5a5eb746f4c42cd090eeeb98c6a161e31c957b8c25e566372dd886c990b",
+      "content": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\57\\57b6e5a5eb746f4c42cd090eeeb98c6a161e31c957b8c25e566372dd886c990b"
     }
   },
   "revisions": {
@@ -63,6 +79,56 @@
           "after": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\77\\77df81f4d6555961fa59e7ed43b3d909ef56b330b3adca871795c17e1cdf97ef"
         }
       }
+    },
+    "c2d48a3b-4c3c-423b-912d-8739130237a5": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792822707163,
+      "endedAt": 1792822707202,
+      "files": {
+        "index.html": {
+          "before": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\9c\\9cd2c383c24477ac312ca932a1e5fe31f44768c9c6f2937422b9a1fda6469238",
+          "after": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\3c\\3c123a0679668a2b23f934acf96f7aef1f653b992311d0041c934f1a0e0dee76"
+        },
+        "src/animations/animations.js": {
+          "before": null,
+          "after": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\f0\\f0d4397f41d82a51b3c8ce59fe939bb9f53d219d4ff13b781360866923e2768e"
+        },
+        "src/animations/README.md": {
+          "before": null,
+          "after": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\0a\\0a5534f4bc38473b1f28dfe51f92ef725399f660649c84c6570d87fb3c0ce4b5"
+        },
+        "src/composition.html": {
+          "before": null,
+          "after": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\3c\\3c123a0679668a2b23f934acf96f7aef1f653b992311d0041c934f1a0e0dee76"
+        },
+        "src/template.html": {
+          "before": null,
+          "after": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\ca\\ca64c616aad3f0ed5f6bc44eb408540c339c5f6db66821b0aeff705b88a4aa8a"
+        }
+      }
+    },
+    "7483fc91-4ac4-4326-89dc-06a6a70c79de": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792823034327,
+      "endedAt": 1792823034349,
+      "files": {
+        "index.html": {
+          "before": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\3c\\3c123a0679668a2b23f934acf96f7aef1f653b992311d0041c934f1a0e0dee76",
+          "after": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\6a\\6aa94f53518ae99d78eae84e547897fc8e908e88580c7822a17fd1c51ea76af2"
+        },
+        "src/template.html": {
+          "before": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\ca\\ca64c616aad3f0ed5f6bc44eb408540c339c5f6db66821b0aeff705b88a4aa8a",
+          "after": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\57\\57b6e5a5eb746f4c42cd090eeeb98c6a161e31c957b8c25e566372dd886c990b"
+        }
+      }
     }
   },
   "checks": {
@@ -77,13 +143,14 @@
   },
   "renders": {
     "latest": {
-      "id": "9cdf329e-ef9f-4ffc-bab7-939a71113cf3",
-      "completedAt": 1792821639936,
-      "output": "C:\\programacao\\projetos\\video-automation\\render\\test.mp4",
+      "id": "648adda4-7980-4e74-8941-ea0cfbfb55d2",
+      "completedAt": 1792823057405,
+      "output": "C:\\programacao\\projetos\\video-automation\\output\\final.mp4",
       "status": "completed",
-      "revision": "4a8e1ef0-80e7-471f-ac41-b6cba9a0c6cd"
+      "revision": "7483fc91-4ac4-4326-89dc-06a6a70c79de"
     },
     "retainedRevisions": [
+      "7483fc91-4ac4-4326-89dc-06a6a70c79de",
       "4a8e1ef0-80e7-471f-ac41-b6cba9a0c6cd"
     ]
   },
