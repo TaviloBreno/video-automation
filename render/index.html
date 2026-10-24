@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html
+  data-composition-variables='[
+    {"id":"narrationText","type":"string","label":"Texto da Narração","default":"Texto de exemplo"},
+    {"id":"palettePrimary","type":"color","label":"Cor Primária","default":"#00E5FF"},
+    {"id":"paletteAccent","type":"color","label":"Cor de Destaque","default":"#FF00E5"},
+    {"id":"paletteText","type":"color","label":"Cor do Texto","default":"#FFFFFF"},
+    {"id":"paletteBackground","type":"color","label":"Cor de Fundo","default":"#0A0A0A"}
+  ]'
+>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      margin: 0;
+      /* Usa a variável CSS que o HyperFrames injeta automaticamente */
+      background: var(--paletteBackground);
+    }
+    #root {
+      width: 1080px;
+      height: 1920px;
+      position: relative;
+      overflow: hidden;
+    }
+    .title {
+      color: var(--paletteText);
+      font-family: Arial, sans-serif;
+      font-size: 72px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      width: 90%;
+      /* Um toque da cor de destaque, por exemplo, numa borda */
+      border-left: 8px solid var(--paletteAccent);
+      padding-left: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div data-hf-id="hf-txxr" id="root"
+       data-composition-id="main"
+       data-start="0"
+       data-width="1080"
+       data-height="1920"
+       data-duration="10">
+
+    <!-- O texto será substituído pela variável 'narrationText' -->
+    <h1 data-hf-id="hf-0pg8" id="title" class="clip title"
+        data-start="0"
+        data-duration="5"
+        data-var-text="narrationText">
+      Texto de exemplo
+    </h1>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    tl.from("#title", { opacity: 0, y: -50, duration: 1 }, 0);
+    window.__timelines = window.__timelines || {};
+    window.__timelines["main"] = tl;
+  </script>
+</body>
+</html>
