@@ -12,6 +12,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from typing import Any, Dict, List
+from urllib.parse import urlsplit
 
 from jsonschema import Draft202012Validator, ValidationError
 
@@ -50,6 +51,11 @@ SCENE_SCHEMA: Dict[str, Any] = {
                         "enum": ["fade", "slide-up", "slide-left", "zoom", "none"],
                     },
                     "duration_seconds": {"type": "number", "exclusiveMinimum": 0},
+                    "source_ids": {
+                        "type": "array",
+                        "items": {"type": "string", "minLength": 1},
+                        "uniqueItems": True,
+                    },
                 },
                 # Regra condicional: elementos de texto exigem content
                 "allOf": [
@@ -69,6 +75,21 @@ SCENE_SCHEMA: Dict[str, Any] = {
         },
         "suggested_duration_hint": {"type": "number", "minimum": 5, "maximum": 120},
         "narration_text": {"type": "string", "minLength": 1},
+        "sources": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": ["id", "title", "url", "publisher", "snippet"],
+                "additionalProperties": False,
+                "properties": {
+                    "id": {"type": "string", "minLength": 1},
+                    "title": {"type": "string", "minLength": 1},
+                    "url": {"type": "string", "format": "uri"},
+                    "publisher": {"type": "string", "minLength": 1},
+                    "snippet": {"type": "string"},
+                },
+            },
+        },
     },
 }
 
@@ -150,6 +171,47 @@ def validate_scene(scene: Any, schema: Dict[str, Any] | None = None) -> Dict[str
     if errors:
         messages = [_build_specific_message(e) for e in errors]
         raise SceneValidationError(messages)
+
+    sources = scene.get("sources")
+    if (
+        (schema is None or schema == SCENE_SCHEMA)
+        and "sources" in scene
+        and "elements" in scene
+    ):
+        known_ids = {source["id"] for source in sources}
+        if len(known_ids) != len(sources):
+            raise SceneValidationError(["sources contém IDs duplicados"])
+        source_errors = []
+        for index, source in enumerate(sources):
+            try:
+                url = source.get("url")
+                if not isinstance(url, str):
+                    raise ValueError("URL deve ser string")
+                parsed_url = urlsplit(url)
+            except ValueError:
+                parsed_url = None
+            if (
+                parsed_url is None
+                or parsed_url.scheme not in {"http", "https"}
+                or not parsed_url.hostname
+            ):
+                source_errors.append(
+                    f"sources[{index}].url deve ser uma URL HTTP ou HTTPS válida"
+                )
+        for index, element in enumerate(scene["elements"]):
+            source_ids = element.get("source_ids", [])
+            unknown_ids = set(source_ids) - known_ids
+            if unknown_ids:
+                source_errors.append(
+                    f"elements[{index}].source_ids contém IDs desconhecidos: "
+                    f"{sorted(unknown_ids)}"
+                )
+            if element["type"] in {"body", "subtitle"} and not source_ids:
+                source_errors.append(
+                    f"elements[{index}] é uma afirmação textual e precisa de source_ids"
+                )
+        if source_errors:
+            raise SceneValidationError(source_errors)
 
     return scene
 

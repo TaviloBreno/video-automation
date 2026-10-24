@@ -26,6 +26,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from scripts.config_loader import load_config, AppConfig
+from scripts.research_web import format_research_context
 
 ALLOWED_TYPES = {"title", "subtitle", "body", "image", "shape"}
 ALLOWED_POSITIONS = {"top", "center", "bottom"}
@@ -54,9 +55,15 @@ def _load_prompt_template(cfg: AppConfig) -> str:
     return prompt_path.read_text(encoding="utf-8")
 
 
-def _build_messages(template: str, description: str) -> list[dict[str, str]]:
+def _build_messages(
+    template: str,
+    description: str,
+    research_sources: list[dict[str, str]] | None = None,
+) -> list[dict[str, str]]:
     """Substitui {description} e monta a lista de mensagens no formato chat."""
     system_content = template.replace("{description}", description)
+    if research_sources is not None:
+        system_content += format_research_context({"sources": research_sources})
     return [
         {"role": "user", "content": system_content},
     ]
@@ -66,7 +73,11 @@ def _build_messages(template: str, description: str) -> list[dict[str, str]]:
 # Validação mínima do JSON de saída
 # ---------------------------------------------------------------------------
 
-def _validate_scene(scene: Any, known_palettes: set[str] | None = None) -> Dict[str, Any]:
+def _validate_scene(
+    scene: Any,
+    known_palettes: set[str] | None = None,
+    known_source_ids: set[str] | None = None,
+) -> Dict[str, Any]:
     """Valida o schema mínimo e a consistência do JSON retornado."""
     if not isinstance(scene, dict):
         raise ValueError(f"Esperado dict, recebido {type(scene).__name__}")
@@ -130,6 +141,23 @@ def _validate_scene(scene: Any, known_palettes: set[str] | None = None) -> Dict[
                 f"elements[{idx}].animation inválida: {el['animation']!r}. "
                 f"Permitidos: {sorted(ALLOWED_ANIMATIONS)}"
             )
+        source_ids = el.get("source_ids", [])
+        if not isinstance(source_ids, list) or any(
+            not isinstance(source_id, str) for source_id in source_ids
+        ):
+            raise ValueError(f"elements[{idx}].source_ids deve ser uma lista de IDs de fonte")
+        if len(source_ids) != len(set(source_ids)):
+            raise ValueError(f"elements[{idx}].source_ids contém IDs duplicados")
+        if known_source_ids is not None:
+            unknown_ids = set(source_ids) - known_source_ids
+            if unknown_ids:
+                raise ValueError(
+                    f"elements[{idx}] cita fontes desconhecidas: {sorted(unknown_ids)}"
+                )
+            if el_type in {"body", "subtitle"} and not source_ids:
+                raise ValueError(
+                    f"elements[{idx}] é uma afirmação textual e precisa de source_ids"
+                )
 
     if not has_title:
         raise ValueError("'elements' deve conter pelo menos 1 elemento do tipo 'title'")
@@ -204,7 +232,11 @@ def _call_groq(messages: list[dict], cfg: AppConfig) -> str:
 # Função pública
 # ---------------------------------------------------------------------------
 
-def parse_scene(description: str, cfg: AppConfig | None = None) -> Dict[str, Any]:
+def parse_scene(
+    description: str,
+    cfg: AppConfig | None = None,
+    research_sources: list[dict[str, str]] | None = None,
+) -> Dict[str, Any]:
     """
     Converte uma descrição em linguagem natural para um dict JSON estruturado.
 
@@ -220,7 +252,12 @@ def parse_scene(description: str, cfg: AppConfig | None = None) -> Dict[str, Any
 
     cfg = cfg or load_config()
     template = _load_prompt_template(cfg)
-    messages = _build_messages(template, description.strip())
+    messages = _build_messages(template, description.strip(), research_sources)
+    known_source_ids = (
+        {source["id"] for source in research_sources}
+        if research_sources is not None
+        else None
+    )
 
     last_error: Exception | None = None
 
@@ -232,7 +269,11 @@ def parse_scene(description: str, cfg: AppConfig | None = None) -> Dict[str, Any
                 raw = _call_groq(messages, cfg)
 
             scene = _parse_json_response(raw)
-            return _validate_scene(scene, known_palettes=set(cfg.palettes.keys()))
+            return _validate_scene(
+                scene,
+                known_palettes=set(cfg.palettes.keys()),
+                known_source_ids=known_source_ids,
+            )
 
         except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as exc:
             last_error = exc
@@ -249,6 +290,21 @@ def parse_scene(description: str, cfg: AppConfig | None = None) -> Dict[str, Any
         except ValueError as exc:
             last_error = exc
             if attempt < MAX_RETRIES:
+                messages = [
+                    *messages[:-1],
+                    {
+                        **messages[-1],
+                        "content": (
+                            messages[-1]["content"]
+                            + "\n\nA resposta anterior falhou na validação: "
+                            + str(exc)
+                            + ". Corrija o JSON e inclua obrigatoriamente pelo menos "
+                            "um elemento do tipo title. Quando a pesquisa estiver ativa, "
+                            "inclua source_ids existentes em cada afirmação factual "
+                            "de body/subtitle; use apenas fontes que sustentem o texto."
+                        ),
+                    },
+                ]
                 time.sleep(RETRY_DELAY_SECONDS * attempt)
                 continue
             break

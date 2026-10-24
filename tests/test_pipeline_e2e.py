@@ -111,7 +111,7 @@ def test_pipeline_creates_youtube_and_vertical_exports(tmp_path, monkeypatch):
 
     monkeypatch.setattr(pipeline, "export_all", export_to_temp)
     outputs = pipeline.run(
-        "Um vídeo curto em português apresenta uma dica simples para beber mais água.",
+        "Sono e sua importância para o aprendizado.",
         palette="dark-neon",
         formats=("youtube", "vertical"),
     )

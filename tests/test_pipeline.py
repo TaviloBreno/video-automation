@@ -50,14 +50,28 @@ def test_run_executes_stages_in_order_and_passes_selected_options(tmp_path, monk
     calls = []
     scene = {
         "palette": "clean-light",
+        "suggested_duration_hint": 5,
         "narration_text": "Narration",
-        "elements": [{"type": "title"}],
+        "elements": [
+            {"type": "title", "content": "Teste", "duration_seconds": 5}
+        ],
     }
 
-    def parse(text, cfg):
+    def parse(text, cfg, research_sources=None):
         calls.append(("parse", text))
         return scene.copy()
 
+    monkeypatch.setattr(
+        pipeline,
+        "search_sources",
+        lambda text: {
+            "status": "completed",
+            "query": text,
+            "searched_at": "2026-01-01T00:00:00+00:00",
+            "provider": "Bing",
+            "sources": [],
+        },
+    )
     monkeypatch.setattr(pipeline, "parse_scene", parse)
     monkeypatch.setattr(
         pipeline,
@@ -113,6 +127,10 @@ def test_run_executes_stages_in_order_and_passes_selected_options(tmp_path, monk
     assert calls[6] == ("export", ("vertical",))
     assert set(outputs) == {"vertical"}
     assert (tmp_path / "output" / "scene.json").is_file()
+    research = json.loads(
+        (tmp_path / "output" / "research.json").read_text(encoding="utf-8")
+    )
+    assert research["status"] == "completed"
 
 
 def test_pipeline_fails_fast_when_scene_parsing_fails(monkeypatch):
@@ -123,6 +141,17 @@ def test_pipeline_fails_fast_when_scene_parsing_fails(monkeypatch):
         pipeline,
         "load_preferences",
         lambda: {"palette": "dark-neon", "voice": "voice", "legend_style": "karaoke"},
+    )
+    monkeypatch.setattr(
+        pipeline,
+        "search_sources",
+        lambda text: {
+            "status": "completed",
+            "query": text,
+            "searched_at": "2026-01-01T00:00:00+00:00",
+            "provider": "Bing",
+            "sources": [],
+        },
     )
     monkeypatch.setattr(
         pipeline,

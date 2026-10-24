@@ -82,6 +82,7 @@ def main(argv: list[str] | None = None) -> int:
     parse_parser = subparsers.add_parser("parse", help="Gerar a cena a partir de uma descrição")
     parse_parser.add_argument("--input", default="input/descricao.txt")
     parse_parser.add_argument("--palette")
+    parse_parser.add_argument("--no-research", action="store_true")
 
     voice_parser = subparsers.add_parser("voice", help="Gerar a narração e timings")
     voice_parser.add_argument("--input", default="output/scene.json", help="Cena JSON ou texto")
@@ -102,6 +103,13 @@ def main(argv: list[str] | None = None) -> int:
     _add_style_argument(all_parser)
     _add_format_argument(all_parser)
     all_parser.add_argument("--verbose", action="store_true")
+    all_parser.add_argument(
+        "--no-research",
+        action="store_false",
+        dest="research",
+        help="Desativar a busca na web para usar somente a descrição",
+    )
+    all_parser.set_defaults(research=True)
 
     args = parser.parse_args(argv)
 
@@ -111,8 +119,11 @@ def main(argv: list[str] | None = None) -> int:
         command = ["--input", args.input]
         if args.palette:
             command.extend(["--palette", args.palette])
+        if args.no_research:
+            command.append("--no-research")
         return _run_script("parse_scene.py", command)
     if args.command == "voice":
+        preferences = load_preferences()
         source = _path(args.input)
         if source.is_file() and source.suffix.lower() == ".json":
             narration = json.loads(source.read_text(encoding="utf-8"))["narration_text"]
@@ -162,6 +173,7 @@ def main(argv: list[str] | None = None) -> int:
                 args.voice,
                 args.legend_style,
                 _format_list(args.formats),
+                args.research,
             )
             return 0
         except Exception as exc:

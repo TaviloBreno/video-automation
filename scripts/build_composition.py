@@ -4,6 +4,7 @@ build_composition.py — Gera render/src/composition.html a partir de scene.json
 """
 
 import json
+import html
 import sys
 from pathlib import Path
 
@@ -21,38 +22,71 @@ def build_composition(scene_path: str, words_path: str, template_path: str, outp
     scene_duration = compute_scene_duration(words_path, padding=0.3)
 
     template = Path(template_path).read_text(encoding="utf-8")
+    sources = {source["id"]: source for source in scene.get("sources", [])}
 
-    # Gera os clips HTML
     clips_html = []
     cursor = 0.0
-    for el in scene["elements"]:
+    role_labels = {
+        "title": "A PERGUNTA",
+        "subtitle": "IDEIA-CHAVE",
+        "body": "MECANISMO",
+        "image": "OBSERVAÇÃO",
+        "shape": "MODELO",
+    }
+    animation_names = {"fade": "fade-in", "zoom": "scale-in"}
+    for index, el in enumerate(scene["elements"], start=1):
         dur = el.get("duration_seconds", 3)
-        anim = el.get("animation", "fade-in")
-        content = el.get("content", "")
+        anim = animation_names.get(el.get("animation", "fade"), el.get("animation", "fade"))
+        if anim == "none":
+            anim = ""
+        content = html.escape(str(el.get("content", "")))
         pos = el.get("position", "center")
+        source_ids = el.get("source_ids", [])
+        cited_sources = [
+            sources[source_id]
+            for source_id in source_ids
+            if source_id in sources
+        ]
+        source_line = ""
+        if cited_sources:
+            citations = "  ·  ".join(
+                (
+                    f'<span class="citation" title="{html.escape(source["url"], quote=True)}">'
+                    f'<b>[{html.escape(source["id"])}]</b> '
+                    f'{html.escape(source["title"])}'
+                    f'<i> — {html.escape(source["publisher"])}</i></span>'
+                )
+                for source in cited_sources
+            )
+            source_line = (
+                f'<div class="clip-sources">FONTES  /  {citations}</div>'
+            )
 
-        # Mapeia posição para CSS
-        top = {"top": "10%", "center": "50%", "bottom": "85%"}.get(pos, "50%")
+        top = {"top": "27%", "center": "51%", "bottom": "75%"}.get(pos, "51%")
+        role = html.escape(role_labels.get(el.get("type"), "EVIDÊNCIA"))
 
         clips_html.append(f'''
-    <div id="el-{len(clips_html)}" class="clip" 
-         data-start="{cursor}" data-duration="{dur}" 
+    <div id="el-{index}" class="clip explainer-clip"
+         data-start="{cursor}" data-duration="{dur}"
          data-animation="{anim}"
-         style="position:absolute; top:{top}; left:50%; transform:translate(-50%,-50%); 
-                color:var(--paletteText); font-size:64px; text-align:center; width:90%;">
-      {content}
+         style="--clip-top:{top}; --clip-index:'{index}'">
+      <div class="clip-heading">
+        <span class="clip-index">{index:02d}</span>
+        <span class="clip-role">{role}</span>
+      </div>
+      <div class="clip-copy">{content}</div>
+      {source_line}
     </div>''')
         cursor += dur
 
-    # Substitui placeholders no template
-    html = template.replace("{{CLIPS}}", "\n".join(clips_html))
-    html = html.replace("{{SCENE_DURATION}}", str(scene_duration))
-    html = html.replace("{{PALETTE_PRIMARY}}", palette.primary)
-    html = html.replace("{{PALETTE_ACCENT}}", palette.accent)
-    html = html.replace("{{PALETTE_TEXT}}", palette.text)
-    html = html.replace("{{PALETTE_BACKGROUND}}", palette.background)
+    rendered_html = template.replace("{{CLIPS}}", "\n".join(clips_html))
+    rendered_html = rendered_html.replace("{{SCENE_DURATION}}", str(scene_duration))
+    rendered_html = rendered_html.replace("{{PALETTE_PRIMARY}}", palette.primary)
+    rendered_html = rendered_html.replace("{{PALETTE_ACCENT}}", palette.accent)
+    rendered_html = rendered_html.replace("{{PALETTE_TEXT}}", palette.text)
+    rendered_html = rendered_html.replace("{{PALETTE_BACKGROUND}}", palette.background)
 
-    Path(output_path).write_text(html, encoding="utf-8")
+    Path(output_path).write_text(rendered_html, encoding="utf-8")
     print(f"Composição gerada: {output_path} (duração: {scene_duration:.2f}s)")
     return scene_duration
 

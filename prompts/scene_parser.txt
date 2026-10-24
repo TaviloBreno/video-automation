@@ -11,7 +11,8 @@ Retorne APENAS um objeto JSON válido, sem markdown, sem texto antes ou depois, 
       "content": "string (texto ou descrição do elemento)",
       "position": "top" | "center" | "bottom",
       "animation": "fade" | "slide-up" | "slide-left" | "zoom" | "none",
-      "duration_seconds": number
+      "duration_seconds": number,
+      "source_ids": ["S1"] (quando houver pesquisa e a afirmação for sustentada por essa fonte)
     }
   ],
   "palette": "string (nome de uma paleta disponível)",
@@ -27,6 +28,7 @@ Retorne APENAS um objeto JSON válido, sem markdown, sem texto antes ou depois, 
 5. "suggested_duration_hint" deve ser um número entre 5 e 120.
 6. "narration_text" deve ser uma frase completa em português, derivada da descrição, adequada para narração.
 7. "duration_seconds" de cada elemento deve ser > 0 e a soma deve ser compatível com "suggested_duration_hint".
+8. Se o contexto incluir fontes de pesquisa, todo elemento factual "body" ou "subtitle" deve apontar para uma ou mais fontes pertinentes em "source_ids", usando somente IDs fornecidos. Use apenas afirmações diretamente sustentadas pelos títulos/trechos; se eles não forem suficientes, restrinja o assunto e não invente detalhes. O pipeline acrescentará os metadados bibliográficos ao resultado.
 
 # EXEMPLO 1 (few-shot)
 Descrição: "cena de lançamento de produto, fundo escuro, texto aparecendo gradualmente"

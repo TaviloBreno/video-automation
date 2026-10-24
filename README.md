@@ -10,6 +10,7 @@ renderizada, legendada e exportada para YouTube e formatos verticais.
 - Node.js LTS e npm, usados pelo render HyperFrames.
 - Ollama instalado, em execução e com o modelo `llama3.2` baixado.
 - `subreel` instalado e acesso à internet para a voz Edge TTS.
+- Acesso à internet para pesquisa e inclusão de fontes nos vídeos (Bing).
 
 ## Instalação
 
@@ -102,6 +103,16 @@ python scripts/cli.py all \
   --legend-style karaoke \
   --formats youtube,vertical
 ```
+
+Por padrão, `all` e `parse` pesquisam fontes na web, entregam os resultados
+como evidências ao modelo e gravam a bibliografia em `output/research.json` e
+`output/scene.json`. Afirmações factuais nos elementos de texto recebem IDs de
+fonte e a composição mostra as referências junto ao conteúdo. A busca usa
+resultados públicos do Bing; confira as páginas originais antes de publicar.
+Sem conexão ou sem fontes utilizáveis, a etapa falha com uma mensagem clara;
+para executar deliberadamente sem pesquisa, use `--no-research`. O visual é
+uma identidade editorial própria de explicação científica, sem reproduzir a
+marca ou a identidade visual de outros canais.
 
 No PowerShell, os comandos podem ser escritos em uma linha ou usar o acento
 grave como continuação. Os arquivos finais são `output-youtube.mp4` e

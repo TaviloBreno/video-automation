@@ -42,6 +42,71 @@ def test_valid_full():
     assert validate_scene(_valid_scene()) is not None
 
 
+def test_validates_referenced_sources_and_factual_elements():
+    scene = _valid_scene()
+    scene["sources"] = [
+        {
+            "id": "S1",
+            "title": "Evidência científica",
+            "url": "https://example.org/study",
+            "publisher": "example.org",
+            "snippet": "Resumo da evidência.",
+        }
+    ]
+    scene["elements"][1]["source_ids"] = ["S1"]
+
+    assert validate_scene(scene) is scene
+
+
+def test_rejects_factual_element_without_source_ids():
+    scene = _valid_scene()
+    scene["sources"] = [
+        {
+            "id": "S1",
+            "title": "Evidência científica",
+            "url": "https://example.org/study",
+            "publisher": "example.org",
+            "snippet": "Resumo da evidência.",
+        }
+    ]
+
+    with pytest.raises(SceneValidationError, match="precisa de source_ids"):
+        validate_scene(scene)
+
+
+def test_rejects_unknown_source_id():
+    scene = _valid_scene()
+    scene["sources"] = [
+        {
+            "id": "S1",
+            "title": "Evidência científica",
+            "url": "https://example.org/study",
+            "publisher": "example.org",
+            "snippet": "Resumo da evidência.",
+        }
+    ]
+    scene["elements"][1]["source_ids"] = ["S2"]
+
+    with pytest.raises(SceneValidationError, match="IDs desconhecidos"):
+        validate_scene(scene)
+
+
+def test_rejects_non_http_source_url():
+    scene = _valid_scene()
+    scene["sources"] = [
+        {
+            "id": "S1",
+            "title": "Evidência científica",
+            "url": "javascript:alert(1)",
+            "publisher": "example.org",
+            "snippet": "Resumo da evidência.",
+        }
+    ]
+
+    with pytest.raises(SceneValidationError, match="URL HTTP ou HTTPS"):
+        validate_scene(scene)
+
+
 def test_valid_no_optional_fields():
     """Caso válido 3: elementos sem position/animation (opcionais)."""
     scene = {

@@ -22,6 +22,7 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from scripts.config_loader import load_config, ConfigError, get_palette
 from scripts.llm_client import parse_scene
+from scripts.research_web import search_sources
 from scripts.scene_validator import validate_scene, SceneValidationError
 
 logger = logging.getLogger("parse_scene")
@@ -60,6 +61,13 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Log detalhado",
     )
+    parser.add_argument(
+        "--no-research",
+        action="store_false",
+        dest="research",
+        help="Desativar pesquisa na web",
+    )
+    parser.set_defaults(research=True)
     args = parser.parse_args(argv)
 
     setup_logging(args.verbose)
@@ -76,6 +84,14 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     logger.info("Descrição lida (%d caracteres)", len(description))
+
+    research_data = None
+    if args.research:
+        try:
+            research_data = search_sources(description)
+        except Exception as exc:
+            logger.error("Falha na pesquisa web: %s", exc)
+            return 1
 
     # 2. Carrega config e valida palette forçada (se houver)
     try:
@@ -94,7 +110,11 @@ def main(argv: list[str] | None = None) -> int:
 
     # 3. Chama o pipeline (parse_scene já faz retry/fallback)
     try:
-        scene = parse_scene(description, cfg=cfg)
+        scene = parse_scene(
+            description,
+            cfg=cfg,
+            research_sources=research_data["sources"] if research_data else None,
+        )
     except Exception as exc:
         logger.error("Falha ao gerar cena: %s", exc)
         return 1
@@ -102,6 +122,8 @@ def main(argv: list[str] | None = None) -> int:
     # 4. Sobrescreve palette se --palette foi passado
     if args.palette:
         scene["palette"] = args.palette
+    if research_data:
+        scene["sources"] = research_data["sources"]
 
     # 5. Revalida o schema final (garantia extra)
     try:
@@ -120,6 +142,24 @@ def main(argv: list[str] | None = None) -> int:
         encoding="utf-8",
     )
     logger.info("Cena escrita em: %s", output_path)
+    research_path = PROJECT_ROOT / "output" / "research.json"
+    research_path.parent.mkdir(parents=True, exist_ok=True)
+    research_path.write_text(
+        json.dumps(
+            research_data
+            or {
+                "status": "disabled",
+                "query": None,
+                "searched_at": None,
+                "provider": None,
+                "sources": [],
+            },
+            indent=2,
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+    logger.info("Pesquisa/fontes escrita em: %s", research_path)
 
     return 0
 

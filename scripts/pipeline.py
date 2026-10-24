@@ -22,6 +22,8 @@ from scripts.export_all import export_all
 from scripts.generate_voice import generate_voice
 from scripts.llm_client import parse_scene
 from scripts.render_scene import render_scene
+from scripts.research_web import search_sources
+from scripts.scene_validator import validate_scene
 from scripts.settings import load_preferences
 
 logger = logging.getLogger("pipeline")
@@ -88,6 +90,7 @@ def run(
     voice: str | None = None,
     legend_style: str | None = None,
     formats: str | Sequence[str] = ("youtube", "vertical"),
+    research: bool = True,
 ) -> dict[str, Path]:
     """Run parse, voice, duration, composition, render, subtitles, and exports."""
     selected_formats = _normalize_formats(formats)
@@ -102,6 +105,7 @@ def run(
 
     output_dir = _resolve_path(config.paths.output_dir)
     scene_path = output_dir / "scene.json"
+    research_path = output_dir / "research.json"
     words_path = output_dir / "voice.words.json"
     audio_path = output_dir / "voice.mp3"
     composition_path = _resolve_path("render/index.html")
@@ -110,10 +114,37 @@ def run(
     subtitled_path = output_dir / "final_legendas.mp4"
 
     description_text = _stage("T1.4 — descrição → cena", lambda: _read_description(description))
+    research_data = (
+        _stage(
+            "Pesquisa na web — fontes e evidências",
+            lambda: search_sources(description_text),
+        )
+        if research
+        else {
+            "query": None,
+            "searched_at": None,
+            "provider": None,
+            "status": "disabled",
+            "sources": [],
+        }
+    )
+    research_data.setdefault("status", "completed")
+    research_path.parent.mkdir(parents=True, exist_ok=True)
+    research_path.write_text(
+        json.dumps(research_data, indent=2, ensure_ascii=False),
+        encoding="utf-8",
+    )
 
     def create_scene() -> dict:
-        scene = parse_scene(description_text, cfg=config)
+        scene = parse_scene(
+            description_text,
+            cfg=config,
+            research_sources=research_data["sources"] if research else None,
+        )
         scene["palette"] = selected_palette
+        if research:
+            scene["sources"] = research_data["sources"]
+        validate_scene(scene)
         scene_path.parent.mkdir(parents=True, exist_ok=True)
         scene_path.write_text(
             json.dumps(scene, indent=2, ensure_ascii=False),
@@ -197,6 +228,13 @@ def main(argv: list[str] | None = None) -> int:
         help="Formatos separados por vírgula: youtube,vertical",
     )
     parser.add_argument("--verbose", action="store_true", help="Ativar logs detalhados")
+    parser.add_argument(
+        "--no-research",
+        action="store_false",
+        dest="research",
+        help="Desativar a busca na web para usar somente a descrição",
+    )
+    parser.set_defaults(research=True)
     args = parser.parse_args(argv)
     logging.basicConfig(
         level=logging.DEBUG if args.verbose else logging.INFO,
@@ -204,7 +242,14 @@ def main(argv: list[str] | None = None) -> int:
         datefmt="%H:%M:%S",
     )
     try:
-        run(args.input, args.palette, args.voice, args.legend_style, args.formats)
+        run(
+            args.input,
+            args.palette,
+            args.voice,
+            args.legend_style,
+            args.formats,
+            args.research,
+        )
         return 0
     except Exception as exc:
         logger.error("Pipeline interrompido: %s", exc)
