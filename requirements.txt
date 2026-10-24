@@ -1,0 +1,5 @@
+# Dependências Python do projeto
+# Fase 0: o check_env.py usa apenas stdlib; nada obrigatório aqui.
+# Futuras fases adicionarão: requests, python-dotenv, etc.
+requests>=2.31.0
+python-dotenv>=1.0.0

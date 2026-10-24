@@ -1,0 +1,19 @@
+# Saídas geradas
+output/
+*.mp4
+*.mp3
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+.env
+
+# Sistema
+.DS_Store
+Thumbs.db

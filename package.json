@@ -1,0 +1,12 @@
+{
+  "name": "video-automation",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Pipeline de automação de vídeo com IA (Fase 0)",
+  "scripts": {
+    "check": "python scripts/check_env.py"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
