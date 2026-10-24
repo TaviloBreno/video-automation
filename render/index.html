@@ -2,6 +2,7 @@
 <html data-composition-variables='[]'>
 <head>
   <meta charset="utf-8">
+  <title>Widescreen Studio Scene</title>
   <style>
     :root {
       --palettePrimary: #00E5FF;
@@ -10,12 +11,12 @@
       --paletteBackground: #0A0A0A;
       --surface: color-mix(in srgb, var(--paletteBackground) 88%, white);
     }
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      margin: 0;
       background: var(--paletteBackground);
       color: var(--paletteText);
-      font-family: Inter, "Aptos", "Arial", sans-serif;
+      font-family: 'Outfit', Inter, -apple-system, sans-serif;
+      overflow: hidden;
     }
     #root {
       width: 1920px;
@@ -23,185 +24,380 @@
       position: relative;
       overflow: hidden;
       background:
-        radial-gradient(ellipse at 82% 18%, color-mix(in srgb, var(--paletteAccent) 18%, transparent), transparent 48%),
-        linear-gradient(160deg, var(--paletteBackground), var(--surface));
+        radial-gradient(circle at 85% 15%, color-mix(in srgb, var(--paletteAccent) 22%, transparent) 0%, transparent 45%),
+        radial-gradient(circle at 15% 85%, color-mix(in srgb, var(--palettePrimary) 18%, transparent) 0%, transparent 45%),
+        linear-gradient(135deg, var(--paletteBackground) 0%, var(--surface) 100%);
     }
-    #root::before {
-      content: "";
+
+    /* Grade Científica de Fundo e Moldura Neon */
+    .bg-grid-overlay {
       position: absolute;
-      inset: 40px;
-      border: 1px solid color-mix(in srgb, var(--paletteText) 16%, transparent);
+      inset: 0;
+      background-size: 60px 60px;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
       pointer-events: none;
     }
-    #root::after {
-      content: "ESTÚDIO DE CIÊNCIA  /  EXPLICAÇÃO EM CAMADAS";
+    .hud-border {
       position: absolute;
-      top: 66px;
-      left: 90px;
-      color: var(--paletteAccent);
-      font-size: 20px;
-      font-weight: 700;
-      letter-spacing: 3px;
+      inset: 36px;
+      border: 1px solid color-mix(in srgb, var(--palettePrimary) 22%, transparent);
+      pointer-events: none;
     }
-    .explainer-clip {
+    .hud-header {
       position: absolute;
-      top: var(--clip-top);
-      left: 9%;
-      width: 82%;
-      padding: 30px 44px 34px;
-      transform: translateY(-50%);
-      border-left: 6px solid var(--paletteAccent);
-      background: color-mix(in srgb, var(--paletteBackground) 78%, transparent);
-    }
-    .clip-heading {
+      top: 56px;
+      left: 72px;
       display: flex;
       align-items: center;
-      gap: 14px;
-      margin-bottom: 20px;
+      gap: 12px;
+      color: var(--paletteAccent);
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+    }
+    .hud-dot {
+      width: 10px;
+      height: 10px;
+      background: var(--paletteAccent);
+      border-radius: 50%;
+      box-shadow: 0 0 12px var(--paletteAccent);
+    }
+
+    /* Container de Cada Clipe / Slide */
+    .explainer-clip {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 120px 100px 90px;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    /* Coluna Esquerda: Texto e Tipografia Cinética */
+    .clip-left-content {
+      flex: 1;
+      max-width: 920px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      z-index: 2;
+    }
+
+    .clip-heading {
+      display: inline-flex;
+      align-items: center;
+      gap: 16px;
       color: var(--paletteAccent);
       font-size: 20px;
       font-weight: 700;
       letter-spacing: 3px;
     }
+
     .clip-index {
       display: inline-flex;
-      width: 46px;
-      height: 46px;
+      width: 48px;
+      height: 48px;
       align-items: center;
       justify-content: center;
-      border: 1px solid var(--paletteAccent);
+      border: 2px solid var(--paletteAccent);
       border-radius: 50%;
       font-size: 18px;
-      letter-spacing: 0;
+      color: var(--paletteAccent);
+      box-shadow: 0 0 16px color-mix(in srgb, var(--paletteAccent) 40%, transparent);
     }
+
     .clip-copy {
-      font-size: 62px;
-      font-weight: 650;
-      line-height: 1.15;
+      font-size: 54px;
+      font-weight: 750;
+      line-height: 1.2;
+      color: var(--paletteText);
       text-wrap: balance;
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
     }
+
     .clip-sources {
-      margin-top: 26px;
-      color: color-mix(in srgb, var(--paletteText) 70%, transparent);
-      font-size: 18px;
+      margin-top: 10px;
+      color: color-mix(in srgb, var(--paletteText) 65%, transparent);
+      font-size: 15px;
       line-height: 1.5;
-      letter-spacing: .4px;
+      letter-spacing: .5px;
     }
-    .citation b { color: var(--paletteAccent); }
-    .citation i { font-style: normal; }
-    
-    /* Imagens Ilustrativas no Vídeo */
-    .clip-media-container {
-      margin-top: 24px;
+    .citation b { color: var(--palettePrimary); }
+    .citation i { font-style: normal; opacity: 0.8; }
+
+    /* Coluna Direita: Imagem Real ou Motion Design Procedural */
+    .clip-right-media {
+      flex: 0 0 680px;
+      height: 480px;
       position: relative;
-      border-radius: 12px;
-      overflow: hidden;
-      max-height: 480px;
-      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6);
-      border: 1px solid color-mix(in srgb, var(--paletteAccent) 30%, transparent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
     }
-    .clip-media-container img {
+
+    /* Mídia: Imagem Fotográfica com Créditos */
+    .media-image-frame {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 2px solid color-mix(in srgb, var(--paletteAccent) 40%, transparent);
+      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.7), 0 0 30px color-mix(in srgb, var(--paletteAccent) 20%, transparent);
+      background: #000;
+    }
+    .media-image-frame img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       display: block;
+      transform-origin: center center;
     }
     .image-credit-badge {
       position: absolute;
-      bottom: 12px;
-      right: 14px;
-      background: rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(8px);
-      padding: 6px 12px;
-      border-radius: 6px;
+      bottom: 14px;
+      right: 16px;
+      background: rgba(8, 12, 22, 0.85);
+      backdrop-filter: blur(10px);
+      padding: 7px 14px;
+      border-radius: 8px;
       font-size: 13px;
       color: #e2e8f0;
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.5);
     }
     .image-credit-badge b {
-      color: var(--paletteAccent);
+      color: var(--palettePrimary);
+    }
+
+    /* Mídia: Motion Design Vetorial Procedural */
+    .motion-design-graphic {
+      position: relative;
+      width: 440px;
+      height: 440px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .orbit-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 2px dashed color-mix(in srgb, var(--palettePrimary) 45%, transparent);
+    }
+    .ring-outer {
+      width: 420px;
+      height: 420px;
+      border-color: color-mix(in srgb, var(--paletteAccent) 50%, transparent);
+      box-shadow: 0 0 30px color-mix(in srgb, var(--paletteAccent) 15%, transparent);
+    }
+    .ring-mid {
+      width: 300px;
+      height: 300px;
+      border-style: solid;
+      border-width: 1px;
+      border-color: color-mix(in srgb, var(--palettePrimary) 40%, transparent);
+    }
+    .ring-inner {
+      width: 180px;
+      height: 180px;
+      border: 2px dashed color-mix(in srgb, var(--palettePrimary) 70%, transparent);
+    }
+    .pulse-core {
+      width: 90px;
+      height: 90px;
+      background: radial-gradient(circle, var(--palettePrimary) 0%, color-mix(in srgb, var(--paletteAccent) 60%, transparent) 70%, transparent 100%);
+      border-radius: 50%;
+      box-shadow: 0 0 50px var(--palettePrimary), 0 0 90px var(--paletteAccent);
+    }
+    .hud-label {
+      position: absolute;
+      bottom: -10px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: var(--palettePrimary);
+      background: rgba(0, 0, 0, 0.6);
+      padding: 4px 12px;
+      border-radius: 4px;
+      border: 1px solid color-mix(in srgb, var(--palettePrimary) 30%, transparent);
     }
   </style>
 </head>
 <body>
   <div id="root" data-composition-id="main" data-start="0"
-       data-width="1920" data-height="1080" data-duration="50.525">
+       data-width="1920" data-height="1080" data-duration="6.9125">
+    <div class="bg-grid-overlay"></div>
+    <div class="hud-border"></div>
+    <div class="hud-header">
+      <span class="hud-dot"></span>
+      <span>ESTÚDIO DE CIÊNCIA & EXPLICAÇÃO VISUAL</span>
+    </div>
+
     
-    <div id="el-1" class="clip explainer-clip"
-         data-start="0.0" data-duration="11.225"
-         data-animation="scale-in"
-         style="--clip-top:51%; --clip-index:'1'">
-      <div class="clip-heading">
-        <span class="clip-index">01</span>
-        <span class="clip-role">A PERGUNTA</span>
+    <div id="el-1" class="explainer-clip"
+         data-start="0.000" data-duration="4.000">
+      <div class="clip-left-content">
+        <div class="clip-heading">
+          <span class="clip-index">01</span>
+          <span>A PERGUNTA / TÍTULO</span>
+        </div>
+        <div class="clip-copy">Quasars: o que são e como eles são tão brilhantes</div>
+        
       </div>
-      <div class="clip-copy">Conclusao: O Universo Primitivo</div>
       
-      
+      <div class="clip-right-media">
+        <div class="motion-design-graphic">
+          <div class="orbit-ring ring-outer"></div>
+          <div class="orbit-ring ring-mid"></div>
+          <div class="orbit-ring ring-inner"></div>
+          <div class="pulse-core"></div>
+          <div class="hud-label">MOTION DESIGN // CIÊNCIA</div>
+        </div>
+      </div>
     </div>
 
-    <div id="el-2" class="clip explainer-clip"
-         data-start="11.225" data-duration="12.412"
-         data-animation="fade-in"
-         style="--clip-top:51%; --clip-index:'2'">
-      <div class="clip-heading">
-        <span class="clip-index">02</span>
-        <span class="clip-role">MECANISMO</span>
+    <div id="el-2" class="explainer-clip"
+         data-start="4.000" data-duration="8.000">
+      <div class="clip-left-content">
+        <div class="clip-heading">
+          <span class="clip-index">02</span>
+          <span>MECANISMO &amp; CIÊNCIA</span>
+        </div>
+        <div class="clip-copy">Quasars são núcleos ativos de galáxias alimentados por buracos negros supermassivos. Esses objetos celestes são extremamente brilhantes devido à grande quantidade de matéria quente e em movimento dentro deles.</div>
+        <div class="clip-sources">FONTES CIENTÍFICAS  /  <span class="citation" title="https://www.dicio.com.br/educativo/"><b>[S1</b> Educativo - Dicio, Dicionário Online de Português</i></span>  ·  <span class="citation" title="https://www.ludoeducativo.com.br/pt/"><b>[S2</b> Ludo Educativo - Portal de Jogos Educativos</i></span></div>
       </div>
-      <div class="clip-copy">Quasars: uma pista para o universo primitivo</div>
       
-      <div class="clip-sources">FONTES  /  <span class="citation" title="https://www.twitch.tv/?lang=pt-br"><b>[S2]</b> Twitch<i> — twitch.tv</i></span>  ·  <span class="citation" title="https://www.twitch.com/login"><b>[S3]</b> Twitch<i> — twitch.com</i></span></div>
+      <div class="clip-right-media">
+        <div class="motion-design-graphic">
+          <div class="orbit-ring ring-outer"></div>
+          <div class="orbit-ring ring-mid"></div>
+          <div class="orbit-ring ring-inner"></div>
+          <div class="pulse-core"></div>
+          <div class="hud-label">MOTION DESIGN // CIÊNCIA</div>
+        </div>
+      </div>
     </div>
 
-    <div id="el-3" class="clip explainer-clip"
-         data-start="23.637" data-duration="12.975"
-         data-animation="slide-up"
-         style="--clip-top:51%; --clip-index:'3'">
-      <div class="clip-heading">
-        <span class="clip-index">03</span>
-        <span class="clip-role">MECANISMO</span>
+    <div id="el-3" class="explainer-clip"
+         data-start="12.000" data-duration="5.000">
+      <div class="clip-left-content">
+        <div class="clip-heading">
+          <span class="clip-index">03</span>
+          <span>MECANISMO &amp; CIÊNCIA</span>
+        </div>
+        <div class="clip-copy">A distância em que os quasars são observados varia devido à dispersão da luz, tornando impossível determinar a origem exata desses objetos.</div>
+        <div class="clip-sources">FONTES CIENTÍFICAS  /  <span class="citation" title="https://dmaiseducativo.com.br/"><b>[S3</b> D+ Educativo -</i></span></div>
       </div>
-      <div class="clip-copy">Energia colossal para entender a expansão do universo</div>
       
-      <div class="clip-sources">FONTES  /  <span class="citation" title="https://www.twitch.tv/?lang=pt-br"><b>[S2]</b> Twitch<i> — twitch.tv</i></span>  ·  <span class="citation" title="https://www.twitch.com/login"><b>[S3]</b> Twitch<i> — twitch.com</i></span></div>
+      <div class="clip-right-media">
+        <div class="motion-design-graphic">
+          <div class="orbit-ring ring-outer"></div>
+          <div class="orbit-ring ring-mid"></div>
+          <div class="orbit-ring ring-inner"></div>
+          <div class="pulse-core"></div>
+          <div class="hud-label">MOTION DESIGN // CIÊNCIA</div>
+        </div>
+      </div>
     </div>
 
-    <div id="el-4" class="clip explainer-clip"
-         data-start="36.612" data-duration="13.913"
-         data-animation="slide-left"
-         style="--clip-top:51%; --clip-index:'4'">
-      <div class="clip-heading">
-        <span class="clip-index">04</span>
-        <span class="clip-role">MECANISMO</span>
+    <div id="el-4" class="explainer-clip"
+         data-start="17.000" data-duration="8.000">
+      <div class="clip-left-content">
+        <div class="clip-heading">
+          <span class="clip-index">04</span>
+          <span>MECANISMO &amp; CIÊNCIA</span>
+        </div>
+        <div class="clip-copy">Os quasars revelam informações valiosas sobre o universo primitivo, como a composição primordial e a formação de galáxias.</div>
+        <div class="clip-sources">FONTES CIENTÍFICAS  /  <span class="citation" title="https://www.ludoeducativo.com.br/pt/activities"><b>[S4</b> Atividades Destaques - Ludo Educativo</i></span>  ·  <span class="citation" title="https://www.significadosdepalavras.com/educativo"><b>[S5</b> Significado de educativo: o que é, definição, exemplos e sinônimos</i></span></div>
       </div>
-      <div class="clip-copy">Nova compreensão do início do universo</div>
       
-      <div class="clip-sources">FONTES  /  <span class="citation" title="https://www.twitch.tv/?lang=pt-br"><b>[S2]</b> Twitch<i> — twitch.tv</i></span>  ·  <span class="citation" title="https://www.twitch.com/login"><b>[S3]</b> Twitch<i> — twitch.com</i></span></div>
+      <div class="clip-right-media">
+        <div class="motion-design-graphic">
+          <div class="orbit-ring ring-outer"></div>
+          <div class="orbit-ring ring-mid"></div>
+          <div class="orbit-ring ring-inner"></div>
+          <div class="pulse-core"></div>
+          <div class="hud-label">MOTION DESIGN // CIÊNCIA</div>
+        </div>
+      </div>
     </div>
   </div>
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
-  <script src="animations/animations.js"></script>
-    <script>
-    window.HF_ANIMATIONS = {
-      "fade-in": (el, tl, at) => { tl.from(el, { opacity: 0, duration: 0.4, ease: "power2.out" }, at); },
-      "slide-up": (el, tl, at) => { tl.from(el, { y: 150, opacity: 0, ease: "power4.out", duration: 0.6 }, at); },
-      "slide-left": (el, tl, at) => { tl.from(el, { x: -200, opacity: 0, ease: "power4.out", duration: 0.6 }, at); },
-      "scale-in": (el, tl, at) => { tl.from(el, { scale: 0, opacity: 0, duration: 0.6, ease: "power2.out" }, at); },
-      "typewriter": (el, tl, at) => {
-        el.style.overflow = "hidden"; el.style.whiteSpace = "nowrap";
-        tl.from(el, { width: 0, duration: 1.2, ease: "steps(20)" }, at);
-      },
-    };
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+
+  <!-- GSAP Carregado Localmente Offline -->
+  <script src="src/gsap.min.js"></script>
   <script>
-    const tl = gsap.timeline({ paused: true });
-    document.querySelectorAll("[data-animation]").forEach((el) => {
-      const recipe = window.HF_ANIMATIONS && window.HF_ANIMATIONS[el.dataset.animation];
-      if (recipe) recipe(el, tl, parseFloat(el.dataset.start || "0"));
+    window.addEventListener("DOMContentLoaded", () => {
+      const tl = gsap.timeline({ paused: true });
+      const clips = document.querySelectorAll(".explainer-clip");
+
+      clips.forEach((el, idx) => {
+        const start = parseFloat(el.dataset.start || "0");
+        const dur = parseFloat(el.dataset.duration || "4");
+        const leftContent = el.querySelector(".clip-left-content");
+        const rightMedia = el.querySelector(".clip-right-media");
+        const img = el.querySelector(".media-image-frame img");
+        const ringOuter = el.querySelector(".ring-outer");
+        const ringInner = el.querySelector(".ring-inner");
+        const core = el.querySelector(".pulse-core");
+
+        // 1. Torna o clipe visível no segundo exato de início
+        tl.set(el, { autoAlpha: 1, visibility: "visible" }, start);
+
+        // 2. Animação Cinética de Entrada
+        if (leftContent) {
+          tl.from(leftContent, {
+            y: 50,
+            opacity: 0,
+            duration: 0.65,
+            ease: "power3.out"
+          }, start);
+        }
+        if (rightMedia) {
+          tl.from(rightMedia, {
+            scale: 0.88,
+            opacity: 0,
+            duration: 0.75,
+            ease: "back.out(1.4)"
+          }, start + 0.1);
+        }
+
+        // 3. Movimento Contínuo (Ken Burns ou Motion Design Dinâmico)
+        if (img) {
+          tl.fromTo(img, { scale: 1.0 }, { scale: 1.07, duration: dur, ease: "none" }, start);
+        }
+        if (ringOuter) {
+          tl.fromTo(ringOuter, { rotation: 0 }, { rotation: 220, duration: dur, ease: "none" }, start);
+        }
+        if (ringInner) {
+          tl.fromTo(ringInner, { rotation: 0 }, { rotation: -300, duration: dur, ease: "none" }, start);
+        }
+        if (core) {
+          tl.fromTo(core, { scale: 0.9 }, { scale: 1.15, yoyo: true, repeat: Math.ceil(dur), duration: 0.9, ease: "sine.inOut" }, start);
+        }
+
+        // 4. Animação de Saída Suave antes de trocar para o próximo clipe
+        const exitStart = Math.max(start + 0.3, start + dur - 0.45);
+        tl.to(el, {
+          opacity: 0,
+          y: -25,
+          duration: 0.4,
+          ease: "power2.in"
+        }, exitStart);
+
+        // 5. Oculta completamente após o término da sua duração
+        tl.set(el, { autoAlpha: 0, visibility: "hidden" }, start + dur);
+      });
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
     });
-    window.__timelines = window.__timelines || {};
-    window.__timelines["main"] = tl;
   </script>
 </body>
 </html>

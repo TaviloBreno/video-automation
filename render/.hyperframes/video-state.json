@@ -429,9 +429,9 @@
   },
   "renders": {
     "latest": {
-      "id": "95b0b921-6227-45ed-9cd2-f306a2a92a92",
-      "completedAt": 1792834728349,
-      "output": "C:\\programacao\\projetos\\video-automation\\output\\jobs\\job_1792834099_4c9380\\chapters\\ch07\\chapter.mp4",
+      "id": "1d185ebc-4624-44f6-a202-59bb515862f0",
+      "completedAt": 1792835283314,
+      "output": "C:\\programacao\\projetos\\video-automation\\render\\test_render.mp4",
       "status": "completed",
       "revision": "dada6c9f-dcfc-4a8b-a9e9-3bbe66988dcd"
     },

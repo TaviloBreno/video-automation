@@ -538,6 +538,16 @@ def build_chapter_scene(
         durations = [slot_seconds / segments] * segments
     durations[-1] = slot_seconds - sum(durations[:-1])
 
+    image_dict: dict[str, Any] = {}
+    if image_info:
+        local_p = image_info.get("local_path")
+        img_src = str(local_p) if (local_p and Path(local_p).exists()) else (image_info.get("image_url") or "")
+        credit = f"{image_info.get('author', 'Domínio Público')} ({image_info.get('license', 'CC')})"
+        image_dict["image_url"] = img_src
+        if local_p and Path(local_p).exists():
+            image_dict["image_path"] = str(local_p)
+        image_dict["image_credit"] = credit[:60]
+
     elements: list[dict[str, Any]] = [
         {
             "type": "title",
@@ -545,6 +555,7 @@ def build_chapter_scene(
             "position": "center",
             "animation": "zoom",
             "duration_seconds": round(durations[0], 3),
+            **image_dict,
         }
     ]
     animations = ["fade", "slide-up", "slide-left"]
@@ -555,11 +566,8 @@ def build_chapter_scene(
             "position": "center",
             "animation": animations[i % len(animations)],
             "duration_seconds": round(durations[i + 1], 3),
+            **image_dict,
         }
-        if image_info and i == 0:
-            el["image_url"] = image_info.get("image_url") or image_info.get("local_path")
-            credit = f"{image_info.get('author', 'Domínio Público')} ({image_info.get('license', 'CC')})"
-            el["image_credit"] = credit[:50]
         if sources:
             known = {s["id"] for s in sources}
             valid_ids = [sid for sid in chapter.get("source_ids", []) if sid in known]
@@ -736,7 +744,7 @@ def run_long_video(
         scene = build_chapter_scene(ch, read_words(words_path), slot, palette, sources, image_info=ch_img)
         _save_json(scene_path, scene)
         img_sig = ch_img.get("filename", "") if ch_img else ""
-        sig = _signature(scene_path, words_path, d / "voice.mp3", extra=f"{pad:.3f}|{palette}|{img_sig}")
+        sig = _signature(scene_path, words_path, d / "voice.mp3", WIDE_TEMPLATE, extra=f"{pad:.3f}|{palette}|{img_sig}|split_motion_v2")
         pct = 0.45 + 0.43 * (i / n)
         if video_path.exists() and sig_path.exists() and sig_path.read_text().strip() == sig:
             progress(pct, f"Capítulo {i + 1}/{n} já renderizado.")

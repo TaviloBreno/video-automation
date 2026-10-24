@@ -1,18 +1,48 @@
 #!/usr/bin/env python3
 """
-build_composition.py — Gera render/src/composition.html a partir de scene.json.
+build_composition.py — Gera render/index.html a partir de scene.json e template_wide.html,
+com suporte a conversão de imagens para Base64 Data URI e Motion Design procedural animado.
 """
 
-import json
+from __future__ import annotations
+
+import base64
 import html
+import json
+import logging
 import sys
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(PROJECT_ROOT))
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 
 from scripts.compute_duration import compute_scene_duration
-from scripts.config_loader import load_config, get_palette
+from scripts.config_loader import get_palette, load_config
+
+logger = logging.getLogger("build_composition")
+
+
+def _image_to_data_uri(image_path_or_url: str) -> str:
+    """Converte um arquivo de imagem local para Base64 Data URI para carregamento instantâneo offline."""
+    if not image_path_or_url:
+        return ""
+
+    p = Path(image_path_or_url)
+    if p.exists() and p.is_file() and p.stat().st_size > 0:
+        suffix = p.suffix.lower()
+        mime = "image/jpeg"
+        if suffix == ".png":
+            mime = "image/png"
+        elif suffix == ".webp":
+            mime = "image/webp"
+        try:
+            b64_content = base64.b64encode(p.read_bytes()).decode("ascii")
+            return f"data:{mime};base64,{b64_content}"
+        except Exception as exc:
+            logger.warning("Falha ao converter imagem para base64: %s", exc)
+
+    return image_path_or_url
 
 
 def build_composition(
@@ -24,7 +54,7 @@ def build_composition(
 ):
     scene = json.loads(Path(scene_path).read_text(encoding="utf-8"))
     cfg = load_config()
-    palette = get_palette(scene["palette"], cfg)
+    palette = get_palette(scene.get("palette", "dark-neon"), cfg)
     scene_duration = compute_scene_duration(words_path, padding=padding)
 
     template = Path(template_path).read_text(encoding="utf-8")
@@ -33,67 +63,74 @@ def build_composition(
     clips_html = []
     cursor = 0.0
     role_labels = {
-        "title": "A PERGUNTA",
+        "title": "A PERGUNTA / TÍTULO",
         "subtitle": "IDEIA-CHAVE",
-        "body": "MECANISMO",
-        "image": "OBSERVAÇÃO",
-        "shape": "MODELO",
+        "body": "MECANISMO & CIÊNCIA",
+        "image": "OBSERVAÇÃO REAL",
+        "shape": "MODELO TEÓRICO",
     }
-    animation_names = {"fade": "fade-in", "zoom": "scale-in"}
-    for index, el in enumerate(scene["elements"], start=1):
-        dur = el.get("duration_seconds", 3)
-        anim = animation_names.get(el.get("animation", "fade"), el.get("animation", "fade"))
-        if anim == "none":
-            anim = ""
+
+    elements = scene.get("elements", [])
+    total_elements = len(elements)
+
+    for index, el in enumerate(elements, start=1):
+        dur = float(el.get("duration_seconds", 4.0))
         content = html.escape(str(el.get("content", "")))
-        pos = el.get("position", "center")
         source_ids = el.get("source_ids", [])
-        cited_sources = [
-            sources[source_id]
-            for source_id in source_ids
-            if source_id in sources
-        ]
+        cited_sources = [sources[sid] for sid in source_ids if sid in sources]
+
         source_line = ""
         if cited_sources:
             citations = "  ·  ".join(
                 (
-                    f'<span class="citation" title="{html.escape(source["url"], quote=True)}">'
-                    f'<b>[{html.escape(source["id"])}]</b> '
-                    f'{html.escape(source["title"])}'
-                    f'<i> — {html.escape(source["publisher"])}</i></span>'
+                    f'<span class="citation" title="{html.escape(s.get("url", ""), quote=True)}">'
+                    f'<b>[{html.escape(s.get("id", ""))}</b> '
+                    f'{html.escape(s.get("title", ""))}</i></span>'
                 )
-                for source in cited_sources
+                for s in cited_sources
             )
-            source_line = (
-                f'<div class="clip-sources">FONTES  /  {citations}</div>'
-            )
+            source_line = f'<div class="clip-sources">FONTES CIENTÍFICAS  /  {citations}</div>'
 
-        # Bloco de imagem com créditos de referência
-        image_src = el.get("image_url") or el.get("image_path") or ""
-        image_html = ""
-        if image_src:
+        # Verifica se há imagem associada
+        image_src = el.get("image_path") or el.get("image_url") or ""
+        data_uri = _image_to_data_uri(image_src)
+
+        if data_uri:
             credit = html.escape(str(el.get("image_credit") or "Domínio Público / CC"))
-            image_html = f'''
-      <div class="clip-media-container">
-        <img src="{html.escape(image_src)}" alt="Ilustração">
-        <div class="image-credit-badge">Fonte: <b>{credit}</b></div>
+            media_html = f'''
+      <div class="clip-right-media">
+        <div class="media-image-frame">
+          <img src="{data_uri}" alt="Ilustração">
+          <div class="image-credit-badge">Fonte: <b>{credit}</b></div>
+        </div>
+      </div>'''
+        else:
+            # Motion Design Procedural Neon Dinâmico
+            media_html = '''
+      <div class="clip-right-media">
+        <div class="motion-design-graphic">
+          <div class="orbit-ring ring-outer"></div>
+          <div class="orbit-ring ring-mid"></div>
+          <div class="orbit-ring ring-inner"></div>
+          <div class="pulse-core"></div>
+          <div class="hud-label">MOTION DESIGN // CIÊNCIA</div>
+        </div>
       </div>'''
 
-        top = {"top": "27%", "center": "51%", "bottom": "75%"}.get(pos, "51%")
-        role = html.escape(role_labels.get(el.get("type"), "EVIDÊNCIA"))
+        role = html.escape(role_labels.get(el.get("type"), "EXPLICAÇÃO"))
 
         clips_html.append(f'''
-    <div id="el-{index}" class="clip explainer-clip"
-         data-start="{cursor}" data-duration="{dur}"
-         data-animation="{anim}"
-         style="--clip-top:{top}; --clip-index:'{index}'">
-      <div class="clip-heading">
-        <span class="clip-index">{index:02d}</span>
-        <span class="clip-role">{role}</span>
+    <div id="el-{index}" class="explainer-clip"
+         data-start="{cursor:.3f}" data-duration="{dur:.3f}">
+      <div class="clip-left-content">
+        <div class="clip-heading">
+          <span class="clip-index">{index:02d}</span>
+          <span>{role}</span>
+        </div>
+        <div class="clip-copy">{content}</div>
+        {source_line}
       </div>
-      <div class="clip-copy">{content}</div>
-      {image_html}
-      {source_line}
+      {media_html}
     </div>''')
         cursor += dur
 
@@ -104,8 +141,10 @@ def build_composition(
     rendered_html = rendered_html.replace("{{PALETTE_TEXT}}", palette.text)
     rendered_html = rendered_html.replace("{{PALETTE_BACKGROUND}}", palette.background)
 
-    Path(output_path).write_text(rendered_html, encoding="utf-8")
-    print(f"Composição gerada: {output_path} (duração: {scene_duration:.2f}s)")
+    out_file = Path(output_path)
+    out_file.parent.mkdir(parents=True, exist_ok=True)
+    out_file.write_text(rendered_html, encoding="utf-8")
+    logger.info("Composição gerada com sucesso: %s (%.2fs)", output_path, scene_duration)
     return scene_duration
 
 
@@ -113,6 +152,6 @@ if __name__ == "__main__":
     build_composition(
         scene_path="output/scene.json",
         words_path="output/voice.words.json",
-        template_path="render/src/template.html",
-        output_path="render/index.html",  
+        template_path="render/src/template_wide.html",
+        output_path="render/index.html",
     )
