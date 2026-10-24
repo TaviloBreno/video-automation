@@ -346,17 +346,41 @@ def write_chapter(
     def validate(data: Any) -> dict[str, Any]:
         if not isinstance(data, dict):
             raise ValueError("Esperado um objeto JSON")
-        narration = data.get("narration")
-        points = data.get("key_points")
+        narration = data.get("narration") or data.get("text") or data.get("roteiro") or ""
         if not isinstance(narration, str) or not narration.strip():
             raise ValueError("'narration' deve ser texto não vazio")
-        if not isinstance(points, list) or not points:
-            raise ValueError("'key_points' deve ser uma lista com 1 a 3 frases")
-        cleaned_points = [
-            _clean_text(str(p))[:90] for p in points if isinstance(p, str) and _clean_text(p)
-        ][:3]
+
+        # Tenta obter key_points com múltiplas chaves alternativas
+        raw_points = (
+            data.get("key_points")
+            or data.get("pontos_chave")
+            or data.get("points")
+            or data.get("highlights")
+            or data.get("topics")
+            or []
+        )
+
+        cleaned_points: list[str] = []
+        if isinstance(raw_points, str):
+            for part in re.split(r"[\n;•\-]|\.\s+", raw_points):
+                p_clean = _clean_text(part)[:90]
+                if p_clean:
+                    cleaned_points.append(p_clean)
+        elif isinstance(raw_points, list):
+            for p in raw_points:
+                p_clean = _clean_text(str(p))[:90]
+                if p_clean:
+                    cleaned_points.append(p_clean)
+
+        # Se o modelo não mandou ou mandou vazio, extrai automaticamente frases-chave da narração
         if not cleaned_points:
-            raise ValueError("'key_points' deve conter frases não vazias")
+            sentences = [s.strip() for s in re.split(r"[.!?]+", narration) if len(s.strip()) > 10]
+            if sentences:
+                cleaned_points = [s[:90] for s in sentences[:2]]
+            else:
+                cleaned_points = [_clean_text(chapter.get("title", "Destaque do capítulo"))[:90]]
+
+        cleaned_points = cleaned_points[:3]
         result = {"narration": _clean_text(narration), "key_points": cleaned_points}
         count = _word_count(result["narration"])
         if not (lo <= count <= hi):
