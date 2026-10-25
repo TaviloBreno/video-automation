@@ -61,6 +61,7 @@ def get_config_info():
     """Retorna opções disponíveis de paletas, vozes e estilos."""
     cfg = load_config()
     voices = [
+        {"id": "pt-BR-AntonioSenior", "name": "👴 Antônio Sênior (Homem Mais Velho & Maduro — Tom Grave Solene)", "gender": "Masculina"},
         {"id": "pt-BR-AntonioDoc", "name": "🇧🇷 Antônio (Documentarista Brasileiro, Barítono com Pausas) - Padrão", "gender": "Masculina"},
         {"id": "pt-BR-AntonioNeural", "name": "🇧🇷 Antônio (Brasileiro, Tom Firme e Natural)", "gender": "Masculina"},
         {"id": "pt-BR-FranciscaNeural", "name": "🇧🇷 Francisca (Brasileira, Feminina Natural)", "gender": "Feminina"},
@@ -573,6 +574,18 @@ def list_shorts(job_id: str):
                 "social_metadata": social_meta,
             })
     return jsonify({"shorts": clips})
+
+
+@app.route("/api/music/<path:filename>")
+def serve_music_sample(filename: str):
+    """Serve amostras de trilhas sonoras royalty-free."""
+    music_dir = (PROJECT_ROOT / "assets" / "music").resolve()
+    file_path = (music_dir / filename).resolve()
+    if not file_path.name.endswith(".mp3"):
+        file_path = file_path.with_suffix(".mp3")
+    if not file_path.exists() or not str(file_path).startswith(str(music_dir)):
+        return "Música não encontrada", 404
+    return send_file(file_path, conditional=True)
 
 
 @app.route("/media/<job_id>/<path:filename>")

@@ -1,0 +1,91 @@
+{
+  "language": "pt",
+  "source": "edge-tts",
+  "words": [
+    {
+      "text": "Olá!",
+      "start": 0.1,
+      "end": 0.575
+    },
+    {
+      "text": "Esta",
+      "start": 1.4375,
+      "end": 1.725
+    },
+    {
+      "text": "é",
+      "start": 1.7375,
+      "end": 1.825
+    },
+    {
+      "text": "a",
+      "start": 1.8375,
+      "end": 1.9
+    },
+    {
+      "text": "voz",
+      "start": 1.9125,
+      "end": 2.2
+    },
+    {
+      "text": "de",
+      "start": 2.2125,
+      "end": 2.2875
+    },
+    {
+      "text": "Antônio",
+      "start": 2.3,
+      "end": 2.7625
+    },
+    {
+      "text": "com",
+      "start": 2.775,
+      "end": 2.95
+    },
+    {
+      "text": "ritmo",
+      "start": 2.9625,
+      "end": 3.325
+    },
+    {
+      "text": "padrão,",
+      "start": 3.3375,
+      "end": 3.775
+    },
+    {
+      "text": "clara,",
+      "start": 4.0,
+      "end": 4.35
+    },
+    {
+      "text": "firme",
+      "start": 4.6125,
+      "end": 4.8625
+    },
+    {
+      "text": "e",
+      "start": 4.875,
+      "end": 4.9
+    },
+    {
+      "text": "natural",
+      "start": 4.9125,
+      "end": 5.4
+    },
+    {
+      "text": "para",
+      "start": 5.4125,
+      "end": 5.55
+    },
+    {
+      "text": "explicações",
+      "start": 5.5625,
+      "end": 6.25
+    },
+    {
+      "text": "diretas.",
+      "start": 6.2625,
+      "end": 6.8875
+    }
+  ]
+}

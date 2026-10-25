@@ -168,7 +168,13 @@
 
                 <!-- Voz da Narração -->
                 <div class="form-group">
-                  <label for="voiceSelect">Voz Neural (Edge TTS pt-BR)</label>
+                  <div class="label-with-value">
+                    <label for="voiceSelect">Voz Neural (Edge TTS pt-BR)</label>
+                    <button type="button" id="btnPreviewVoice" class="btn-preview-audio" title="Ouvir demonstração da voz selecionada">
+                      <span id="previewVoiceIcon">▶</span>
+                      <span id="previewVoiceText">Ouvir Voz</span>
+                    </button>
+                  </div>
                   <select id="voiceSelect" class="custom-select">
                     <!-- Injetado via JS -->
                   </select>
@@ -185,7 +191,13 @@
 
                 <!-- Trilha Sonora Royalty-Free -->
                 <div class="form-group">
-                  <label for="bgMusicSelect">Trilha Sonora Sem Direitos Autorais (Royalty-Free)</label>
+                  <div class="label-with-value">
+                    <label for="bgMusicSelect">Trilha Sonora Sem Direitos Autorais (Royalty-Free)</label>
+                    <button type="button" id="btnPreviewMusic" class="btn-preview-audio" title="Ouvir demonstração da trilha sonora selecionada">
+                      <span id="previewMusicIcon">▶</span>
+                      <span id="previewMusicText">Ouvir Trilha</span>
+                    </button>
+                  </div>
                   <select id="bgMusicSelect" class="custom-select">
                     <!-- Injetado via JS -->
                   </select>

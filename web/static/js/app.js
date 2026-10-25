@@ -110,6 +110,119 @@ function setupEventListeners() {
 
   // Modais de Edição e Exclusão
   setupModals();
+
+  // Prévia Sonora de Vozes e Músicas
+  setupAudioPreviews();
+}
+
+let currentPreviewAudio = null;
+let currentPreviewType = null;
+
+function setupAudioPreviews() {
+  const btnVoice = document.getElementById("btnPreviewVoice");
+  const voiceSelect = document.getElementById("voiceSelect");
+  const iconVoice = document.getElementById("previewVoiceIcon");
+  const textVoice = document.getElementById("previewVoiceText");
+
+  const btnMusic = document.getElementById("btnPreviewMusic");
+  const musicSelect = document.getElementById("bgMusicSelect");
+  const iconMusic = document.getElementById("previewMusicIcon");
+  const textMusic = document.getElementById("previewMusicText");
+
+  function stopAllPreviews() {
+    if (currentPreviewAudio) {
+      currentPreviewAudio.pause();
+      currentPreviewAudio.currentTime = 0;
+      currentPreviewAudio = null;
+    }
+    if (btnVoice) {
+      btnVoice.classList.remove("playing");
+      if (iconVoice) iconVoice.textContent = "▶";
+      if (textVoice) textVoice.textContent = "Ouvir Voz";
+    }
+    if (btnMusic) {
+      btnMusic.classList.remove("playing");
+      if (iconMusic) iconMusic.textContent = "▶";
+      if (textMusic) textMusic.textContent = "Ouvir Trilha";
+    }
+    currentPreviewType = null;
+  }
+
+  if (btnVoice && voiceSelect) {
+    btnVoice.addEventListener("click", () => {
+      const voiceId = voiceSelect.value;
+      if (!voiceId) return;
+
+      if (currentPreviewType === "voice") {
+        stopAllPreviews();
+        return;
+      }
+
+      stopAllPreviews();
+      const audioUrl = `/static/audio/voices/${voiceId}.mp3`;
+      currentPreviewAudio = new Audio(audioUrl);
+      currentPreviewType = "voice";
+
+      btnVoice.classList.add("playing");
+      if (iconVoice) iconVoice.textContent = "⏸";
+      if (textVoice) textVoice.textContent = "Pausar";
+
+      currentPreviewAudio.play().catch((err) => {
+        console.warn("Erro ao reproduzir áudio de voz:", err);
+        stopAllPreviews();
+      });
+
+      currentPreviewAudio.addEventListener("ended", stopAllPreviews);
+      currentPreviewAudio.addEventListener("error", stopAllPreviews);
+    });
+
+    voiceSelect.addEventListener("change", () => {
+      if (currentPreviewType === "voice") {
+        stopAllPreviews();
+        btnVoice.click();
+      }
+    });
+  }
+
+  if (btnMusic && musicSelect) {
+    btnMusic.addEventListener("click", () => {
+      const musicId = musicSelect.value;
+      if (!musicId || musicId === "none") {
+        alert("Nenhuma trilha selecionada.");
+        return;
+      }
+
+      if (currentPreviewType === "music") {
+        stopAllPreviews();
+        return;
+      }
+
+      stopAllPreviews();
+      const audioUrl = `/api/music/${musicId}.mp3`;
+      currentPreviewAudio = new Audio(audioUrl);
+      currentPreviewAudio.volume = 0.35;
+      currentPreviewType = "music";
+
+      btnMusic.classList.add("playing");
+      if (iconMusic) iconMusic.textContent = "⏸";
+      if (textMusic) textMusic.textContent = "Pausar";
+
+      currentPreviewAudio.play().catch((err) => {
+        console.warn("Erro ao reproduzir música:", err);
+        stopAllPreviews();
+      });
+
+      currentPreviewAudio.addEventListener("ended", stopAllPreviews);
+      currentPreviewAudio.addEventListener("error", stopAllPreviews);
+    });
+
+    musicSelect.addEventListener("change", () => {
+      if (currentPreviewType === "music") {
+        stopAllPreviews();
+        btnMusic.click();
+      }
+    });
+  }
 }
 
 function updateDurationDisplay(minutes) {

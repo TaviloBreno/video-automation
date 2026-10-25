@@ -1,0 +1,91 @@
+{
+  "language": "pt",
+  "source": "edge-tts",
+  "words": [
+    {
+      "text": "Olá!",
+      "start": 0.105541,
+      "end": 0.591666
+    },
+    {
+      "text": "Esta",
+      "start": 0.888875,
+      "end": 1.194416
+    },
+    {
+      "text": "é",
+      "start": 1.208333,
+      "end": 1.2499989
+    },
+    {
+      "text": "a",
+      "start": 1.263875,
+      "end": 1.347208
+    },
+    {
+      "text": "voz",
+      "start": 1.361125,
+      "end": 1.59725
+    },
+    {
+      "text": "de",
+      "start": 1.611125,
+      "end": 1.694458
+    },
+    {
+      "text": "Francisca,",
+      "start": 1.708333,
+      "end": 2.430541
+    },
+    {
+      "text": "com",
+      "start": 2.458333,
+      "end": 2.708333
+    },
+    {
+      "text": "tom",
+      "start": 2.722208,
+      "end": 2.916666
+    },
+    {
+      "text": "acolhedor,",
+      "start": 2.930541,
+      "end": 3.611082
+    },
+    {
+      "text": "elegante",
+      "start": 3.722208,
+      "end": 4.361083
+    },
+    {
+      "text": "e",
+      "start": 4.375,
+      "end": 4.444458
+    },
+    {
+      "text": "excelente",
+      "start": 4.458333,
+      "end": 5.083333
+    },
+    {
+      "text": "dicção",
+      "start": 5.097208,
+      "end": 5.652749
+    },
+    {
+      "text": "para",
+      "start": 5.666666,
+      "end": 5.902791
+    },
+    {
+      "text": "vídeos",
+      "start": 5.916666,
+      "end": 6.305541
+    },
+    {
+      "text": "científicos.",
+      "start": 6.319458,
+      "end": 7.249999
+    }
+  ]
+}

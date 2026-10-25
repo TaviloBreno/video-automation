@@ -1,0 +1,131 @@
+{
+  "language": "pt",
+  "source": "edge-tts",
+  "words": [
+    {
+      "text": "Olá",
+      "start": 0.1125,
+      "end": 0.70625
+    },
+    {
+      "text": "Sou",
+      "start": 1.796875,
+      "end": 2.125
+    },
+    {
+      "text": "o",
+      "start": 2.140625,
+      "end": 2.203125
+    },
+    {
+      "text": "narrador",
+      "start": 2.21875,
+      "end": 2.84375
+    },
+    {
+      "text": "veterano",
+      "start": 2.859375,
+      "end": 3.578125
+    },
+    {
+      "text": "Com",
+      "start": 4.65625,
+      "end": 4.90625
+    },
+    {
+      "text": "o",
+      "start": 4.921875,
+      "end": 4.96875
+    },
+    {
+      "text": "passar",
+      "start": 4.984375,
+      "end": 5.46875
+    },
+    {
+      "text": "das",
+      "start": 5.484375,
+      "end": 5.6875
+    },
+    {
+      "text": "décadas",
+      "start": 5.703125,
+      "end": 6.375
+    },
+    {
+      "text": "aprendi",
+      "start": 6.65625,
+      "end": 7.25
+    },
+    {
+      "text": "que",
+      "start": 7.265625,
+      "end": 7.34375
+    },
+    {
+      "text": "os",
+      "start": 7.359375,
+      "end": 7.4375
+    },
+    {
+      "text": "maiores",
+      "start": 7.453125,
+      "end": 8.046875
+    },
+    {
+      "text": "mistérios",
+      "start": 8.0625,
+      "end": 8.609375
+    },
+    {
+      "text": "do",
+      "start": 8.625,
+      "end": 8.734375
+    },
+    {
+      "text": "universo",
+      "start": 8.75,
+      "end": 9.515625
+    },
+    {
+      "text": "exigem",
+      "start": 9.8125,
+      "end": 10.453125
+    },
+    {
+      "text": "calma",
+      "start": 10.46875,
+      "end": 10.90625
+    },
+    {
+      "text": "sabedoria",
+      "start": 11.265625,
+      "end": 11.96875
+    },
+    {
+      "text": "e",
+      "start": 11.984375,
+      "end": 12.03125
+    },
+    {
+      "text": "contemplação",
+      "start": 12.046875,
+      "end": 12.984375
+    },
+    {
+      "text": "para",
+      "start": 13.0,
+      "end": 13.234375
+    },
+    {
+      "text": "serem",
+      "start": 13.25,
+      "end": 13.59375
+    },
+    {
+      "text": "compreendidos",
+      "start": 13.609375,
+      "end": 14.71875
+    }
+  ]
+}

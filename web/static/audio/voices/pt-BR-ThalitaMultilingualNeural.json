@@ -1,0 +1,91 @@
+{
+  "language": "pt",
+  "source": "edge-tts",
+  "words": [
+    {
+      "text": "Olá!",
+      "start": 0.055541,
+      "end": 0.513874
+    },
+    {
+      "text": "Esta",
+      "start": 0.902791,
+      "end": 1.486124
+    },
+    {
+      "text": "é",
+      "start": 1.486125,
+      "end": 1.583333
+    },
+    {
+      "text": "a",
+      "start": 1.583333,
+      "end": 1.638874
+    },
+    {
+      "text": "voz",
+      "start": 1.638875,
+      "end": 1.875
+    },
+    {
+      "text": "de",
+      "start": 1.875,
+      "end": 1.986125
+    },
+    {
+      "text": "Thalita,",
+      "start": 1.986125,
+      "end": 2.611125
+    },
+    {
+      "text": "jovem,",
+      "start": 2.861125,
+      "end": 3.430583
+    },
+    {
+      "text": "dinâmica",
+      "start": 3.597208,
+      "end": 4.486083
+    },
+    {
+      "text": "e",
+      "start": 4.486125,
+      "end": 4.652791
+    },
+    {
+      "text": "envolvente,",
+      "start": 4.652791,
+      "end": 5.486124
+    },
+    {
+      "text": "ótima",
+      "start": 5.708333,
+      "end": 6.194458
+    },
+    {
+      "text": "para",
+      "start": 6.194458,
+      "end": 6.374999
+    },
+    {
+      "text": "manter",
+      "start": 6.375,
+      "end": 6.722208
+    },
+    {
+      "text": "o",
+      "start": 6.722208,
+      "end": 6.777749
+    },
+    {
+      "text": "público",
+      "start": 6.777791,
+      "end": 7.194457
+    },
+    {
+      "text": "conectado.",
+      "start": 7.194458,
+      "end": 7.874999
+    }
+  ]
+}

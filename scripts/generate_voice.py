@@ -111,10 +111,16 @@ def generate_voice(
     mp3_path = out_path / "voice.mp3"
     words_path = out_path / "voice.words.json"
 
-    # Perfil especial de documentarista maduro
+    # Perfil especial de documentarista maduro / homem mais velho
     target_pitch = pitch
     target_rate = rate
-    if voice == "pt-BR-AntonioDoc":
+    if voice == "pt-BR-AntonioSenior":
+        target_voice = "pt-BR-AntonioNeural"
+        if pitch == "+0Hz" or not pitch:
+            target_pitch = "-9Hz"
+        if rate == "+0%" or not rate:
+            target_rate = "-20%"
+    elif voice == "pt-BR-AntonioDoc":
         target_voice = "pt-BR-AntonioNeural"
         if pitch == "+0Hz" or not pitch:
             target_pitch = "-5Hz"

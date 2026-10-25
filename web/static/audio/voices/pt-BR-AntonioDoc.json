@@ -1,0 +1,101 @@
+{
+  "language": "pt",
+  "source": "edge-tts",
+  "words": [
+    {
+      "text": "Olá",
+      "start": 0.1125,
+      "end": 0.70625
+    },
+    {
+      "text": "Sou",
+      "start": 1.796875,
+      "end": 2.15625
+    },
+    {
+      "text": "o",
+      "start": 2.171875,
+      "end": 2.234375
+    },
+    {
+      "text": "narrador",
+      "start": 2.25,
+      "end": 2.90625
+    },
+    {
+      "text": "documental",
+      "start": 2.921875,
+      "end": 3.84375
+    },
+    {
+      "text": "Minha",
+      "start": 4.921875,
+      "end": 5.265625
+    },
+    {
+      "text": "voz",
+      "start": 5.28125,
+      "end": 5.640625
+    },
+    {
+      "text": "tem",
+      "start": 5.65625,
+      "end": 5.859375
+    },
+    {
+      "text": "pausas",
+      "start": 5.875,
+      "end": 6.375
+    },
+    {
+      "text": "calmas",
+      "start": 6.390625,
+      "end": 6.84375
+    },
+    {
+      "text": "e",
+      "start": 6.859375,
+      "end": 7.046875
+    },
+    {
+      "text": "tom",
+      "start": 7.0625,
+      "end": 7.28125
+    },
+    {
+      "text": "solene",
+      "start": 7.296875,
+      "end": 7.859375
+    },
+    {
+      "text": "para",
+      "start": 7.875,
+      "end": 8.125
+    },
+    {
+      "text": "prender",
+      "start": 8.140625,
+      "end": 8.625
+    },
+    {
+      "text": "a",
+      "start": 8.640625,
+      "end": 8.6875
+    },
+    {
+      "text": "atenção",
+      "start": 8.703125,
+      "end": 9.34375
+    },
+    {
+      "text": "do",
+      "start": 9.359375,
+      "end": 9.515625
+    },
+    {
+      "text": "público",
+      "start": 9.53125,
+      "end": 10.078125
+    }
+  ]
+}
