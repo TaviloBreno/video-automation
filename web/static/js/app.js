@@ -659,7 +659,11 @@ async function renderSingleShort(candidate, btnElement) {
   btnElement.disabled = true;
   btnElement.textContent = "⏳ Recortando e aplicando legendas...";
 
+  let data;
   try {
+    const legendSelect = document.getElementById("legendStyleSelect");
+    const legendStyle = legendSelect ? legendSelect.value : "karaoke";
+
     const res = await fetch(`/api/jobs/${currentJobId}/render_short`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -667,24 +671,34 @@ async function renderSingleShort(candidate, btnElement) {
         start_time: candidate.start_time,
         end_time: candidate.end_time,
         title: candidate.title,
-        legend_style: document.getElementById("legendStyleSelect").value,
+        hook: candidate.hook || "",
+        legend_style: legendStyle,
       }),
     });
 
-    const data = await res.json();
-    if (res.ok && data.clip) {
-      btnElement.textContent = "✅ Pronto!";
-      addShortToGrid(data.clip);
-      updateShortsBadgeCount();
-    } else {
-      alert("Falha ao gerar Short: " + (data.error || "Erro desconhecido"));
+    data = await res.json();
+    if (!res.ok || !data.clip) {
+      alert("Falha ao gerar Short: " + (data.error || "Erro no servidor"));
       btnElement.disabled = false;
       btnElement.textContent = "Tentar Novamente";
+      return;
     }
-  } catch (err) {
-    alert("Erro ao conectar ao servidor.");
+  } catch (netErr) {
+    console.error("Erro na comunicação com o servidor:", netErr);
+    alert("Falha ao conectar ao servidor local.");
     btnElement.disabled = false;
     btnElement.textContent = "Tentar Novamente";
+    return;
+  }
+
+  try {
+    btnElement.textContent = "✅ Pronto!";
+    addShortToGrid(data.clip);
+    updateShortsBadgeCount();
+  } catch (domErr) {
+    console.error("Erro ao renderizar card do Short:", domErr);
+    btnElement.textContent = "✅ Pronto!";
+    updateShortsBadgeCount();
   }
 }
 
@@ -709,6 +723,12 @@ async function loadExistingShorts(jobId) {
   }
 }
 
+function formatHashtags(ht) {
+  if (!ht) return "";
+  if (Array.isArray(ht)) return ht.join(" ");
+  return String(ht);
+}
+
 function addShortToGrid(clip) {
   const grid = document.getElementById("renderedShortsGrid");
   const card = document.createElement("div");
@@ -720,7 +740,9 @@ function addShortToGrid(clip) {
   if (sm) {
     const tiktokText = (sm.tiktok && sm.tiktok.caption) || "";
     const reelsText = (sm.instagram_reels && sm.instagram_reels.caption) || "";
-    const ytText = sm.youtube_shorts ? `${sm.youtube_shorts.title || ""}\n\n${sm.youtube_shorts.description || ""}\n\n${(sm.youtube_shorts.hashtags || []).join(" ")}`.trim() : "";
+    const ytHashtags = formatHashtags(sm.youtube_shorts && sm.youtube_shorts.hashtags);
+    const ytCaption = (sm.youtube_shorts && (sm.youtube_shorts.caption || sm.youtube_shorts.description)) || "";
+    const ytText = sm.youtube_shorts ? `${sm.youtube_shorts.title || ""}\n\n${ytCaption}\n\n${ytHashtags}`.trim() : "";
 
     socialHtml = `
       <div class="short-social-box">
@@ -740,23 +762,66 @@ function addShortToGrid(clip) {
       <video src="${videoUrl}" controls playsinline preload="metadata"></video>
     </div>
     <div class="short-actions">
-      <span style="font-size:11px;color:var(--text-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px;">
+      <span style="font-size:11px;color:var(--text-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:140px;" title="${escapeHtml(clip.title || clip.file)}">
         ${escapeHtml(clip.title || clip.file)}
       </span>
-      <a href="${videoUrl}" download="${clip.file}">Baixar 9:16</a>
+      <div class="short-action-buttons">
+        <a href="${videoUrl}" download="${clip.file}" class="btn-download-short" title="Baixar Vídeo Vertical (9:16)">⬇ Baixar</a>
+        <button type="button" class="btn-delete-short" title="Excluir este Short definitivamente">🗑️</button>
+      </div>
     </div>
     ${socialHtml}
   `;
+
+  const btnDelete = card.querySelector(".btn-delete-short");
+  if (btnDelete) {
+    btnDelete.addEventListener("click", async () => {
+      const shortName = clip.title || clip.file;
+      const confirmDelete = confirm(`Deseja realmente apagar o Short:\n"${shortName}"?`);
+      if (!confirmDelete) return;
+
+      btnDelete.disabled = true;
+      btnDelete.textContent = "⏳";
+
+      try {
+        const res = await fetch(`/api/jobs/${currentJobId}/shorts/${clip.file}`, {
+          method: "DELETE",
+        });
+        const data = await res.json();
+        if (res.ok) {
+          card.style.transition = "all 0.3s ease";
+          card.style.opacity = "0";
+          card.style.transform = "scale(0.85)";
+          setTimeout(() => {
+            card.remove();
+            updateShortsBadgeCount();
+          }, 300);
+        } else {
+          alert("Falha ao excluir o Short: " + (data.error || "Erro desconhecido"));
+          btnDelete.disabled = false;
+          btnDelete.textContent = "🗑️";
+        }
+      } catch (err) {
+        console.error("Erro na requisição de exclusão:", err);
+        alert("Erro de conexão ao tentar excluir.");
+        btnDelete.disabled = false;
+        btnDelete.textContent = "🗑️";
+      }
+    });
+  }
 
   if (sm) {
     const pillBtns = card.querySelectorAll(".social-pill-btn");
     const display = card.querySelector(".social-caption-display");
     const btnCopy = card.querySelector(".btn-copy-social");
 
+    const ytHashtags = formatHashtags(sm.youtube_shorts && sm.youtube_shorts.hashtags);
+    const ytCaption = (sm.youtube_shorts && (sm.youtube_shorts.caption || sm.youtube_shorts.description)) || "";
+
     const platformTexts = {
       tiktok: (sm.tiktok && sm.tiktok.caption) || "",
       reels: (sm.instagram_reels && sm.instagram_reels.caption) || "",
-      shorts: sm.youtube_shorts ? `${sm.youtube_shorts.title || ""}\n\n${sm.youtube_shorts.description || ""}\n\n${(sm.youtube_shorts.hashtags || []).join(" ")}`.trim() : "",
+      shorts: sm.youtube_shorts ? `${sm.youtube_shorts.title || ""}\n\n${ytCaption}\n\n${ytHashtags}`.trim() : "",
     };
 
     pillBtns.forEach((btn) => {

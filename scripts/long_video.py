@@ -37,6 +37,7 @@ from scripts.config_loader import AppConfig, get_palette, load_config
 from scripts.generate_voice import generate_voice
 from scripts.llm_client import (
     OLLAMA_ENABLED,
+    call_llm,
     _call_groq,
     _call_ollama,
     _parse_json_response,
@@ -208,7 +209,7 @@ def ask_json(
             raise JobCancelled()
         messages = [{"role": "user", "content": current}]
         try:
-            raw = _call_ollama(messages, llm_cfg) if OLLAMA_ENABLED else _call_groq(messages, llm_cfg)
+            raw = call_llm(messages, llm_cfg)
             return validate(_parse_json_response(raw))
         except (requests.exceptions.RequestException, RuntimeError) as exc:
             last_error = exc

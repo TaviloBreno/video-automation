@@ -576,6 +576,41 @@ def list_shorts(job_id: str):
     return jsonify({"shorts": clips})
 
 
+@app.route("/api/jobs/<job_id>/shorts/<filename>", methods=["DELETE"])
+def delete_short(job_id: str, filename: str):
+    """Exclui um vídeo vertical Short e seus metadados de redes sociais associados."""
+    safe_filename = Path(filename).name
+    if not safe_filename.endswith(".mp4"):
+        return jsonify({"error": "Arquivo inválido"}), 400
+
+    job_dir = _get_job_path(job_id)
+    shorts_dir = job_dir / "shorts"
+    video_file = shorts_dir / safe_filename
+    meta_file = video_file.with_suffix(".json")
+
+    deleted = False
+    if video_file.exists():
+        try:
+            video_file.unlink()
+            deleted = True
+        except Exception as exc:
+            logger.error("Erro ao apagar arquivo de short %s: %s", video_file, exc)
+            return jsonify({"error": f"Erro ao apagar vídeo: {exc}"}), 500
+
+    if meta_file.exists():
+        try:
+            meta_file.unlink()
+        except Exception:
+            pass
+
+    if deleted:
+        logger.info("Short %s do job %s excluído com sucesso", safe_filename, job_id)
+        return jsonify({"success": True, "message": "Short excluído com sucesso."})
+
+    return jsonify({"error": "Short não encontrado"}), 404
+
+
+
 @app.route("/api/music/<path:filename>")
 def serve_music_sample(filename: str):
     """Serve amostras de trilhas sonoras royalty-free."""

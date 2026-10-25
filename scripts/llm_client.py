@@ -195,6 +195,8 @@ def _call_ollama(messages: list[dict], cfg: AppConfig) -> str:
             "temperature": cfg.llm.temperature,
             "num_predict": min(cfg.llm.max_tokens, 1536),
             "num_ctx": 8192,
+            "repeat_penalty": 1.15,
+            "top_p": 0.9,
         },
     }
     response = requests.post(url, json=payload, timeout=cfg.llm.timeout_seconds)
@@ -233,6 +235,20 @@ def _call_groq(messages: list[dict], cfg: AppConfig) -> str:
         response_format={"type": "json_object"},  # JSON mode do Groq
     )
     return completion.choices[0].message.content
+
+
+def call_llm(messages: list[dict], cfg: AppConfig) -> str:
+    """Chama LLM com preferência por Ollama local e fallback automático transparente para Groq."""
+    if OLLAMA_ENABLED:
+        try:
+            return _call_ollama(messages, cfg)
+        except Exception as exc:
+            if GROQ_API_KEY:
+                import logging
+                logging.getLogger("llm_client").warning("Ollama falhou (%s), aplicando fallback automático para Groq...", exc)
+                return _call_groq(messages, cfg)
+            raise
+    return _call_groq(messages, cfg)
 
 
 # ---------------------------------------------------------------------------
