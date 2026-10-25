@@ -34,6 +34,7 @@ app = Flask(
     template_folder=str(PROJECT_ROOT / "web" / "templates"),
     static_folder=str(PROJECT_ROOT / "web" / "static"),
 )
+app.json.ensure_ascii = False
 
 JOBS_DIR = PROJECT_ROOT / "output" / "jobs"
 JOBS_DIR.mkdir(parents=True, exist_ok=True)
