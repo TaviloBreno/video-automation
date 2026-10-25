@@ -57,81 +57,166 @@ def _clean_source_title(title: str, publisher: str = "") -> str:
     return cleaned[:42]
 
 
-def detect_visual_theme(topic: str, content: str, chapter_title: str = "") -> tuple[str, str]:
+def detect_visual_theme(
+    topic: str,
+    content: str,
+    chapter_title: str = "",
+    explicit_archetype: str = "",
+) -> tuple[str, str]:
     """Detecta o campo da ciência e subtema para gerar Motion Design contextualizado."""
+    clean_sub = re.sub(r"[^\w\s]", "", chapter_title or topic).strip()[:24].upper()
+    label_suffix = clean_sub if clean_sub else "CIÊNCIA & DADOS"
+
+    if explicit_archetype:
+        arch = explicit_archetype.lower().strip()
+        arch_labels = {
+            "orbital": ("orbital", f"DINÂMICA ORBITAL // {label_suffix}"),
+            "infographic": ("infographic", f"TELEMETRIA & DADOS // {label_suffix}"),
+            "blueprint": ("blueprint", f"DIAGRAMA TÉCNICO // {label_suffix}"),
+            "spectrum": ("spectrum", f"ESPECTRO & ONDAS // {label_suffix}"),
+            "network": ("network", f"REDE DE CONEXÕES // {label_suffix}"),
+            "timeline": ("timeline", f"CRONOLOGIA CÓSMICA // {label_suffix}"),
+            "quantum": ("quantum", f"ESTRUTURA QUÂNTICA // {label_suffix}"),
+        }
+        if arch in arch_labels:
+            return arch_labels[arch]
+
     text = f"{topic} {chapter_title} {content}".lower()
 
     if re.search(r"(câncer|tumor|carcinoma|oncol|célula|biópsia|dna|genoma|mutação|gene|imunoterap|imune|anticorpo|linfócit|vírus|vacina|biolog|sangue|medicin)", text):
-        if re.search(r"(imunoterap|imune|anticorpo|linfócit|t-cell)", text):
-            label = "IMUNOTERAPIA & DEFESA"
-        elif re.search(r"(dna|genoma|mutação|gene|crispr)", text):
-            label = "GENÉTICA & DNA"
-        elif re.search(r"(tumor|carcinoma|metástase)", text):
-            label = "ONCOLOGIA CELULAR"
-        else:
-            label = "BIOLOGIA & CÉLULAS"
-        return "biology", label
+        return "network", f"BIOLOGIA & CÉLULAS // {label_suffix}"
 
-    if re.search(r"(quasar|quásar|buraco negro|singularidade|acrec|horizonte de eventos|espaço|astro|galáxia|universo|estrela|supernova|hubble|james webb|telescópio|relativid)", text):
-        if re.search(r"(buraco negro|singularidade|horizonte)", text):
-            label = "BURACO NEGRO & SINGULARIDADE"
-        elif re.search(r"(quasar|quásar|acrec)", text):
-            label = "QUASAR & ENERGIA RELATIVÍSTICA"
-        elif re.search(r"(supernova|estrela)", text):
-            label = "EVOLUÇÃO ESTELAR"
-        else:
-            label = "ASTROFÍSICA & COSMO"
-        return "astronomy", label
+    if re.search(r"(quasar|quásar|buraco negro|singularidade|acrec|horizonte de eventos|espaço|astro|galáxia|universo|estrela|supernova)", text):
+        return "orbital", f"ASTROFÍSICA & COSMO // {label_suffix}"
 
-    if re.search(r"(inteligência artificial|ia|rede neural|algoritmo|computador|software|dados|deep learning|robô|chip|silício)", text):
-        return "neural_tech", "REDES NEURAIS & IA"
+    if re.search(r"(telescópio|hubble|james webb|óptica|espelho|observatório|detector|resolução|coordenadas)", text):
+        return "blueprint", f"OBSERVAÇÃO TÉCNICA // {label_suffix}"
 
-    if re.search(r"(átomo|quântic|elétron|próton|fóton|física|partícula|radiação)", text):
-        return "quantum_physics", "FÍSICA QUÂNTICA & ÁTOMOS"
+    if re.search(r"(luz|onda|espectro|frequência|comprimento de onda|doppler|redshift|radiação|eletromagnét)", text):
+        return "spectrum", f"ESPECTROGRAFIA // {label_suffix}"
 
-    clean_sub = re.sub(r"[^\w\s]", "", chapter_title or topic).strip()
-    return "science_general", (clean_sub[:24].upper() if clean_sub else "EXPLORAÇÃO CIENTÍFICA")
+    if re.search(r"(tempo|evolução|anos|milhões de anos|história|origem|cronologia|big bang)", text):
+        return "timeline", f"EVOLUÇÃO TEMPORAL // {label_suffix}"
+
+    if re.search(r"(átomo|quântic|elétron|próton|fóton|física|partícula)", text):
+        return "quantum", f"MECÂNICA QUÂNTICA // {label_suffix}"
+
+    if re.search(r"(inteligência artificial|ia|rede neural|algoritmo|computador|dados|deep learning)", text):
+        return "network", f"SISTEMAS NEURAIS // {label_suffix}"
+
+    return "infographic", f"DADOS & MEDIÇÃO // {label_suffix}"
 
 
 def generate_thematic_motion_html(theme: str, label: str) -> str:
     """Retorna Motion Design vetorial procedural específico do assunto falado."""
-    if theme == "astronomy":
+    if theme in ("orbital", "astronomy"):
         return f'''
       <div class="clip-right-media">
-        <div class="motion-design-graphic motion-astro">
+        <div class="motion-design-graphic motion-orbital">
           <div class="plasma-jet"></div>
           <div class="accretion-disk disk-outer"></div>
           <div class="accretion-disk disk-inner"></div>
           <div class="event-horizon"></div>
-          <div class="hud-label">ASTROFÍSICA // {label}</div>
+          <div class="hud-label">{label}</div>
         </div>
       </div>'''
-    elif theme == "biology":
+
+    elif theme == "infographic":
         return f'''
       <div class="clip-right-media">
-        <div class="motion-design-graphic motion-bio">
-          <div class="cell-membrane"></div>
-          <div class="dna-helix">
-            <div class="dna-ring ring-a"></div>
-            <div class="dna-ring ring-b"></div>
+        <div class="motion-design-graphic motion-infographic">
+          <svg class="radial-gauge-svg" viewBox="0 0 360 360" width="360" height="360">
+            <circle class="gauge-bg" cx="180" cy="180" r="140" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="8"/>
+            <circle class="gauge-bar" cx="180" cy="180" r="140" fill="none" stroke="var(--palettePrimary)" stroke-width="10" stroke-dasharray="880" stroke-dashoffset="260" stroke-linecap="round"/>
+            <circle class="gauge-inner-ring" cx="180" cy="180" r="105" fill="none" stroke="var(--paletteAccent)" stroke-width="2" stroke-dasharray="6 8"/>
+          </svg>
+          <div class="infographic-bars">
+            <div class="meter-bar bar-1"></div>
+            <div class="meter-bar bar-2"></div>
+            <div class="meter-bar bar-3"></div>
+            <div class="meter-bar bar-4"></div>
           </div>
-          <div class="cell-nucleus"></div>
-          <div class="hud-label">BIOLOGIA CELULAR // {label}</div>
+          <div class="gauge-center-readout">
+            <span class="readout-val">98.4%</span>
+            <span class="readout-unit">FLUXO RELATIVÍSTICO</span>
+          </div>
+          <div class="hud-label">{label}</div>
         </div>
       </div>'''
-    elif theme == "neural_tech":
+
+    elif theme == "blueprint":
         return f'''
       <div class="clip-right-media">
-        <div class="motion-design-graphic motion-neural">
-          <div class="neural-grid">
-            <div class="synapse-orbit syn-1"></div>
-            <div class="synapse-orbit syn-2"></div>
-            <div class="neural-core"></div>
-          </div>
-          <div class="hud-label">SISTEMAS NEURAIS // {label}</div>
+        <div class="motion-design-graphic motion-blueprint">
+          <div class="crosshair-axis axis-x"></div>
+          <div class="crosshair-axis axis-y"></div>
+          <div class="blueprint-reticle ret-outer"></div>
+          <div class="blueprint-reticle ret-mid"></div>
+          <div class="blueprint-reticle ret-inner"></div>
+          <div class="blueprint-corner tl"></div>
+          <div class="blueprint-corner tr"></div>
+          <div class="blueprint-corner bl"></div>
+          <div class="blueprint-corner br"></div>
+          <div class="blueprint-hud-coords">AZ: 184.22° // EL: +47.19° // RA: 12h 55m</div>
+          <div class="hud-label">{label}</div>
         </div>
       </div>'''
-    elif theme == "quantum_physics":
+
+    elif theme == "spectrum":
+        return f'''
+      <div class="clip-right-media">
+        <div class="motion-design-graphic motion-spectrum">
+          <svg class="spectrum-svg" viewBox="0 0 420 280" width="420" height="280">
+            <path class="sine-wave wave-1" d="M 0 140 Q 52.5 60 105 140 T 210 140 T 315 140 T 420 140" fill="none" stroke="var(--palettePrimary)" stroke-width="3"/>
+            <path class="sine-wave wave-2" d="M 0 140 Q 52.5 210 105 140 T 210 140 T 315 140 T 420 140" fill="none" stroke="var(--paletteAccent)" stroke-width="2" stroke-dasharray="4 4"/>
+          </svg>
+          <div class="spectrum-dispersion-bar"></div>
+          <div class="spectral-absorption-lines">
+            <div class="abs-line line-1"></div>
+            <div class="abs-line line-2"></div>
+            <div class="abs-line line-3"></div>
+            <div class="abs-line line-4"></div>
+          </div>
+          <div class="hud-label">{label}</div>
+        </div>
+      </div>'''
+
+    elif theme in ("network", "biology", "neural_tech"):
+        return f'''
+      <div class="clip-right-media">
+        <div class="motion-design-graphic motion-network">
+          <svg class="network-svg" viewBox="0 0 380 380" width="380" height="380">
+            <line x1="190" y1="190" x2="80" y2="90" stroke="rgba(255,255,255,0.2)" stroke-width="2" stroke-dasharray="4 4"/>
+            <line x1="190" y1="190" x2="300" y2="90" stroke="rgba(255,255,255,0.2)" stroke-width="2" stroke-dasharray="4 4"/>
+            <line x1="190" y1="190" x2="310" y2="280" stroke="rgba(255,255,255,0.2)" stroke-width="2" stroke-dasharray="4 4"/>
+            <line x1="190" y1="190" x2="70" y2="270" stroke="rgba(255,255,255,0.2)" stroke-width="2" stroke-dasharray="4 4"/>
+            <circle class="net-node node-a" cx="80" cy="90" r="14" fill="var(--paletteAccent)"/>
+            <circle class="net-node node-b" cx="300" cy="90" r="12" fill="var(--palettePrimary)"/>
+            <circle class="net-node node-c" cx="310" cy="280" r="15" fill="var(--paletteAccent)"/>
+            <circle class="net-node node-d" cx="70" cy="270" r="11" fill="var(--palettePrimary)"/>
+          </svg>
+          <div class="network-core"></div>
+          <div class="hud-label">{label}</div>
+        </div>
+      </div>'''
+
+    elif theme == "timeline":
+        return f'''
+      <div class="clip-right-media">
+        <div class="motion-design-graphic motion-timeline">
+          <div class="timeline-axis"></div>
+          <div class="timeline-nodes">
+            <div class="tl-node n-1"><div class="tl-pulse"></div><span>T-0</span></div>
+            <div class="tl-node n-2"><div class="tl-pulse"></div><span>ERA I</span></div>
+            <div class="tl-node n-3"><div class="tl-pulse"></div><span>ERA II</span></div>
+            <div class="tl-node n-4 active"><div class="tl-pulse"></div><span>PRESENTE</span></div>
+          </div>
+          <div class="timeline-scanner-beam"></div>
+          <div class="hud-label">{label}</div>
+        </div>
+      </div>'''
+
+    elif theme in ("quantum", "quantum_physics"):
         return f'''
       <div class="clip-right-media">
         <div class="motion-design-graphic motion-quantum">
@@ -139,9 +224,10 @@ def generate_thematic_motion_html(theme: str, label: str) -> str:
           <div class="quantum-orbit q-2"></div>
           <div class="quantum-orbit q-3"></div>
           <div class="quantum-nucleus"></div>
-          <div class="hud-label">ESTRUTURA ATÔMICA // {label}</div>
+          <div class="hud-label">{label}</div>
         </div>
       </div>'''
+
     else:
         return f'''
       <div class="clip-right-media">
@@ -150,7 +236,7 @@ def generate_thematic_motion_html(theme: str, label: str) -> str:
           <div class="orbit-ring ring-mid"></div>
           <div class="orbit-ring ring-inner"></div>
           <div class="pulse-core"></div>
-          <div class="hud-label">CIÊNCIA & DADOS // {label}</div>
+          <div class="hud-label">{label}</div>
         </div>
       </div>'''
 
@@ -218,7 +304,9 @@ def build_composition(
       </div>'''
         else:
             # Motion Design Procedural Neon Temático e Específico do Assunto Falado
-            theme_key, theme_label = detect_visual_theme(topic_text, el.get("content", ""), narration_text)
+            arch = el.get("visual_archetype") or scene.get("visual_archetype") or ""
+            ch_title = scene.get("chapter_title") or ""
+            theme_key, theme_label = detect_visual_theme(topic_text, el.get("content", ""), ch_title, explicit_archetype=arch)
             media_html = generate_thematic_motion_html(theme_key, theme_label)
 
         role = html.escape(role_labels.get(el.get("type"), "EXPLICAÇÃO"))

@@ -36,8 +36,12 @@ def _clean_query(topic: str) -> str:
     return " ".join(words[:4])
 
 
-def search_wikimedia_image(query: str, timeout: float = 12.0) -> Optional[Dict[str, Any]]:
-    """Busca imagens de alta qualidade no Wikimedia Commons com licença e autor."""
+def search_wikimedia_image(
+    query: str,
+    used_urls: Optional[set[str]] = None,
+    timeout: float = 12.0,
+) -> Optional[Dict[str, Any]]:
+    """Busca imagens de alta qualidade no Wikimedia Commons com licença e autor, evitando duplicatas."""
     clean_q = _clean_query(query)
     if not clean_q:
         return None
@@ -48,7 +52,7 @@ def search_wikimedia_image(query: str, timeout: float = 12.0) -> Optional[Dict[s
         "generator": "search",
         "gsrsearch": f"{clean_q} filetype:bitmap",
         "gsrnamespace": "6",  # Namespace File:
-        "gsrlimit": "6",
+        "gsrlimit": "10",
         "prop": "imageinfo",
         "iiprop": "url|size|extmetadata",
         "iiurlwidth": "1920",
@@ -71,8 +75,14 @@ def search_wikimedia_image(query: str, timeout: float = 12.0) -> Optional[Dict[s
             info = image_info[0]
             thumb_url = info.get("thumburl") or info.get("url")
             orig_url = info.get("descriptionshorturl") or info.get("descriptionurl") or thumb_url
-            meta = info.get("extmetadata", {})
 
+            # Evita reutilizar a mesma imagem já exibida em outro capítulo
+            if not thumb_url:
+                continue
+            if used_urls is not None and (thumb_url in used_urls or orig_url in used_urls):
+                continue
+
+            meta = info.get("extmetadata", {})
             artist = meta.get("Artist", {}).get("value", "")
             # Limpa tags HTML do autor e caracteres não-latinos
             artist = re.sub(r"<[^>]+>", "", artist).strip()
@@ -84,8 +94,12 @@ def search_wikimedia_image(query: str, timeout: float = 12.0) -> Optional[Dict[s
             width = info.get("thumbwidth") or info.get("width", 0)
             height = info.get("thumbheight") or info.get("height", 0)
 
-            # Prefere imagens horizontais ou grandes
-            if width >= 800 and thumb_url:
+            # Prefere imagens com resolução razoável (>= 600px)
+            if width >= 600:
+                if used_urls is not None:
+                    used_urls.add(thumb_url)
+                    if orig_url:
+                        used_urls.add(orig_url)
                 return {
                     "source": "wikimedia",
                     "title": title,
@@ -133,8 +147,13 @@ def extract_scientific_terms(topic: str, title: str, narration: str = "") -> lis
     return candidates
 
 
-def search_wikipedia_image(term: str, lang: str = "en", timeout: float = 8.0) -> Optional[Dict[str, Any]]:
-    """Busca imagem oficial e representativa de um conceito científico na Wikipedia REST API."""
+def search_wikipedia_image(
+    term: str,
+    lang: str = "en",
+    used_urls: Optional[set[str]] = None,
+    timeout: float = 8.0,
+) -> Optional[Dict[str, Any]]:
+    """Busca imagem oficial e representativa de um conceito científico na Wikipedia REST API, evitando duplicatas."""
     clean_term = term.strip().replace(" ", "_")
     url = f"https://{lang}.wikipedia.org/api/rest_v1/page/summary/{urllib.parse.quote(clean_term)}"
     try:
@@ -143,14 +162,25 @@ def search_wikipedia_image(term: str, lang: str = "en", timeout: float = 8.0) ->
             data = resp.json()
             img_data = data.get("originalimage") or data.get("thumbnail")
             if img_data and img_data.get("source"):
+                img_url = img_data["source"]
+                if used_urls is not None and img_url in used_urls:
+                    return None
+
                 title = data.get("title", clean_term).replace("_", " ")
                 desc = data.get("description", "Ilustração Científica Oficial")
                 author = "Wikipedia / Wikimedia Commons"
+                page_url = data.get("content_urls", {}).get("desktop", {}).get("page", "")
+
+                if used_urls is not None:
+                    used_urls.add(img_url)
+                    if page_url:
+                        used_urls.add(page_url)
+
                 return {
                     "source": f"wikipedia_{lang}",
                     "title": f"{title} ({desc})",
-                    "image_url": img_data["source"],
-                    "page_url": data.get("content_urls", {}).get("desktop", {}).get("page", ""),
+                    "image_url": img_url,
+                    "page_url": page_url,
                     "author": author,
                     "license": "Domínio Público / CC-BY-SA",
                     "width": img_data.get("width", 1920),
@@ -166,30 +196,57 @@ def search_free_image(
     topic: str = "",
     chapter_title: str = "",
     narration: str = "",
+    visual_keywords: Optional[List[str]] = None,
+    used_urls: Optional[set[str]] = None,
 ) -> Optional[Dict[str, Any]]:
-    """Busca imagem de alta fidelidade ligada exatamente ao assunto falado."""
-    # 1. Tenta conceitos científicos específicos via Wikipedia REST API (qualidade máxima)
-    terms = extract_scientific_terms(topic or query, chapter_title or query, narration)
-    for t in terms[:4]:
-        # Tenta em inglês (maior acervo de imagens científicas da NASA/NIH)
-        res = search_wikipedia_image(t, lang="en")
+    """Busca imagem de alta fidelidade ligada exatamente ao assunto falado neste capítulo específico."""
+    # 1. Prioridade máxima: visual_keywords sugeridas pelo LLM para o conteúdo específico do capítulo
+    if visual_keywords:
+        for kw in visual_keywords:
+            if not kw or len(kw.strip()) < 3:
+                continue
+            clean_kw = kw.strip()
+            # Tenta Wikipedia
+            res = search_wikipedia_image(clean_kw, lang="en", used_urls=used_urls)
+            if res:
+                return res
+            # Tenta Wikimedia Commons
+            res = search_wikimedia_image(clean_kw, used_urls=used_urls)
+            if res:
+                return res
+
+    # 2. Termos científicos específicos extraídos apenas do título e narração do capítulo (evitando poluição do topic global)
+    ch_terms = extract_scientific_terms(chapter_title, chapter_title, narration)
+    for t in ch_terms[:3]:
+        res = search_wikipedia_image(t, lang="en", used_urls=used_urls)
         if res:
             return res
-        # Tenta em português
-        res = search_wikipedia_image(t, lang="pt")
+        res = search_wikimedia_image(t, used_urls=used_urls)
         if res:
             return res
 
-    # 2. Tenta termos extraídos no Wikimedia Commons Search
-    for t in terms[:2]:
-        res = search_wikimedia_image(t)
+    # 3. Tentativa no Wikimedia Commons com o título do capítulo limpo
+    if chapter_title:
+        res = search_wikimedia_image(chapter_title, used_urls=used_urls)
         if res:
             return res
 
-    # 3. Tentativa com a query limpa no Wikimedia Commons
-    res = search_wikimedia_image(query)
-    if res:
-        return res
+    # 4. Termos do tópico geral somente como fallback se nada for encontrado para o capítulo
+    if topic:
+        topic_terms = extract_scientific_terms(topic, "", "")
+        for t in topic_terms[:3]:
+            res = search_wikipedia_image(t, lang="en", used_urls=used_urls)
+            if res:
+                return res
+            res = search_wikimedia_image(t, used_urls=used_urls)
+            if res:
+                return res
+
+    # 5. Fallback final com a query pura
+    if query:
+        res = search_wikimedia_image(query, used_urls=used_urls)
+        if res:
+            return res
 
     return None
 
@@ -244,16 +301,27 @@ def download_image(image_info: Dict[str, Any], dest_dir: Path, filename_prefix: 
 def collect_chapter_images(
     chapters: List[Dict[str, Any]], topic: str, dest_dir: Path
 ) -> List[Optional[Dict[str, Any]]]:
-    """Busca e baixa uma imagem representativa para cada capítulo do vídeo."""
+    """Busca e baixa uma imagem representativa e ÚNICA para cada capítulo do vídeo."""
     images = []
     dest_dir = Path(dest_dir)
     dest_dir.mkdir(parents=True, exist_ok=True)
+    used_urls: set[str] = set()
 
     for i, ch in enumerate(chapters):
         ch_title = ch.get("title", "")
         ch_narration = ch.get("narration", "")
-        query = f"{topic} {ch_title}"
-        info = search_free_image(query, topic=topic, chapter_title=ch_title, narration=ch_narration)
+        visual_kws = ch.get("visual_keywords", [])
+        if isinstance(visual_kws, str):
+            visual_kws = [k.strip() for k in visual_kws.split(",") if k.strip()]
+
+        info = search_free_image(
+            query=ch_title,
+            topic=topic,
+            chapter_title=ch_title,
+            narration=ch_narration,
+            visual_keywords=visual_kws,
+            used_urls=used_urls,
+        )
         if info:
             local = download_image(info, dest_dir, filename_prefix=f"ch_{i+1:02d}")
             if local:

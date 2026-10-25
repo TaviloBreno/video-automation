@@ -59,6 +59,7 @@ SCENE_SCHEMA: Dict[str, Any] = {
                     "image_url": {"type": "string"},
                     "image_path": {"type": "string"},
                     "image_credit": {"type": "string"},
+                    "visual_archetype": {"type": "string"},
                 },
                 # Regra condicional: elementos de texto exigem content
                 "allOf": [
@@ -79,6 +80,8 @@ SCENE_SCHEMA: Dict[str, Any] = {
         "suggested_duration_hint": {"type": "number", "minimum": 5, "maximum": 120},
         "narration_text": {"type": "string", "minLength": 1},
         "topic": {"type": "string"},
+        "chapter_title": {"type": "string"},
+        "visual_archetype": {"type": "string"},
         "sources": {
             "type": "array",
             "items": {

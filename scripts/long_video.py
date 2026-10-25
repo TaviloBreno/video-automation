@@ -346,8 +346,10 @@ def write_chapter(
         f"5. Tamanho do texto: Aproximadamente {target_words} palavras (entre {lo} e {hi}).\n"
         + (f' O capítulo anterior encerrou com: "{prev_tail}". Faça uma ponte de transição elegante.' if prev_tail else "")
         + "\n6. Fidelidade factual: Ancore os dados nas fontes científicas sem inventar fatos.\n"
-        '- "key_points": 1 a 3 frases sínteses curtas e marcantes (até 80 caracteres) para tipografia em tela.\n\n'
-        'Responda em JSON: {"narration": "texto falado do capítulo com pontuação expressiva e pausas", "key_points": ["..."]}'
+        '- "key_points": 1 a 3 frases sínteses curtas e marcantes (até 80 caracteres) para tipografia em tela.\n'
+        '- "visual_keywords": 2 a 3 termos de busca em inglês específicos para ilustrar este capítulo (ex: "James Webb mirror", "Accretion disk binary star", "Supermassive black hole").\n'
+        '- "visual_archetype": escolha um estilo de motion design único para este capítulo entre: "orbital", "infographic", "blueprint", "spectrum", "network", "timeline", "quantum".\n\n'
+        'Responda em JSON: {"narration": "texto falado do capítulo com pontuação expressiva e pausas", "key_points": ["..."], "visual_keywords": ["..."], "visual_archetype": "orbital"}'
         + _evidence_block(chapter_sources)
     )
 
@@ -389,7 +391,28 @@ def write_chapter(
                 cleaned_points = [_clean_text(chapter.get("title", "Destaque do capítulo"))[:90]]
 
         cleaned_points = cleaned_points[:3]
-        result = {"narration": _clean_text(narration), "key_points": cleaned_points}
+
+        # Extrai visual_keywords específicas para este capítulo
+        raw_kws = data.get("visual_keywords") or data.get("keywords") or []
+        cleaned_kws: list[str] = []
+        if isinstance(raw_kws, str):
+            cleaned_kws = [k.strip() for k in raw_kws.split(",") if len(k.strip()) > 2]
+        elif isinstance(raw_kws, list):
+            cleaned_kws = [str(k).strip() for k in raw_kws if len(str(k).strip()) > 2]
+
+        # Extrai visual_archetype
+        supported_archs = ["orbital", "infographic", "blueprint", "spectrum", "network", "timeline", "quantum"]
+        arch = str(data.get("visual_archetype", "")).lower().strip()
+        if arch not in supported_archs:
+            # Alterna harmonicamente para garantir diversidade visual entre capítulos consecutivos
+            arch = supported_archs[index % len(supported_archs)]
+
+        result = {
+            "narration": _clean_text(narration),
+            "key_points": cleaned_points,
+            "visual_keywords": cleaned_kws[:3],
+            "visual_archetype": arch,
+        }
         count = _word_count(result["narration"])
         if not (lo <= count <= hi):
             raise SoftValidation(
@@ -542,9 +565,8 @@ def build_chapter_scene(
     image_info: dict[str, Any] | None = None,
     topic: str = "",
 ) -> dict[str, Any]:
-    """Cria a cena de um capítulo: título + frases-chave sincronizadas à fala.
-
-    Os elementos cobrem exatamente a duração do capítulo, sem lacunas.
+    """Cria a cena de um capítulo: título + frases-chave sincronizadas à fala,
+    alternando dinamicamente entre Motion Design cinemático de abertura e Fotografia Real explicativa.
     """
     points = chapter["key_points"]
     segments = len(points) + 1
@@ -568,6 +590,13 @@ def build_chapter_scene(
             image_dict["image_path"] = str(local_p)
         image_dict["image_credit"] = credit[:60]
 
+    # Arquétipo visual do capítulo (orbital, infographic, blueprint, spectrum, network, timeline, quantum)
+    supported_archs = ["orbital", "infographic", "blueprint", "spectrum", "network", "timeline", "quantum"]
+    archetype = chapter.get("visual_archetype")
+    if not archetype or archetype not in supported_archs:
+        archetype = supported_archs[0]
+
+    # Elemento 1 (Título do Capítulo): Abre sempre com Motion Design Procedural Temático (sem congelar foto)
     elements: list[dict[str, Any]] = [
         {
             "type": "title",
@@ -575,9 +604,11 @@ def build_chapter_scene(
             "position": "center",
             "animation": "zoom",
             "duration_seconds": round(durations[0], 3),
-            **image_dict,
+            "visual_archetype": archetype,
         }
     ]
+
+    # Elementos seguintes: Alternam entre Imagem Real da fonte e Motion Design/Infográfico
     animations = ["fade", "slide-up", "slide-left"]
     for i, point in enumerate(points):
         el: dict[str, Any] = {
@@ -586,13 +617,19 @@ def build_chapter_scene(
             "position": "center",
             "animation": animations[i % len(animations)],
             "duration_seconds": round(durations[i + 1], 3),
-            **image_dict,
+            "visual_archetype": archetype,
         }
+        # O primeiro ponto sempre recebe a imagem real do capítulo.
+        # Se houver mais de um ponto, pontos pares recebem imagem e ímpares ficam com o Motion HUD
+        if image_dict and (i == 0 or i % 2 == 0):
+            el.update(image_dict)
+
         if sources:
             known = {s["id"] for s in sources}
             valid_ids = [sid for sid in chapter.get("source_ids", []) if sid in known]
             el["source_ids"] = valid_ids or [sources[0]["id"]]
         elements.append(el)
+
     # Reajusta o arredondamento para a soma bater com o capítulo.
     elements[-1]["duration_seconds"] = round(
         slot_seconds - sum(e["duration_seconds"] for e in elements[:-1]), 3
@@ -603,6 +640,8 @@ def build_chapter_scene(
         "suggested_duration_hint": min(120.0, max(5.0, round(slot_seconds, 2))),
         "narration_text": chapter["narration"],
         "topic": topic or chapter.get("title", ""),
+        "chapter_title": chapter.get("title", ""),
+        "visual_archetype": archetype,
     }
     if sources:
         scene["sources"] = sources
@@ -777,7 +816,8 @@ def run_long_video(
         scene = build_chapter_scene(ch, read_words(words_path), slot, palette, sources, image_info=ch_img, topic=topic)
         _save_json(scene_path, scene)
         img_sig = ch_img.get("filename", "") if ch_img else ""
-        sig = _signature(scene_path, words_path, d / "voice.mp3", WIDE_TEMPLATE, extra=f"{pad:.3f}|{palette}|{img_sig}|split_motion_v3")
+        arch_sig = scene.get("visual_archetype", "")
+        sig = _signature(scene_path, words_path, d / "voice.mp3", WIDE_TEMPLATE, extra=f"{pad:.3f}|{palette}|{img_sig}|{arch_sig}|split_motion_v4")
         pct = 0.45 + 0.43 * (i / n)
         if video_path.exists() and sig_path.exists() and sig_path.read_text().strip() == sig:
             progress(pct, f"Capítulo {i + 1}/{n} já renderizado.")
