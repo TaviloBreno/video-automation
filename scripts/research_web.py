@@ -129,14 +129,17 @@ def _search_query(value: str) -> str:
     )
 
 
-def _has_foreign_script(text: str) -> bool:
-    """Detecta caracteres chineses, japoneses, coreanos, cirílicos ou árabes."""
-    return bool(
-        re.search(
-            r"[\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff\uac00-\ud7af\u0400-\u04ff\u0600-\u06ff]",
-            text,
-        )
-    )
+SPAM_AND_JUNK_PATTERNS = [
+    r"buracoon", r"jogo[s]?\s+de\s+buraco", r"jogue\s+gr[aá]tis", r"jogar\s+online",
+    r"100%\s+gr[aá]tis", r"cassino", r"casino", r"\bbet[s]?\b", r"aposta[s]?",
+    r"\bslot[s]?\b", r"\bpoker\b", r"baralho", r"truco", r"canastra", r"download\s+gr[aá]tis",
+    r"baixar\s+gr[aá]tis", r"torrent", r"crack\b", r"jogos?\s+online",
+]
+
+
+def _is_spam_or_irrelevant(text: str) -> bool:
+    """Detecta spams, jogos de azar, jogos de cartas ou links comerciais irrelevantes."""
+    return any(re.search(pattern, text, re.IGNORECASE) for pattern in SPAM_AND_JUNK_PATTERNS)
 
 
 def _fetch_bing(query_text: str, timeout: float) -> list[dict[str, str]]:
@@ -191,6 +194,10 @@ def search_sources(topic: str, max_results: int = 5, timeout: float = 15) -> dic
         if not url or url in seen_urls:
             continue
         searchable_text = " ".join((title_raw, snippet_raw, url))
+        # Descarta fontes com spam, cassino, jogos de cartas ou sites irrelevantes
+        if _is_spam_or_irrelevant(searchable_text):
+            continue
+
         if topic_terms and len(_search_terms(searchable_text) & topic_terms) < required_matches:
             # Se já temos fontes suficientes, descarta os não relacionados
             if len(sources) >= 3:

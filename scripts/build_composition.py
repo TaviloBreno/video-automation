@@ -47,14 +47,34 @@ def _image_to_data_uri(image_path_or_url: str) -> str:
 
 
 def _clean_source_title(title: str, publisher: str = "") -> str:
-    """Remove caracteres asiáticos/orientais e higieniza títulos para exibição em português."""
+    """Remove caracteres orientais, limpa sufixos redundantes e trunca respeitando palavras inteiras."""
     if not title:
-        return publisher or "Fonte Confiável"
+        return publisher or "Fonte Científica"
+
+    # Remove caracteres de scripts orientais ou cirílicos
     cleaned = re.sub(r"[\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff\uac00-\ud7af\u0400-\u04ff\u0600-\u06ff]+", "", title)
-    cleaned = re.sub(r"\s+", " ", cleaned).strip(" -·|:")
+
+    # Remove sufixos repetitivos comuns em títulos de sites (ex: " - Brasil Escola", " | Toda Matéria", " – Wikipédia")
+    cleaned = re.sub(
+        r"\s*[-–—|:]\s*(Brasil Escola|Toda Matéria|Wikipédia|Wikipedia|UOL|Mundo Educação|Canaltech|G1|BBC|TechTudo).*$",
+        "",
+        cleaned,
+        flags=re.IGNORECASE,
+    )
+    cleaned = re.sub(r"\s+", " ", cleaned).strip(" -–—·|:")
+
     if len(cleaned) < 3:
         cleaned = publisher or "Artigo Científico"
-    return cleaned[:42]
+
+    # Trunca respeitando palavras completas (máximo ~45 caracteres)
+    if len(cleaned) > 45:
+        cutoff = cleaned[:45].rfind(" ")
+        if cutoff > 20:
+            cleaned = cleaned[:cutoff] + "…"
+        else:
+            cleaned = cleaned[:42] + "…"
+
+    return cleaned
 
 
 def detect_visual_theme(

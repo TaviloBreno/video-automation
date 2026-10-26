@@ -140,7 +140,34 @@ def _concat_list(paths: list[Path], list_path: Path) -> None:
     list_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
+import unicodedata
+
+
 def _clean_text(text: str) -> str:
+    if not text:
+        return ""
+    # 1. Normaliza Unicode para NFC (combina acentos decompostos e evita caracteres sobrepostos)
+    text = unicodedata.normalize("NFC", str(text))
+    # 2. Corrige mojibakes comuns gerados por decodificação incorreta
+    mojibake_map = {
+        "Ã§": "ç", "Ã‡": "Ç",
+        "Ã£": "ã", "Ãƒ": "Ã",
+        "Ã¡": "á", "Ã": "Á",
+        "Ã©": "é", "Ã‰": "É",
+        "Ãª": "ê", "ÃŠ": "Ê",
+        "Ã­": "í", "Ã": "Í",
+        "Ã³": "ó", "Ã“": "Ó",
+        "Ã´": "ô", "Ã”": "Ô",
+        "Ãµ": "õ", "Ã•": "Õ",
+        "Ãº": "ú", "Ãš": "Ú",
+        "â€“": "–", "â€”": "—",
+        "â€œ": "“", "â€": "”",
+        "â€˜": "‘", "â€™": "’",
+        "Â": "",
+    }
+    for bad, good in mojibake_map.items():
+        if bad in text:
+            text = text.replace(bad, good)
     text = re.sub(r"[*_#`>]+", "", text)
     text = re.sub(r"\s+", " ", text).strip()
     return text
@@ -343,13 +370,13 @@ def write_chapter(
         "   - Use perguntas retóricas instigantes para provocar reflexão ('Mas como algo assim pode existir?').\n"
         "3. Zero Academicismo Frio: Em vez de definições enciclopédicas secas, use metáforas sensoriais vívidas e analogias visuais que façam o espectador visualizar a cena mentalmente.\n"
         "4. Sem Clichês Mecânicos: NUNCA diga 'Olá pessoal', 'Neste vídeo vamos ver', nem coloque títulos, subtítulos ou tópicos dentro da narração.\n"
-        f"5. Tamanho do texto: Aproximadamente {target_words} palavras (entre {lo} e {hi}).\n"
-        + (f' O capítulo anterior encerrou com: "{prev_tail}". Faça uma ponte de transição elegante.' if prev_tail else "")
-        + "\n6. Fidelidade factual: Ancore os dados nas fontes científicas sem inventar fatos.\n"
-        '- "key_points": 1 a 3 frases sínteses curtas e marcantes (até 80 caracteres) para tipografia em tela.\n'
+        + (f' O capítulo anterior encerrou com: "{prev_tail}". Faça uma ponte de transição elegante.\n' if prev_tail else "")
+        + "6. Fidelidade factual: Ancore os dados nas fontes científicas sem inventar fatos.\n"
+        + "7. Ortografia e Acentuação Estritas: Escreva em Português do Brasil com acentuação e gramática perfeitas (ex: 'espaço', 'matéria', 'atração', 'está', 'reação', 'início'). NUNCA gere palavras sem acento, truncadas ou corrompidas.\n"
+        '- "key_points": 1 a 3 frases explicativas curtas e impactantes (de 20 a 80 caracteres) para aparecer na tela. PROIBIDO responder apenas com "..." ou reticências!\n'
         '- "visual_keywords": 2 a 3 termos de busca em inglês específicos para ilustrar este capítulo (ex: "James Webb mirror", "Accretion disk binary star", "Supermassive black hole").\n'
         '- "visual_archetype": escolha um estilo de motion design único para este capítulo entre: "orbital", "infographic", "blueprint", "spectrum", "network", "timeline", "quantum".\n\n'
-        'Responda em JSON: {"narration": "texto falado do capítulo com pontuação expressiva e pausas", "key_points": ["..."], "visual_keywords": ["..."], "visual_archetype": "orbital"}'
+        'Responda em JSON: {"narration": "texto falado do capítulo com pontuação expressiva e pausas", "key_points": ["Conceito científico 1", "Conceito científico 2"], "visual_keywords": ["..."], "visual_archetype": "orbital"}'
         + _evidence_block(chapter_sources)
     )
 
@@ -370,25 +397,39 @@ def write_chapter(
             or []
         )
 
+        def _is_valid_point(p: str) -> bool:
+            # Rejeita pontos que sejam apenas reticências, símbolos ou muito curtos
+            clean = re.sub(r"[^\w\s]", "", p).strip()
+            words = clean.split()
+            if len(clean) < 8 or len(words) < 2:
+                return False
+            if re.match(r"^[\.\-\s\*\:\,\;]+$", p.strip()):
+                return False
+            return True
+
         cleaned_points: list[str] = []
         if isinstance(raw_points, str):
             for part in re.split(r"[\n;•\-]|\.\s+", raw_points):
                 p_clean = _clean_text(part)[:90]
-                if p_clean:
+                if _is_valid_point(p_clean):
                     cleaned_points.append(p_clean)
         elif isinstance(raw_points, list):
             for p in raw_points:
                 p_clean = _clean_text(str(p))[:90]
-                if p_clean:
+                if _is_valid_point(p_clean):
                     cleaned_points.append(p_clean)
 
-        # Se o modelo não mandou ou mandou vazio, extrai automaticamente frases-chave da narração
+        # Se o modelo não mandou, mandou inválido ou apenas "...", extrai frases reais da narração
         if not cleaned_points:
-            sentences = [s.strip() for s in re.split(r"[.!?]+", narration) if len(s.strip()) > 10]
+            sentences = [
+                s.strip()
+                for s in re.split(r"[.!?]+", narration)
+                if len(re.sub(r"[^\w\s]", "", s).strip().split()) >= 3 and len(s.strip()) >= 12
+            ]
             if sentences:
-                cleaned_points = [s[:90] for s in sentences[:2]]
+                cleaned_points = [_clean_text(s)[:85] for s in sentences[:2]]
             else:
-                cleaned_points = [_clean_text(chapter.get("title", "Destaque do capítulo"))[:90]]
+                cleaned_points = [_clean_text(chapter.get("title", "Conceito Científico"))[:85]]
 
         cleaned_points = cleaned_points[:3]
 

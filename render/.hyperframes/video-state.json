@@ -1,7 +1,7 @@
 {
   "version": 1,
   "historyId": "8d4187f1-fb29-45c7-90b0-47f2dd063f88",
-  "currentRevision": "654a6b55-6a45-4e0d-a909-cd89d4ed3fdc",
+  "currentRevision": "b74a7398-fc8d-41f8-af65-9e1dc1feb635",
   "pendingChanges": false,
   "files": {
     "AGENTS.md": {
@@ -17,8 +17,8 @@
       "content": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\53\\53dbce1e19aa713cbb12ee0bc4d206143b45ab15e6ffbfcaa8f69572d4d24d50"
     },
     "index.html": {
-      "hash": "9d4a4df04f4cf51e08abeb6717a487bf322daee325fd02170359c6fc779fdb16",
-      "content": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\9d\\9d4a4df04f4cf51e08abeb6717a487bf322daee325fd02170359c6fc779fdb16"
+      "hash": "770494a7626c3a7c3a418bdbb7e7a23991876a1b6475286575ee0eaf30660914",
+      "content": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\77\\770494a7626c3a7c3a418bdbb7e7a23991876a1b6475286575ee0eaf30660914"
     },
     "meta.json": {
       "hash": "a98496daea3fdeab65a83404bcbc034263c25d5571e5eaf23caa4b7c9eced945",
@@ -49,8 +49,8 @@
       "content": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\d0\\d0352355bbe9e871c1a472c2dd4ead6d5a5c54e74c6dc292cf5544f42f31fb84"
     },
     "src/template_wide.html": {
-      "hash": "d634f353b3df2f4acf5d2b15a7fc97100c1369f49dc213e5c121d641734ce783",
-      "content": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\d6\\d634f353b3df2f4acf5d2b15a7fc97100c1369f49dc213e5c121d641734ce783"
+      "hash": "9847a6c5af53b647aab9cec2c77a0b957dcdab099964a91651621b2d3661a294",
+      "content": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\98\\9847a6c5af53b647aab9cec2c77a0b957dcdab099964a91651621b2d3661a294"
     },
     "src/gsap.min.js": {
       "hash": "28033e449a31ebcc396e5be8b13b63152bf03094288fb5867034321927bce087",
@@ -1819,6 +1819,235 @@
           "after": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\9d\\9d4a4df04f4cf51e08abeb6717a487bf322daee325fd02170359c6fc779fdb16"
         }
       }
+    },
+    "dd756cac-a753-491e-8dd9-4ea7272b0056": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792925803114,
+      "endedAt": 1792925803139,
+      "files": {
+        "index.html": {
+          "before": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\9d\\9d4a4df04f4cf51e08abeb6717a487bf322daee325fd02170359c6fc779fdb16",
+          "after": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\2a\\2a2f159e588aa564335312db372ae5a244517cb6827d79edecfc20827368989f"
+        },
+        "src/template_wide.html": {
+          "before": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\d6\\d634f353b3df2f4acf5d2b15a7fc97100c1369f49dc213e5c121d641734ce783",
+          "after": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\98\\9847a6c5af53b647aab9cec2c77a0b957dcdab099964a91651621b2d3661a294"
+        }
+      }
+    },
+    "f7a79d2f-a262-4996-8040-202b86454861": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792925897442,
+      "endedAt": 1792925897446,
+      "files": {
+        "index.html": {
+          "before": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\2a\\2a2f159e588aa564335312db372ae5a244517cb6827d79edecfc20827368989f",
+          "after": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\5c\\5ce0920eca814d4c0b257c6bfe25c1c8e6da94060e77a6d766d2bb4ba04398ec"
+        }
+      }
+    },
+    "67b24efd-acf0-4424-b038-9baf16c666f3": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792960885422,
+      "endedAt": 1792960885424,
+      "files": {
+        "index.html": {
+          "before": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\5c\\5ce0920eca814d4c0b257c6bfe25c1c8e6da94060e77a6d766d2bb4ba04398ec",
+          "after": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\67\\67cc0616a419e176a32cf362cba5aadf05f0277e6ee6e327bf11849a40442e98"
+        }
+      }
+    },
+    "dce36732-9a10-4a66-b92a-2d656da86bb5": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792960979720,
+      "endedAt": 1792960979722,
+      "files": {
+        "index.html": {
+          "before": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\67\\67cc0616a419e176a32cf362cba5aadf05f0277e6ee6e327bf11849a40442e98",
+          "after": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\24\\24a8aaca359addc18b0bc956b910a28d6a2ca5eff213bdfdd9407a2b874ac7a6"
+        }
+      }
+    },
+    "729d25bd-66a0-4ec0-a5ac-33f66674ef2e": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792961214387,
+      "endedAt": 1792961214389,
+      "files": {
+        "index.html": {
+          "before": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\24\\24a8aaca359addc18b0bc956b910a28d6a2ca5eff213bdfdd9407a2b874ac7a6",
+          "after": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\4d\\4d9ced7e096284c4c78cfde3ff2a7590981f86876289558e31668526d4e278c7"
+        }
+      }
+    },
+    "4dc1d7ec-a43f-4ad1-9e36-4b8e1f6573da": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792961275093,
+      "endedAt": 1792961275095,
+      "files": {
+        "index.html": {
+          "before": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\4d\\4d9ced7e096284c4c78cfde3ff2a7590981f86876289558e31668526d4e278c7",
+          "after": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\4c\\4cd22eaaf38ae0bdc8e5c0b2f4f3dfe3ffac21d72d308d46eee0535dba553474"
+        }
+      }
+    },
+    "2090e265-2ae6-4b9c-b421-9435833b6520": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792961508963,
+      "endedAt": 1792961508966,
+      "files": {
+        "index.html": {
+          "before": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\4c\\4cd22eaaf38ae0bdc8e5c0b2f4f3dfe3ffac21d72d308d46eee0535dba553474",
+          "after": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\24\\24de1e8dac863ea39d263bd8cea3acb6c5dbe8693d01dedd732af402ce6f0ca2"
+        }
+      }
+    },
+    "d9cd93f7-5925-472f-a007-920815fef72f": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792961615872,
+      "endedAt": 1792961615876,
+      "files": {
+        "index.html": {
+          "before": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\24\\24de1e8dac863ea39d263bd8cea3acb6c5dbe8693d01dedd732af402ce6f0ca2",
+          "after": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\cb\\cb0a0e6b676d838960ca0c1b979624d15272edf523f6cfd6167a87ec982d2dcd"
+        }
+      }
+    },
+    "074cbec0-5464-492f-a893-70ddb35ed676": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792961710979,
+      "endedAt": 1792961710982,
+      "files": {
+        "index.html": {
+          "before": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\cb\\cb0a0e6b676d838960ca0c1b979624d15272edf523f6cfd6167a87ec982d2dcd",
+          "after": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\01\\016fa07344498d7d0b15a0ca311864dd6e26b16b6bc1f29667cc1c3f3ce10d87"
+        }
+      }
+    },
+    "7653bc3b-7835-4042-b992-d4d7f80abb77": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792961903585,
+      "endedAt": 1792961903587,
+      "files": {
+        "index.html": {
+          "before": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\01\\016fa07344498d7d0b15a0ca311864dd6e26b16b6bc1f29667cc1c3f3ce10d87",
+          "after": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\5d\\5d3044527b3651ab98b1519d3fca35e0e6622558c1e007a97b8134461e782c12"
+        }
+      }
+    },
+    "3f76bbdc-f74b-495c-a2db-c73f7496a3b8": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792962033915,
+      "endedAt": 1792962033917,
+      "files": {
+        "index.html": {
+          "before": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\5d\\5d3044527b3651ab98b1519d3fca35e0e6622558c1e007a97b8134461e782c12",
+          "after": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\64\\649bbf7de8579f3371551c7b3044102f7d5ef6ff2c0550164b77695a44621c99"
+        }
+      }
+    },
+    "29204724-8d22-4144-9399-23cd564875ce": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792962166194,
+      "endedAt": 1792962166197,
+      "files": {
+        "index.html": {
+          "before": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\64\\649bbf7de8579f3371551c7b3044102f7d5ef6ff2c0550164b77695a44621c99",
+          "after": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\96\\96078a3b63ded8939050625506d93ec77a40c7097ae433271c02720b835685aa"
+        }
+      }
+    },
+    "96b9dab4-3d73-466f-9ab2-17b323e30e04": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792962247978,
+      "endedAt": 1792962247980,
+      "files": {
+        "index.html": {
+          "before": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\96\\96078a3b63ded8939050625506d93ec77a40c7097ae433271c02720b835685aa",
+          "after": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\a9\\a9113688792a5a974ce22449ee87dea7c2dcf434ef5ad3afdb8ffcf80ea6d76e"
+        }
+      }
+    },
+    "84310570-37f5-41ae-aca6-dfc4c0858b8e": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792962518445,
+      "endedAt": 1792962518447,
+      "files": {
+        "index.html": {
+          "before": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\a9\\a9113688792a5a974ce22449ee87dea7c2dcf434ef5ad3afdb8ffcf80ea6d76e",
+          "after": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\63\\6349d7d0d2e9e3d8c6bd8e58242fef4eb8d64e3a51c24363557cc59aadda54ee"
+        }
+      }
+    },
+    "b74a7398-fc8d-41f8-af65-9e1dc1feb635": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792962611599,
+      "endedAt": 1792962611602,
+      "files": {
+        "index.html": {
+          "before": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\63\\6349d7d0d2e9e3d8c6bd8e58242fef4eb8d64e3a51c24363557cc59aadda54ee",
+          "after": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\77\\770494a7626c3a7c3a418bdbb7e7a23991876a1b6475286575ee0eaf30660914"
+        }
+      }
     }
   },
   "checks": {
@@ -1833,15 +2062,15 @@
   },
   "renders": {
     "latest": {
-      "id": "d1e5f11b-a820-4232-8415-e0aa557cbdae",
-      "completedAt": 1792924096983,
-      "output": "C:\\programacao\\projetos\\video-automation\\output\\jobs\\job_1792922037_7537d0\\chapters\\ch15\\chapter.mp4",
+      "id": "567a3cae-6544-4630-83c1-b2849fb5386d",
+      "completedAt": 1792964834666,
+      "output": "C:\\programacao\\projetos\\video-automation\\output\\jobs\\job_1792959671_aa011e\\chapters\\ch13\\chapter.mp4",
       "status": "completed",
-      "revision": "654a6b55-6a45-4e0d-a909-cd89d4ed3fdc"
+      "revision": "b74a7398-fc8d-41f8-af65-9e1dc1feb635"
     },
     "retainedRevisions": [
-      "654a6b55-6a45-4e0d-a909-cd89d4ed3fdc",
-      "cdea3e2d-f72c-4127-9dae-a3d22dab3652"
+      "b74a7398-fc8d-41f8-af65-9e1dc1feb635",
+      "84310570-37f5-41ae-aca6-dfc4c0858b8e"
     ]
   },
   "pendingArtifactCleanup": []
