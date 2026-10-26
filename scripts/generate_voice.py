@@ -17,6 +17,7 @@ import logging
 import re
 import subprocess
 import sys
+import time
 from pathlib import Path
 from typing import Tuple
 
@@ -134,26 +135,106 @@ def generate_voice(
     # Formata texto com pausas respiratórias naturais
     spoken_text = insert_breaths(text)
 
-    logger.info("Executando subreel tts com voz '%s' (pitch: %s, rate: %s)...", target_voice, target_pitch, target_rate)
-    result = _run_subreel_tts(spoken_text, target_voice, target_rate, target_pitch, mp3_path, words_path)
+    # Retry resiliente com backoff exponencial para lidar com timeouts e oscilações do WebSocket da Microsoft
+    max_attempts = 4
+    last_result = None
 
-    # Se falhou por voz descontinuada ou NoAudioReceived, tenta fallback
-    if result.returncode != 0 and ("NoAudioReceived" in result.stderr or "retired" in result.stderr or target_voice != DEFAULT_FALLBACK_VOICE):
-        fallback_voice = "pt-BR-FranciscaNeural" if "Femin" in target_voice else "pt-BR-AntonioNeural"
-        logger.warning(
-            "subreel tts falhou com a voz '%s'. Tentando voz de contingência '%s'...",
-            target_voice, fallback_voice
+    for attempt in range(1, max_attempts + 1):
+        logger.info(
+            "Executando subreel tts com voz '%s' (pitch: %s, rate: %s, tentativa %d/%d)...",
+            target_voice, target_pitch, target_rate, attempt, max_attempts
         )
-        result = _run_subreel_tts(spoken_text, fallback_voice, target_rate, target_pitch, mp3_path, words_path)
+        result = _run_subreel_tts(spoken_text, target_voice, target_rate, target_pitch, mp3_path, words_path)
+        last_result = result
 
-    if result.returncode != 0:
-        raise RuntimeError(
-            f"subreel tts falhou (exit {result.returncode}):\n"
-            f"stdout: {result.stdout}\nstderr: {result.stderr}"
+        # Sucesso: arquivos gerados e com tamanho válido
+        if (
+            result.returncode == 0
+            and mp3_path.exists()
+            and mp3_path.stat().st_size > 500
+            and words_path.exists()
+            and words_path.stat().st_size > 10
+        ):
+            break
+
+        err_output = f"{result.stderr or ''}\n{result.stdout or ''}"
+        is_conn_error = any(
+            err in err_output
+            for err in (
+                "ConnectionTimeoutError",
+                "ClientConnectorError",
+                "ServerDisconnectedError",
+                "timeout",
+                "timed out",
+                "Connection reset",
+                "Cannot connect to host",
+            )
         )
+
+        # Se for erro transitório de conexão e ainda tiver tentativas, espera e tenta novamente
+        if is_conn_error and attempt < max_attempts:
+            wait_sec = 2.0 * attempt
+            logger.warning(
+                "Falha transitória de conexão com speech.platform.bing.com na tentativa %d (%s). Aguardando %.1fs para retentar...",
+                attempt, err_output.strip().splitlines()[-1] if err_output.strip() else "Timeout", wait_sec
+            )
+            # Remove arquivos parciais corrompidos
+            if mp3_path.exists():
+                try: mp3_path.unlink()
+                except Exception: pass
+            if words_path.exists():
+                try: words_path.unlink()
+                except Exception: pass
+            time.sleep(wait_sec)
+            continue
+
+        # Se falhou por voz descontinuada ou NoAudioReceived, tenta fallback
+        if "NoAudioReceived" in err_output or "retired" in err_output or (attempt == max_attempts and target_voice != DEFAULT_FALLBACK_VOICE):
+            fallback_voice = "pt-BR-FranciscaNeural" if "Femin" in target_voice else "pt-BR-AntonioNeural"
+            logger.warning(
+                "subreel tts falhou com a voz '%s'. Tentando voz de contingência '%s'...",
+                target_voice, fallback_voice
+            )
+            result = _run_subreel_tts(spoken_text, fallback_voice, target_rate, target_pitch, mp3_path, words_path)
+            last_result = result
+            if (
+                result.returncode == 0
+                and mp3_path.exists()
+                and mp3_path.stat().st_size > 500
+                and words_path.exists()
+            ):
+                break
+
+        # Se for a penúltima tentativa, tenta síntese direta em Python via subreel.tts.synthesize
+        if attempt == max_attempts - 1 and (not mp3_path.exists() or mp3_path.stat().st_size == 0):
+            try:
+                logger.info("Tentando síntese direta via subreel.tts.synthesize...")
+                from subreel.tts import synthesize
+                clean_rate = str(target_rate).strip()
+                if not clean_rate.endswith("%"): clean_rate = f"{clean_rate}%"
+                if not (clean_rate.startswith("+") or clean_rate.startswith("-")): clean_rate = f"+{clean_rate}"
+                clean_pitch = str(target_pitch).strip()
+                if not clean_pitch.endswith("Hz"): clean_pitch = f"{clean_pitch}Hz"
+                if not (clean_pitch.startswith("+") or clean_pitch.startswith("-")): clean_pitch = f"+{clean_pitch}"
+                synthesize(
+                    spoken_text,
+                    voice=target_voice,
+                    out=str(mp3_path),
+                    rate=clean_rate,
+                    pitch=clean_pitch,
+                    timings=str(words_path),
+                )
+                if mp3_path.exists() and mp3_path.stat().st_size > 500 and words_path.exists():
+                    break
+            except Exception as exc:
+                logger.warning("Síntese direta via subreel.tts falhou: %s", exc)
 
     if not mp3_path.exists() or mp3_path.stat().st_size == 0:
-        raise RuntimeError(f"MP3 não gerado ou vazio: {mp3_path}")
+        err_detail = f"\nstdout: {last_result.stdout}\nstderr: {last_result.stderr}" if last_result else ""
+        raise RuntimeError(
+            f"subreel tts falhou após {max_attempts} tentativas:{err_detail}\n"
+            f"Dica: Verifique a conexão com a internet ou tente novamente em instantes."
+        )
 
     if not words_path.exists() or words_path.stat().st_size == 0:
         raise RuntimeError(f"words.json não gerado ou vazio: {words_path}")
@@ -203,8 +284,8 @@ def main() -> int:
         logger.error("Falha: %s", exc)
         return 1
 
-    print(f"✅ MP3: {mp3}")
-    print(f"✅ Words: {words}")
+    print(f"[OK] MP3: {mp3}")
+    print(f"[OK] Words: {words}")
     return 0
 
 

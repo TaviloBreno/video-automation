@@ -541,7 +541,11 @@ def _voice_all(
     pitch: str,
     cancelled: CancelFn,
 ) -> float:
-    """Gera a voz de todos os capítulos e retorna a soma do tempo falado (s)."""
+    """Gera a voz de todos os capítulos e retorna a soma do tempo falado (s).
+    
+    Executa sequencialmente com intervalo de 350ms para evitar ConnectionTimeoutError
+    e bloqueio por taxa de conexões simultâneas na API Microsoft Edge TTS.
+    """
 
     def one(i: int) -> float:
         if cancelled():
@@ -550,8 +554,14 @@ def _voice_all(
         generate_voice(chapters[i]["narration"], voice, str(d), rate=f"{rate_pct:+d}%", pitch=pitch)
         return compute_scene_duration(d / "voice.words.json", padding=0.0)
 
-    with ThreadPoolExecutor(max_workers=3) as pool:
-        ends = list(pool.map(one, range(len(chapters))))
+    ends: list[float] = []
+    for i in range(len(chapters)):
+        if cancelled():
+            raise JobCancelled()
+        ends.append(one(i))
+        if i < len(chapters) - 1:
+            time.sleep(0.35)
+
     for ch, end in zip(chapters, ends):
         ch["speech_seconds"] = end
     return float(sum(ends))
