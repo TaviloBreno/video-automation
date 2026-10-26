@@ -222,11 +222,6 @@ def validate_scene(scene: Any, schema: Dict[str, Any] | None = None) -> Dict[str
 
     return scene
 
-
-# ---------------------------------------------------------------------------
-# CLI para testar um JSON manualmente
-# ---------------------------------------------------------------------------
-
 def main() -> int:
     import argparse
 

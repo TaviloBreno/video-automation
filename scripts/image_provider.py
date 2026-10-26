@@ -116,6 +116,131 @@ def search_wikimedia_image(
     return None
 
 
+def search_wikimedia_gif(
+    query: str,
+    used_urls: Optional[set[str]] = None,
+    timeout: float = 12.0,
+) -> Optional[Dict[str, Any]]:
+    """Busca GIFs e simulações animadas científicas no Wikimedia Commons."""
+    clean_q = _clean_query(query)
+    if not clean_q:
+        return None
+
+    api_url = "https://commons.wikimedia.org/w/api.php"
+    params = {
+        "action": "query",
+        "generator": "search",
+        "gsrsearch": f"{clean_q} filetype:bitmap .gif",
+        "gsrnamespace": "6",
+        "gsrlimit": "12",
+        "prop": "imageinfo",
+        "iiprop": "url|size|extmetadata|mime",
+        "format": "json",
+    }
+
+    try:
+        resp = requests.get(api_url, params=params, headers={"User-Agent": USER_AGENT}, timeout=timeout)
+        if resp.status_code != 200:
+            return None
+        data = resp.json()
+        pages = data.get("query", {}).get("pages", {})
+        if not pages:
+            return None
+
+        for page_id, page in pages.items():
+            image_info = page.get("imageinfo", [])
+            if not image_info:
+                continue
+            info = image_info[0]
+            gif_url = info.get("url") or info.get("thumburl")
+            if not gif_url or ".gif" not in gif_url.lower():
+                continue
+
+            if used_urls is not None and gif_url in used_urls:
+                continue
+
+            meta = info.get("extmetadata", {})
+            artist = meta.get("Artist", {}).get("value", "")
+            artist = re.sub(r"<[^>]+>", "", artist).strip()
+            artist = re.sub(r"[\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff\uac00-\ud7af\u0400-\u04ff\u0600-\u06ff]+", "", artist).strip() or "Wikimedia Commons"
+            license_name = meta.get("LicenseShortName", {}).get("value", "Domínio Público / CC")
+            title = page.get("title", "").replace("File:", "").replace("_", " ").replace(".gif", "")
+            title = re.sub(r"[\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff\uac00-\ud7af\u0400-\u04ff\u0600-\u06ff]+", "", title).strip() or "Animação Científica"
+
+            if used_urls is not None:
+                used_urls.add(gif_url)
+
+            return {
+                "source": "wikimedia_gif",
+                "title": title,
+                "image_url": gif_url,
+                "author": artist[:60],
+                "license": license_name,
+                "is_gif": True,
+                "width": info.get("width", 800),
+                "height": info.get("height", 600),
+            }
+    except Exception as exc:
+        logger.debug("Wikimedia GIF search falhou para '%s': %s", query, exc)
+    return None
+
+
+def search_multiple_gifs(query: str, limit: int = 8) -> List[Dict[str, Any]]:
+    """Retorna uma lista de GIFs disponíveis para escolha ou pré-visualização."""
+    clean_q = _clean_query(query)
+    if not clean_q:
+        return []
+
+    api_url = "https://commons.wikimedia.org/w/api.php"
+    params = {
+        "action": "query",
+        "generator": "search",
+        "gsrsearch": f"{clean_q} filetype:bitmap .gif",
+        "gsrnamespace": "6",
+        "gsrlimit": str(limit * 2),
+        "prop": "imageinfo",
+        "iiprop": "url|size|extmetadata|mime",
+        "format": "json",
+    }
+
+    results = []
+    try:
+        resp = requests.get(api_url, params=params, headers={"User-Agent": USER_AGENT}, timeout=10.0)
+        if resp.status_code == 200:
+            pages = resp.json().get("query", {}).get("pages", {})
+            for page_id, page in pages.items():
+                image_info = page.get("imageinfo", [])
+                if not image_info:
+                    continue
+                info = image_info[0]
+                gif_url = info.get("url") or ""
+                if not gif_url or ".gif" not in gif_url.lower():
+                    continue
+
+                meta = info.get("extmetadata", {})
+                artist = meta.get("Artist", {}).get("value", "")
+                artist = re.sub(r"<[^>]+>", "", artist).strip() or "Wikimedia Commons"
+                license_name = meta.get("LicenseShortName", {}).get("value", "Domínio Público / CC")
+                title = page.get("title", "").replace("File:", "").replace("_", " ").replace(".gif", "")
+
+                results.append({
+                    "title": title,
+                    "url": gif_url,
+                    "thumb": info.get("thumburl") or gif_url,
+                    "author": artist[:60],
+                    "license": license_name,
+                    "width": info.get("width", 800),
+                    "height": info.get("height", 600),
+                })
+                if len(results) >= limit:
+                    break
+    except Exception as exc:
+        logger.warning("Falha ao buscar múltiplos GIFs: %s", exc)
+    return results
+
+    return None
+
+
 # Mapeamento semântico de termos científicos para conceitos visuais de alta fidelidade
 SCIENTIFIC_CONCEPTS_MAP = [
     (r"(câncer|tumor|carcinoma|oncol|célula|biópsia|mutação celular)", ["Cancer_cell", "Mitosis", "Tumor", "Cell_biology"]),
@@ -206,6 +331,12 @@ def search_free_image(
             if not kw or len(kw.strip()) < 3:
                 continue
             clean_kw = kw.strip()
+            # Se for pedido de simulação ou animação, tenta GIF primeiro
+            if re.search(r"(simulat|animat|orbit|collis|wave|pulsar|rotation|gif)", clean_kw, re.IGNORECASE):
+                gif_res = search_wikimedia_gif(clean_kw, used_urls=used_urls)
+                if gif_res:
+                    return gif_res
+
             # Tenta Wikipedia
             res = search_wikipedia_image(clean_kw, lang="en", used_urls=used_urls)
             if res:
@@ -218,6 +349,12 @@ def search_free_image(
     # 2. Termos científicos específicos extraídos apenas do título e narração do capítulo (evitando poluição do topic global)
     ch_terms = extract_scientific_terms(chapter_title, chapter_title, narration)
     for t in ch_terms[:3]:
+        # Tenta GIF se o capítulo falar de dinâmica/movimento
+        if re.search(r"(movimento|órbita|rotação|fusão|colisão|expansão|onda|pulso|reação)", f"{chapter_title} {narration}", re.IGNORECASE):
+            gif_res = search_wikimedia_gif(t, used_urls=used_urls)
+            if gif_res:
+                return gif_res
+
         res = search_wikipedia_image(t, lang="en", used_urls=used_urls)
         if res:
             return res
@@ -262,7 +399,9 @@ def download_image(image_info: Dict[str, Any], dest_dir: Path, filename_prefix: 
 
     url_hash = hashlib.md5(url.encode()).hexdigest()[:8]
     ext = "jpg"
-    if ".png" in url.lower():
+    if ".gif" in url.lower():
+        ext = "gif"
+    elif ".png" in url.lower():
         ext = "png"
     elif ".webp" in url.lower():
         ext = "webp"

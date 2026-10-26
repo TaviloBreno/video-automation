@@ -173,6 +173,23 @@ def _clean_text(text: str) -> str:
     return text
 
 
+def _smart_truncate(text: str, max_chars: int) -> str:
+    """Trunca um texto respeitando os limites de palavras para NUNCA cortar palavras no meio."""
+    clean = _clean_text(text)
+    if len(clean) <= max_chars:
+        return clean
+    cutoff = clean[:max_chars].rfind(" ")
+    if cutoff > int(max_chars * 0.4):
+        return clean[:cutoff].rstrip(" :,;-")
+    return clean[:max_chars].rstrip(" :,;-")
+
+
+SUPPORTED_ARCHETYPES = [
+    "politics", "social", "psychology", "analytics", "history",
+    "orbital", "infographic", "blueprint", "spectrum", "network", "timeline", "quantum", "formula"
+]
+
+
 def _word_count(text: str) -> int:
     return len(text.split())
 
@@ -269,14 +286,20 @@ def generate_outline(
     known_ids = {s["id"] for s in sources} if sources else None
     prompt = (
         "Você é roteirista sênior e diretor criativo de documentários científicos de alto impacto no YouTube "
-        "(no estilo Carl Sagan / Cosmos, Kurzgesagt, Neil deGrasse Tyson e Veritasium).\n"
+        "para o canal Nerdociência (no estilo Cosmos com Carl Sagan e Neil deGrasse Tyson, Kurzgesagt e Veritasium).\n"
         f"Tema do documentário: {topic}\n"
         f"Planeje um documentário fascinante estruturado em exatamente {n_chapters} capítulos narrativos "
         f"de cerca de {int(chapter_seconds)} segundos cada.\n\n"
-        "Diretrizes de Storytelling e Empatia:\n"
-        "1. Capítulo 1 (Abertura / Gancho Magnético): Não comece com definições secas de dicionário. Abra com um mistério instigante, uma pergunta que desafia o senso comum ou uma cena sensorial de tirar o fôlego que capture imediatamente a curiosidade do espectador.\n"
-        "2. Capítulos Intermediários (Jornada de Descoberta): Desenvolva uma investigação progressiva e envolvente. Use analogias visuais humanas e conecte cada fato com o cosmos e nossa própria existência.\n"
-        "3. Capítulo Final (Conclusão Filosófica & Chamada): Amarre a reflexão final com emoção e maravilhamento, convidando o espectador calorosamente a curtir, compartilhar e se inscrever no canal.\n\n"
+        "ESTRUTURA OBRIGATÓRIA DE STORYTELLING E RETENÇÃO:\n"
+        "1. Capítulo 1 (Hook Magnético de 7 Segundos + Promessa & Curiosidade):\n"
+        "   - Os primeiros 7 segundos (cerca de 15 a 18 palavras) DEVEM ser um gancho arrebatador.\n"
+        "   - Deve conter 3 elementos indispensáveis: 1) Uma PROMESSA clara sobre o que será desvendado; "
+        "2) Criação de alta EXPECTATIVA sobre o peso da descoberta; 3) Uma CURIOSIDADE provocativa que o telespectador sinta a necessidade urgente de resolver.\n"
+        "2. Capítulos Intermediários (Jornada de Investigação Progressiva):\n"
+        "   - Desenvolva a ciência em camadas, apresentando pistas, mecanismos e evidências sem entregar a resposta completa de imediato, mantendo o suspense intelectual.\n"
+        "3. Capítulo Final (Resolução do Enigma & CTA Nerdociência):\n"
+        "   - Entregue a resposta definitiva da promessa inicial com maravilhamento e emoção.\n"
+        "   - Termine OBRIGATORIAMENTE com um Call to Action (CTA) dinâmico e caloroso para o público curtir o vídeo, compartilhar com outros curiosos e deixar seu comentário no canal Nerdociência.\n\n"
         'Responda em JSON: {"title": "título magnético e irresistível para o YouTube", "chapters": ['
         '{"title": "título curto do capítulo (até 60 caracteres)", '
         '"summary": "direção narrativa e emocional do que será explorado"'
@@ -310,7 +333,7 @@ def generate_outline(
             summary = _clean_text(str(ch.get("summary", "")))
             if not ctitle or not summary:
                 raise ValueError(f"chapters[{i}] precisa de title e summary")
-            entry: dict[str, Any] = {"title": ctitle[:70], "summary": summary}
+            entry: dict[str, Any] = {"title": _smart_truncate(ctitle, 120), "summary": summary}
             if known_ids is not None:
                 raw_ids = ch.get("source_ids")
                 if not isinstance(raw_ids, list) or not raw_ids:
@@ -322,7 +345,7 @@ def generate_outline(
                         ids = [sorted(known_ids)[0]]
                 entry["source_ids"] = ids
             clean.append(entry)
-        return {"title": _clean_text(title)[:100], "chapters": clean}
+        return {"title": _smart_truncate(title, 130), "chapters": clean}
 
     return ask_json(prompt, validate, cfg, max_tokens=4096, cancelled=cancelled)
 
@@ -342,20 +365,45 @@ def write_chapter(
     n = len(chapters)
     lo, hi = max(15, int(target_words * 0.75)), int(target_words * 1.3) + 1
     if index == 0 and n == 1:
-        role = "Este é o único capítulo: abra com um gancho misterioso e fascinante e feche convidando calorosamente a curtir e se inscrever."
+        role = (
+            "Este é o único capítulo do vídeo:\n"
+            "- HOOK DE 7 SEGUNDOS (Abertura imediata): As primeiras 15 a 18 palavras faladas DEVEM conter: "
+            "1) Uma PROMESSA clara sobre o mistério que será revelado; 2) Criação de alta EXPECTATIVA; "
+            "3) Uma CURIOSIDADE provocativa que o telespectador sinta a necessidade urgente de resolver.\n"
+            "- DESENVOLVIMENTO: Explique o tema com rigor científico e analogias visuais humanas.\n"
+            "- ENCERRAMENTO COM CTA NERDOCIÊNCIA: Termine com um Call to Action caloroso convidando a CURTIR o vídeo, "
+            "COMPARTILHAR com amigos e COMENTAR sua opinião aqui no canal Nerdociência."
+        )
     elif index == 0:
-        role = "Este é o capítulo de abertura: comece com um gancho misterioso e magnético que capture a atenção do público de imediato."
+        role = (
+            "Este é o capítulo de Abertura (Capítulo 1):\n"
+            "- HOOK OBRIGATÓRIO DE 7 SEGUNDOS: Comece IMEDIATAMENTE (nas primeiras 15 a 18 palavras faladas) com um gancho arrebatador contendo 3 pilares:\n"
+            "  1) UMA PROMESSA: Declare com clareza o que será desvendado neste documentário;\n"
+            "  2) ALTA EXPECTATIVA: Demonstre a magnitude ou o impacto chocante do tema no cosmos ou na nossa existência;\n"
+            "  3) UMA CURIOSIDADE INTRIGANTE: Lance uma pergunta ou paradoxo que o telespectador sinta a necessidade absoluta de resolver até o fim do vídeo.\n"
+            "- PROIBIDO introduções mornas, saudações burocráticas ou definições secas. Vá direto na ferida da curiosidade."
+        )
     elif index == n - 1:
-        role = "Este é o capítulo final: conclua o raciocínio com uma reflexão profunda sobre o tema e termine convidando calorosamente a curtir e se inscrever no canal."
+        role = (
+            "Este é o capítulo Final e Conclusão:\n"
+            "- RESOLUÇÃO DA PROMESSA: Entregue a resposta definitiva do enigma prometido no início do vídeo com reflexão e maravilhamento cósmico.\n"
+            "- CALL TO ACTION (CTA) OBRIGATÓRIO DO CANAL NERDOCIÊNCIA: Termine a narração convidando calorosamente o espectador a:\n"
+            "  1) CURTIR o vídeo se ele aprendeu algo fascinante;\n"
+            "  2) COMPARTILHAR com pessoas que amam ciência e mistérios do universo;\n"
+            "  3) COMENTAR suas próprias teorias e reflexões aqui nos comentários do canal Nerdociência."
+        )
     else:
-        role = "Continue de forma fluida e envolvente a partir do capítulo anterior, mantendo a curiosidade sem se reapresentar."
+        role = (
+            "Continue de forma fluida e eletrizante a partir do capítulo anterior, aprofundando as evidências "
+            "e mantendo viva a expectativa de resolver a pergunta inicial do documentário."
+        )
     outline_text = "\n".join(f"{i + 1}. {c['title']} — {c['summary']}" for i, c in enumerate(chapters))
     chapter_sources = None
     if sources:
         wanted = set(chapter.get("source_ids", []))
         chapter_sources = [s for s in sources if s["id"] in wanted] or sources
     prompt = (
-        "Você é o narrador de um consagrado documentário de divulgação científica no YouTube em português do Brasil "
+        "Você é o narrador e roteirista do canal de divulgação científica Nerdociência no YouTube Brasil "
         "(estilo Cosmos com Carl Sagan e Neil deGrasse Tyson, Kurzgesagt e BBC Earth).\n"
         f"Tema do documentário: {topic}\nTítulo: {outline['title']}\n"
         f"Arco narrativo completo:\n{outline_text}\n\n"
@@ -370,12 +418,14 @@ def write_chapter(
         "   - Use perguntas retóricas instigantes para provocar reflexão ('Mas como algo assim pode existir?').\n"
         "3. Zero Academicismo Frio: Em vez de definições enciclopédicas secas, use metáforas sensoriais vívidas e analogias visuais que façam o espectador visualizar a cena mentalmente.\n"
         "4. Sem Clichês Mecânicos: NUNCA diga 'Olá pessoal', 'Neste vídeo vamos ver', nem coloque títulos, subtítulos ou tópicos dentro da narração.\n"
-        + (f' O capítulo anterior encerrou com: "{prev_tail}". Faça uma ponte de transição elegante.\n' if prev_tail else "")
+        + (f'5. Transição com o capítulo anterior: Ele encerrou com: "{prev_tail}". Faça uma ponte de transição fluida e elegante.\n' if prev_tail else "")
         + "6. Fidelidade factual: Ancore os dados nas fontes científicas sem inventar fatos.\n"
         + "7. Ortografia e Acentuação Estritas: Escreva em Português do Brasil com acentuação e gramática perfeitas (ex: 'espaço', 'matéria', 'atração', 'está', 'reação', 'início'). NUNCA gere palavras sem acento, truncadas ou corrompidas.\n"
+        + "8. Ritmo Fluido & Retenção Magnética (Zero Monotonia): NUNCA crie blocos monolíticos ou discursos lentos que expulsem o espectador. Use frases curtas, ágeis e conversacionais. A cada 15 a 20 segundos de fala, quebre o padrão: insira uma pergunta retórica provocadora, uma analogia tátil ou um 'open loop' (uma nova dúvida intrigante antes de resolver a anterior), mantendo a curiosidade em alta tensão até o desfecho.\n"
+        + "9. Fórmulas e Leis Científicas: Ao tratar de leis fundamentais da física, gravidade, energia, cosmologia ou quântica, sinta-se à vontade para selecionar o arquétipo 'formula' e citar a equação de forma clara e instigante.\n"
         '- "key_points": 1 a 3 frases explicativas curtas e impactantes (de 20 a 80 caracteres) para aparecer na tela. PROIBIDO responder apenas com "..." ou reticências!\n'
-        '- "visual_keywords": 2 a 3 termos de busca em inglês específicos para ilustrar este capítulo (ex: "James Webb mirror", "Accretion disk binary star", "Supermassive black hole").\n'
-        '- "visual_archetype": escolha um estilo de motion design único para este capítulo entre: "orbital", "infographic", "blueprint", "spectrum", "network", "timeline", "quantum".\n\n'
+        '- "visual_keywords": 2 a 3 termos de busca em inglês específicos para ilustrar este capítulo, incluindo simulações ou GIFs quando couber (ex: "Black hole accretion simulation gif", "James Webb mirror", "Quantum wave packet").\n'
+        '- "visual_archetype": escolha um estilo de motion design único para este capítulo entre: "orbital", "infographic", "blueprint", "spectrum", "network", "timeline", "quantum", "formula".\n\n'
         'Responda em JSON: {"narration": "texto falado do capítulo com pontuação expressiva e pausas", "key_points": ["Conceito científico 1", "Conceito científico 2"], "visual_keywords": ["..."], "visual_archetype": "orbital"}'
         + _evidence_block(chapter_sources)
     )
@@ -410,12 +460,12 @@ def write_chapter(
         cleaned_points: list[str] = []
         if isinstance(raw_points, str):
             for part in re.split(r"[\n;•\-]|\.\s+", raw_points):
-                p_clean = _clean_text(part)[:90]
+                p_clean = _smart_truncate(part, 110)
                 if _is_valid_point(p_clean):
                     cleaned_points.append(p_clean)
         elif isinstance(raw_points, list):
             for p in raw_points:
-                p_clean = _clean_text(str(p))[:90]
+                p_clean = _smart_truncate(str(p), 110)
                 if _is_valid_point(p_clean):
                     cleaned_points.append(p_clean)
 
@@ -427,9 +477,9 @@ def write_chapter(
                 if len(re.sub(r"[^\w\s]", "", s).strip().split()) >= 3 and len(s.strip()) >= 12
             ]
             if sentences:
-                cleaned_points = [_clean_text(s)[:85] for s in sentences[:2]]
+                cleaned_points = [_smart_truncate(s, 110) for s in sentences[:2]]
             else:
-                cleaned_points = [_clean_text(chapter.get("title", "Conceito Científico"))[:85]]
+                cleaned_points = [_smart_truncate(chapter.get("title", "Conceito Científico"), 110)]
 
         cleaned_points = cleaned_points[:3]
 
@@ -441,12 +491,12 @@ def write_chapter(
         elif isinstance(raw_kws, list):
             cleaned_kws = [str(k).strip() for k in raw_kws if len(str(k).strip()) > 2]
 
-        # Extrai visual_archetype
-        supported_archs = ["orbital", "infographic", "blueprint", "spectrum", "network", "timeline", "quantum"]
+        # Extrai visual_archetype contextualizado
         arch = str(data.get("visual_archetype", "")).lower().strip()
-        if arch not in supported_archs:
-            # Alterna harmonicamente para garantir diversidade visual entre capítulos consecutivos
-            arch = supported_archs[index % len(supported_archs)]
+        if arch not in SUPPORTED_ARCHETYPES:
+            from scripts.build_composition import detect_visual_theme
+            detected_arch, _ = detect_visual_theme(topic or "", narration, chapter.get("title", ""))
+            arch = detected_arch
 
         result = {
             "narration": _clean_text(narration),
@@ -629,13 +679,14 @@ def build_chapter_scene(
         image_dict["image_url"] = img_src
         if local_p and Path(local_p).exists():
             image_dict["image_path"] = str(local_p)
-        image_dict["image_credit"] = credit[:60]
+        image_dict["image_credit"] = _smart_truncate(credit, 100)
 
-    # Arquétipo visual do capítulo (orbital, infographic, blueprint, spectrum, network, timeline, quantum)
-    supported_archs = ["orbital", "infographic", "blueprint", "spectrum", "network", "timeline", "quantum"]
+    # Arquétipo visual contextualizado ao tema específico
     archetype = chapter.get("visual_archetype")
-    if not archetype or archetype not in supported_archs:
-        archetype = supported_archs[0]
+    if not archetype or archetype not in SUPPORTED_ARCHETYPES:
+        from scripts.build_composition import detect_visual_theme
+        detected_arch, _ = detect_visual_theme(topic or "", chapter.get("narration", ""), chapter.get("title", ""))
+        archetype = detected_arch
 
     # Elemento 1 (Título do Capítulo): Abre sempre com Motion Design Procedural Temático (sem congelar foto)
     elements: list[dict[str, Any]] = [

@@ -67,22 +67,22 @@ def generate_youtube_metadata(
     images_str = "\n".join(images_credits) if images_credits else "Imagens de domínio público e Wikimedia Commons."
 
     prompt = (
-        "Você é um estrategista sênior de canais de sucesso do YouTube Brasil especializado em ciência e documentários.\n"
+        "Você é um estrategista sênior do canal Nerdociência no YouTube Brasil especializado em ciência, astronomia e documentários.\n"
         f"Gere o pacote completo de SEO para o vídeo sobre: '{topic}' (Título provisório: '{title_base}').\n\n"
         f"Capítulos do vídeo:\n{chapters_str}\n\n"
         "Crie:\n"
         "1. 3 variações de Títulos altamente atraentes (alto CTR, sem clickbait falso, envolventes).\n"
-        "2. Resumo instigante em 2 parágrafos para a introdução da descrição.\n"
-        "3. Lista de 15 a 25 Tags/palavras-chave em português separadas por vírgula para a aba de tags do YouTube Studio.\n"
-        "4. 8 a 12 Hashtags relevantes (#).\n"
+        "2. Resumo instigante em 2 parágrafos para a introdução da descrição destacando o enigma investigado.\n"
+        "3. Lista de 15 a 25 Tags/palavras-chave em português separadas por vírgula para a aba de tags do YouTube Studio (inclua 'Nerdociência').\n"
+        "4. 8 a 12 Hashtags relevantes (#) incluindo #Nerdociencia.\n"
         "5. Ideia visual para a Thumbnail (capa do vídeo) com elementos visuais e texto curto de impacto.\n\n"
         "Responda SOMENTE em JSON com este formato exato:\n"
         '{\n'
         '  "title_options": ["Opção 1", "Opção 2", "Opção 3"],\n'
         '  "best_title": "O melhor título selecionado",\n'
         '  "summary": "Dois parágrafos cativantes explicando o mistério abordado no vídeo.",\n'
-        '  "tags": "palavra1, palavra2, palavra3, ...",\n'
-        '  "hashtags": ["#Astronomia", "#Quasars", "#Ciência", ...],\n'
+        '  "tags": "Nerdociência, palavra1, palavra2, ...",\n'
+        '  "hashtags": ["#Nerdociencia", "#Ciência", "#Universo", ...],\n'
         '  "thumbnail_concept": {\n'
         '    "visual": "Descrição da imagem que deve estar na capa",\n'
         '    "text_overlay": "Texto curto de 2 a 4 palavras na capa"\n'
@@ -103,9 +103,9 @@ def generate_youtube_metadata(
                 f"{topic}: Como Realmente Funciona?",
             ],
             "best_title": f"{topic}: Tudo o Que a Ciência Sabe",
-            "summary": f"Descubra todos os detalhes sobre {topic} nesta explicação aprofundada.",
-            "tags": f"{topic}, ciência, astronomia, documentário, física, universo",
-            "hashtags": ["#Ciência", "#Universo", "#Astronomia", "#Documentário"],
+            "summary": f"Descubra todos os detalhes sobre {topic} nesta investigação profunda do canal Nerdociência.",
+            "tags": f"Nerdociência, {topic}, ciência, astronomia, documentário, física, universo",
+            "hashtags": ["#Nerdociencia", "#Ciência", "#Universo", "#Astronomia", "#Documentário"],
             "thumbnail_concept": {
                 "visual": f"Imagem dramática em alta resolução representando {topic}",
                 "text_overlay": "O SEGREDO!",
@@ -119,13 +119,20 @@ def generate_youtube_metadata(
             sources_text.append(f"• [{s.get('id')}] {s.get('title')} ({s.get('publisher', '')}) - {s.get('url', '')}")
     sources_str = "\n".join(sources_text) if sources_text else "Pesquisa acadêmica e artigos científicos públicos."
 
+    # Garante hashtag do canal
+    hts = data.get("hashtags", [])
+    if isinstance(hts, list) and "#Nerdociencia" not in hts and "#nerdociencia" not in [h.lower() for h in hts]:
+        hts.insert(0, "#Nerdociencia")
+
     full_description = (
         f"{data.get('summary', '')}\n\n"
-        f"🔔 Inscreva-se no canal e ative o sino para não perder nenhuma explicação científica semanal!\n\n"
+        f"🔭 Bem-vindo ao canal Nerdociência!\n"
+        f"👍 Se você curte ciência de verdade, deixe seu LIKE, COMPARTILHE com seus amigos e COMENTE suas dúvidas e teorias abaixo!\n"
+        f"🔔 Inscreva-se e ative as notificações para acompanhar todas as nossas viagens pelo cosmos.\n\n"
         f"⏱️ CAPÍTULOS:\n{chapters_str}\n\n"
-        f"📚 FONTES E REFERÊNCIAS:\n{sources_str}\n\n"
+        f"📚 FONTES E REFERÊNCIAS CIENTÍFICAS:\n{sources_str}\n\n"
         f"🖼️ CRÉDITOS VISUAIS:\n{images_str}\n\n"
-        f"{' '.join(data.get('hashtags', []))}"
+        f"{' '.join(hts)}"
     )
 
     return {
@@ -134,7 +141,7 @@ def generate_youtube_metadata(
         "full_description": full_description,
         "summary": data.get("summary", ""),
         "tags": data.get("tags", ""),
-        "hashtags": data.get("hashtags", []),
+        "hashtags": hts,
         "thumbnail_concept": data.get("thumbnail_concept", {}),
         "timestamps": chapters_str,
     }
@@ -198,7 +205,7 @@ def generate_social_clip_metadata(
             },
             "youtube_shorts": {
                 "title": f"{clip_title} 🔥 #Shorts",
-                "caption": f"{clip_hook}\nAssista ao documentário completo no nosso canal!",
-                "hashtags": "#Shorts #Ciencia #Universo",
+                "caption": f"{clip_hook}\nAssista ao documentário completo no canal Nerdociência! Curta e comente!",
+                "hashtags": "#Shorts #Nerdociencia #Ciencia #Universo",
             },
         }

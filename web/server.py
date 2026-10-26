@@ -26,6 +26,7 @@ if str(PROJECT_ROOT) not in sys.path:
 from scripts.add_subtitles import SUBTITLE_STYLES
 from scripts.bg_music import MUSIC_TRACKS
 from scripts.config_loader import load_config
+from scripts.image_provider import search_multiple_gifs
 from scripts.long_video import JobCancelled, run_long_video
 from scripts.viral_clips import detect_viral_candidates, render_viral_clip
 
@@ -125,6 +126,20 @@ def get_config_info():
         "visual_modes": visual_modes,
         "default_visual_mode": "motion_design",
     })
+
+
+@app.route("/api/media/search_gifs", methods=["GET"])
+def api_search_gifs():
+    """Busca animações e GIFs científicos para visualização ou inclusão no vídeo."""
+    query = request.args.get("q", "").strip()
+    if not query:
+        return jsonify({"gifs": []})
+    try:
+        limit = min(20, max(1, int(request.args.get("limit", 8))))
+    except ValueError:
+        limit = 8
+    gifs = search_multiple_gifs(query, limit=limit)
+    return jsonify({"query": query, "count": len(gifs), "gifs": gifs})
 
 
 @app.route("/api/jobs", methods=["GET"])

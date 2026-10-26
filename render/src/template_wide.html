@@ -85,10 +85,11 @@
     /* Coluna Esquerda: Texto e Tipografia Cinética */
     .clip-left-content {
       flex: 1;
-      max-width: 920px;
+      max-width: 1000px;
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      justify-content: center;
+      gap: 20px;
       z-index: 2;
     }
 
@@ -97,42 +98,84 @@
       align-items: center;
       gap: 16px;
       color: var(--paletteAccent);
-      font-size: 20px;
+      font-size: 19px;
       font-weight: 700;
       letter-spacing: 3px;
     }
 
     .clip-index {
       display: inline-flex;
-      width: 48px;
-      height: 48px;
+      width: 44px;
+      height: 44px;
       align-items: center;
       justify-content: center;
       border: 2px solid var(--paletteAccent);
       border-radius: 50%;
-      font-size: 18px;
+      font-size: 17px;
       color: var(--paletteAccent);
       box-shadow: 0 0 16px color-mix(in srgb, var(--paletteAccent) 40%, transparent);
     }
 
     .clip-copy {
-      font-size: 54px;
+      font-size: clamp(34px, 2.7vw, 48px);
       font-weight: 750;
-      line-height: 1.2;
+      line-height: 1.25;
       color: var(--paletteText);
       text-wrap: balance;
       text-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+      word-break: normal;
+      overflow-wrap: break-word;
+      max-height: 520px;
+    }
+    .stat-highlight {
+      color: var(--paletteAccent);
+      background: color-mix(in srgb, var(--paletteAccent) 15%, transparent);
+      padding: 2px 10px;
+      border-radius: 8px;
+      border-bottom: 2px solid var(--paletteAccent);
+      font-weight: 800;
+      display: inline-block;
+      text-shadow: 0 0 16px var(--paletteAccent);
+    }
+    .kinetic-line {
+      display: inline;
     }
 
     .clip-sources {
       margin-top: 10px;
-      color: color-mix(in srgb, var(--paletteText) 65%, transparent);
-      font-size: 15px;
-      line-height: 1.5;
-      letter-spacing: .5px;
+      color: color-mix(in srgb, var(--paletteText) 75%, transparent);
+      font-size: 14px;
+      line-height: 1.6;
+      letter-spacing: .4px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      max-width: 1000px;
+    }
+    .sources-tag {
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      color: var(--paletteAccent);
+      font-size: 12px;
+      text-transform: uppercase;
+      background: rgba(255, 255, 255, 0.06);
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+    .citation {
+      background: rgba(10, 16, 30, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      padding: 4px 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13.5px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
     }
     .citation b { color: var(--palettePrimary); }
-    .citation i { font-style: normal; opacity: 0.8; }
+    .citation i { font-style: normal; opacity: 0.9; }
 
     /* Coluna Direita: Imagem Real ou Motion Design Procedural */
     .clip-right-media {
@@ -489,13 +532,261 @@
       white-space: nowrap;
       z-index: 3;
     }
+
+    /* ARQUÉTIPO: FÓRMULA MATEMÁTICA & LEIS FÍSICAS */
+    .motion-formula {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    .formula-card {
+      width: 580px;
+      padding: 34px 28px 26px;
+      background: rgba(6, 11, 24, 0.82);
+      border-radius: 20px;
+      border: 1px solid color-mix(in srgb, var(--palettePrimary) 45%, transparent);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75), 0 0 35px color-mix(in srgb, var(--palettePrimary) 20%, transparent);
+      backdrop-filter: blur(14px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      text-align: center;
+    }
+    .formula-sub-badge {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      color: var(--paletteAccent);
+      text-transform: uppercase;
+      background: color-mix(in srgb, var(--paletteAccent) 15%, transparent);
+      padding: 5px 14px;
+      border-radius: 20px;
+      border: 1px solid color-mix(in srgb, var(--paletteAccent) 35%, transparent);
+    }
+    .formula-math-display {
+      font-family: 'Cambria Math', 'Latin Modern Math', 'KaTeX_Math', 'Times New Roman', serif;
+      font-size: 52px;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 2px;
+      line-height: 1.25;
+      text-shadow: 0 0 24px var(--palettePrimary), 0 0 45px color-mix(in srgb, var(--paletteAccent) 50%, transparent);
+      margin: 2px 0;
+    }
+    .formula-math-display sup {
+      font-size: 0.6em;
+      vertical-align: super;
+      color: var(--paletteAccent);
+    }
+    .formula-math-display sub {
+      font-size: 0.6em;
+      vertical-align: sub;
+      color: var(--paletteAccent);
+    }
+    .formula-caption {
+      font-size: 16px;
+      font-weight: 600;
+      color: color-mix(in srgb, var(--paletteText) 85%, transparent);
+      letter-spacing: 0.5px;
+    }
+    .formula-vars-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      margin-top: 4px;
+    }
+    .formula-var-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      padding: 5px 12px;
+      font-size: 13px;
+    }
+    .formula-var-chip .var-sym {
+      color: var(--paletteAccent);
+      font-weight: 800;
+      font-family: 'Cambria Math', 'Latin Modern Math', 'Times New Roman', serif;
+    }
+    .formula-var-chip .var-lbl {
+      color: color-mix(in srgb, var(--paletteText) 75%, transparent);
+    }
+
+    /* Linha de Scanner / Feixe de Transição Cinematográfica */
+    .scene-wipe-beam {
+      position: absolute;
+      top: 0;
+      left: -250px;
+      width: 140px;
+      height: 1080px;
+      background: linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--palettePrimary) 40%, transparent) 40%, white 50%, color-mix(in srgb, var(--paletteAccent) 40%, transparent) 60%, transparent 100%);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 100;
+    /* ARQUÉTIPO: POLÍTICA, INFLUÊNCIA & PODER */
+    .motion-politics {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    .polarization-hud {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+    .polarity-spectrum {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    .pol-label.left { color: var(--palettePrimary); }
+    .pol-label.right { color: var(--paletteAccent); }
+    .pol-bar {
+      width: 220px;
+      height: 8px;
+      background: linear-gradient(90deg, var(--palettePrimary) 0%, rgba(255,255,255,0.2) 50%, var(--paletteAccent) 100%);
+      border-radius: 6px;
+      position: relative;
+      box-shadow: 0 0 12px rgba(255,255,255,0.2);
+    }
+    .pol-needle {
+      position: absolute;
+      top: -6px;
+      left: 54%;
+      width: 4px;
+      height: 20px;
+      background: #ffffff;
+      box-shadow: 0 0 10px #ffffff;
+      border-radius: 2px;
+    }
+    .influencer-core {
+      filter: drop-shadow(0 0 12px var(--palettePrimary));
+    }
+    .influencer-core.core-b {
+      filter: drop-shadow(0 0 12px var(--paletteAccent));
+    }
+    .politics-readouts {
+      display: flex;
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .readout-pill {
+      font-size: 13px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      padding: 5px 12px;
+      color: #cbd5e1;
+    }
+    .readout-pill b {
+      color: var(--paletteAccent);
+    }
+
+    /* ARQUÉTIPO: PSICOLOGIA, MENTE & COMPORTAMENTO */
+    .motion-psychology {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    .psych-brain-core {
+      width: 200px;
+      height: 200px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 8px 0;
+    }
+    .synapse-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 2px dashed rgba(255, 255, 255, 0.2);
+    }
+    .s-outer {
+      width: 195px;
+      height: 195px;
+      border-color: var(--palettePrimary);
+      box-shadow: 0 0 20px color-mix(in srgb, var(--palettePrimary) 25%, transparent);
+    }
+    .s-mid {
+      width: 130px;
+      height: 130px;
+      border-color: var(--paletteAccent);
+      box-shadow: 0 0 20px color-mix(in srgb, var(--paletteAccent) 25%, transparent);
+    }
+    .decision-nucleus {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #ffffff 0%, var(--paletteAccent) 60%, transparent 100%);
+      box-shadow: 0 0 35px var(--paletteAccent), 0 0 60px var(--palettePrimary);
+    }
+    .bias-scales-box {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 320px;
+    }
+    .scale-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .scale-lbl {
+      color: #cbd5e1;
+      min-width: 135px;
+      letter-spacing: .5px;
+    }
+    .scale-track {
+      flex: 1;
+      height: 7px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .scale-fill.fill-accent {
+      height: 100%;
+      background: var(--paletteAccent);
+      box-shadow: 0 0 10px var(--paletteAccent);
+    }
+    .scale-fill.fill-primary {
+      height: 100%;
+      background: var(--palettePrimary);
+      box-shadow: 0 0 10px var(--palettePrimary);
+    }
   </style>
 </head>
 <body>
   <div id="root" data-composition-id="main" data-start="0"
-       data-width="1920" data-height="1080" data-duration="{{SCENE_DURATION}}">
+       data-width="1920" data-height="1080" data-duration="{{SCENE_DURATION}}" style="perspective: 1200px;">
     <div class="bg-grid-overlay"></div>
     <div class="hud-border"></div>
+    <div class="scene-wipe-beam"></div>
     <div class="hud-header">
       <span class="hud-dot"></span>
       <span>ESTÚDIO DE CIÊNCIA & EXPLICAÇÃO VISUAL</span>
@@ -510,6 +801,7 @@
     window.addEventListener("DOMContentLoaded", () => {
       const tl = gsap.timeline({ paused: true });
       const clips = document.querySelectorAll(".explainer-clip");
+      const wipeBeam = document.querySelector(".scene-wipe-beam");
 
       clips.forEach((el, idx) => {
         const start = parseFloat(el.dataset.start || "0");
@@ -517,36 +809,113 @@
         const leftContent = el.querySelector(".clip-left-content");
         const rightMedia = el.querySelector(".clip-right-media");
         const img = el.querySelector(".media-image-frame img");
+        const kineticLines = el.querySelectorAll(".kinetic-line");
 
         // 1. Torna o clipe visível no segundo exato de início
         tl.set(el, { autoAlpha: 1, visibility: "visible" }, start);
 
-        // 2. Animação Cinética de Entrada
+        // 2. Transição Cinematográfica: Feixe de Luz de Varredura Espacial (entre clipes)
+        if (idx > 0 && wipeBeam) {
+          tl.fromTo(wipeBeam, 
+            { x: -250, opacity: 0.9 }, 
+            { x: 2200, opacity: 0, duration: 0.65, ease: "power2.inOut" }, 
+            Math.max(0, start - 0.08)
+          );
+        }
+
+        // 3. Animação Cinética de Entrada (com profundidade 3D e rotação suave)
         if (leftContent) {
           tl.from(leftContent, {
-            y: 50,
-            opacity: 0,
-            duration: 0.65,
-            ease: "power3.out"
-          }, start);
-        }
-        if (rightMedia) {
-          tl.from(rightMedia, {
-            scale: 0.88,
+            y: 40,
+            x: -25,
             opacity: 0,
             duration: 0.75,
-            ease: "back.out(1.4)"
-          }, start + 0.1);
+            ease: "power3.out"
+          }, start);
+
+          // Animação progressiva das frases para eliminar monotonia de texto
+          if (kineticLines.length > 1) {
+            tl.from(kineticLines, {
+              opacity: 0.35,
+              y: 8,
+              stagger: 0.18,
+              duration: 0.5,
+              ease: "power1.out"
+            }, start + 0.1);
+          }
         }
 
-        // 3. Ken Burns Suave para Fotografias Reais
+        if (rightMedia) {
+          tl.from(rightMedia, {
+            scale: 0.9,
+            rotationY: 10,
+            opacity: 0,
+            duration: 0.85,
+            ease: "power3.out"
+          }, start + 0.08);
+        }
+
+        // 4. Ken Burns Suave para Fotografias e GIFs Reais
         if (img) {
-          tl.fromTo(img, { scale: 1.0 }, { scale: 1.07, duration: dur, ease: "none" }, start);
+          tl.fromTo(img, { scale: 1.0 }, { scale: 1.08, duration: dur, ease: "none" }, start);
         }
 
-        // 4. Animações Dinâmicas dos 7 Arquétipos de Motion Design:
+        // 5. Animações Dinâmicas dos Arquétipos de Motion Design:
 
-        // A. Arquétipo Orbital
+        // 0. Arquétipo Política & Dinâmica de Poder
+        const polNeedle = el.querySelector(".pol-needle");
+        if (polNeedle) {
+          tl.fromTo(polNeedle, { left: "35%" }, { left: "68%", yoyo: true, repeat: Math.ceil(dur * 1.5), duration: 1.2, ease: "sine.inOut" }, start);
+        }
+        const infLines = el.querySelectorAll(".inf-line");
+        infLines.forEach((line) => {
+          tl.fromTo(line, { strokeDashoffset: 0 }, { strokeDashoffset: 120, duration: dur, ease: "none" }, start);
+        });
+        const leadCores = el.querySelectorAll(".influencer-core");
+        leadCores.forEach((c, cIdx) => {
+          tl.fromTo(c, { scale: 0.9 }, { scale: 1.15, yoyo: true, repeat: Math.ceil(dur * 2), duration: 0.8 + cIdx * 0.2, ease: "sine.inOut" }, start);
+        });
+
+        // 0.1 Arquétipo Psicologia & Cognição
+        const sOuter = el.querySelector(".s-outer");
+        const sMid = el.querySelector(".s-mid");
+        const decNucleus = el.querySelector(".decision-nucleus");
+        if (sOuter) {
+          tl.fromTo(sOuter, { rotation: 0 }, { rotation: 240, duration: dur, ease: "none" }, start);
+        }
+        if (sMid) {
+          tl.fromTo(sMid, { rotation: 0 }, { rotation: -360, duration: dur, ease: "none" }, start);
+        }
+        if (decNucleus) {
+          tl.fromTo(decNucleus, { scale: 0.85 }, { scale: 1.2, yoyo: true, repeat: Math.ceil(dur * 2), duration: 0.7, ease: "sine.inOut" }, start);
+        }
+        const scaleFills = el.querySelectorAll(".scale-fill");
+        scaleFills.forEach((fill) => {
+          const targetW = fill.style.width || "75%";
+          tl.fromTo(fill, { width: "10%" }, { width: targetW, duration: Math.min(dur, 2.0), ease: "power2.out" }, start + 0.2);
+        });
+
+        // A. Arquétipo Fórmula Matemática & Leis Físicas
+        const formulaDisplay = el.querySelector(".formula-math-display");
+        const formulaVars = el.querySelectorAll(".formula-var-chip");
+        if (formulaDisplay) {
+          tl.fromTo(formulaDisplay, 
+            { scale: 0.85, opacity: 0, filter: "brightness(2)" }, 
+            { scale: 1.0, opacity: 1, filter: "brightness(1)", duration: 0.8, ease: "back.out(1.5)" }, 
+            start + 0.15
+          );
+          if (formulaVars.length > 0) {
+            tl.from(formulaVars, {
+              y: 16,
+              opacity: 0,
+              stagger: 0.08,
+              duration: 0.5,
+              ease: "power2.out"
+            }, start + 0.3);
+          }
+        }
+
+        // B. Arquétipo Orbital
         const astroDisk = el.querySelector(".accretion-disk");
         if (astroDisk) {
           tl.fromTo(astroDisk, { rotation: 0 }, { rotation: 360, duration: dur, ease: "none" }, start);
@@ -556,7 +925,7 @@
           tl.fromTo(plasmaJet, { scaleY: 0.9, opacity: 0.8 }, { scaleY: 1.1, opacity: 1, yoyo: true, repeat: Math.ceil(dur * 2), duration: 0.6, ease: "sine.inOut" }, start);
         }
 
-        // B. Arquétipo Infographic (Medidores & Barras)
+        // C. Arquétipo Infographic (Medidores & Barras)
         const gaugeBar = el.querySelector(".gauge-bar");
         if (gaugeBar) {
           tl.fromTo(gaugeBar, { strokeDashoffset: 880 }, { strokeDashoffset: 240, duration: Math.min(dur, 2.5), ease: "power2.out" }, start + 0.2);
@@ -566,7 +935,7 @@
           tl.fromTo(bar, { scaleY: 0.4 }, { scaleY: 1.25, yoyo: true, repeat: Math.ceil(dur * 2), duration: 0.5 + bIdx * 0.15, ease: "sine.inOut" }, start);
         });
 
-        // C. Arquétipo Blueprint (Mira Telescópica)
+        // D. Arquétipo Blueprint (Mira Telescópica)
         const retOuter = el.querySelector(".ret-outer");
         const retMid = el.querySelector(".ret-mid");
         if (retOuter) {
@@ -576,7 +945,7 @@
           tl.fromTo(retMid, { rotation: 0 }, { rotation: -240, duration: dur, ease: "none" }, start);
         }
 
-        // D. Arquétipo Spectrum (Ondas Senoidais)
+        // E. Arquétipo Spectrum (Ondas Senoidais)
         const wave1 = el.querySelector(".wave-1");
         const wave2 = el.querySelector(".wave-2");
         if (wave1) {
@@ -586,7 +955,7 @@
           tl.fromTo(wave2, { strokeDashoffset: 0 }, { strokeDashoffset: -400, duration: dur, ease: "none" }, start);
         }
 
-        // E. Arquétipo Network (Teia & Sinapses)
+        // F. Arquétipo Network (Teia & Sinapses)
         const netCore = el.querySelector(".network-core");
         if (netCore) {
           tl.fromTo(netCore, { scale: 0.85 }, { scale: 1.15, yoyo: true, repeat: Math.ceil(dur), duration: 0.9, ease: "sine.inOut" }, start);
@@ -596,20 +965,20 @@
           tl.fromTo(node, { scale: 0.8 }, { scale: 1.3, yoyo: true, repeat: Math.ceil(dur * 1.5), duration: 0.6 + nIdx * 0.2, ease: "sine.inOut" }, start);
         });
 
-        // F. Arquétipo Timeline (Varredura Temporal)
+        // G. Arquétipo Timeline (Varredura Temporal)
         const scannerBeam = el.querySelector(".timeline-scanner-beam");
         if (scannerBeam) {
           tl.fromTo(scannerBeam, { x: -170 }, { x: 170, duration: dur, ease: "none" }, start);
         }
 
-        // G. Arquétipo Quantum (Órbitas Atômicas)
+        // H. Arquétipo Quantum (Órbitas Atômicas)
         const qOrbits = el.querySelectorAll(".quantum-orbit");
         qOrbits.forEach((qOrb, qIdx) => {
           const dir = qIdx % 2 === 0 ? 1 : -1;
           tl.fromTo(qOrb, { rotation: qIdx * 60 }, { rotation: qIdx * 60 + 360 * dir, duration: dur, ease: "none" }, start);
         });
 
-        // H. Fallback de Anéis Gerais
+        // I. Fallback de Anéis Gerais
         const ringOuter = el.querySelector(".ring-outer");
         const ringInner = el.querySelector(".ring-inner");
         const core = el.querySelector(".pulse-core");
@@ -623,16 +992,17 @@
           tl.fromTo(core, { scale: 0.9 }, { scale: 1.15, yoyo: true, repeat: Math.ceil(dur), duration: 0.9, ease: "sine.inOut" }, start);
         }
 
-        // 4. Animação de Saída Suave antes de trocar para o próximo clipe
+        // 6. Transição de Saída Espacial Fluida (Zoom out cinematográfico com recuo)
         const exitStart = Math.max(start + 0.3, start + dur - 0.45);
         tl.to(el, {
           opacity: 0,
-          y: -25,
-          duration: 0.4,
+          scale: 0.94,
+          x: -30,
+          duration: 0.42,
           ease: "power2.in"
         }, exitStart);
 
-        // 5. Oculta completamente após o término da sua duração
+        // 7. Oculta completamente após o término da sua duração
         tl.set(el, { autoAlpha: 0, visibility: "hidden" }, start + dur);
       });
 
