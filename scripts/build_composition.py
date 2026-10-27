@@ -444,6 +444,45 @@ def generate_thematic_motion_html(theme: str, label: str) -> str:
         </div>
       </div>'''
 
+    elif theme in ("analytics", "chart", "data"):
+        return f'''
+      <div class="clip-right-media">
+        <div class="motion-design-graphic motion-analytics">
+          <div class="analytics-hud-header">
+            <span class="hud-sub-badge">DADOS ESTATÍSTICOS & TENDÊNCIA</span>
+          </div>
+          <svg class="analytics-chart-svg" viewBox="0 0 380 180" width="380" height="180">
+            <line x1="40" y1="160" x2="350" y2="160" stroke="rgba(255,255,255,0.2)" stroke-width="2"/>
+            <line x1="40" y1="20" x2="40" y2="160" stroke="rgba(255,255,255,0.2)" stroke-width="2"/>
+            <polyline points="50,135 110,105 170,125 230,65 290,80 345,30" fill="none" stroke="var(--paletteAccent)" stroke-width="3" stroke-linecap="round"/>
+            <circle cx="230" cy="65" r="5" fill="var(--palettePrimary)"/>
+            <circle cx="345" cy="30" r="7" fill="var(--paletteAccent)"/>
+          </svg>
+          <div class="analytics-bars-row">
+            <div class="stat-col"><div class="stat-fill f1" style="height: 45%;"></div><span>P1</span></div>
+            <div class="stat-col"><div class="stat-fill f2" style="height: 78%;"></div><span>P2</span></div>
+            <div class="stat-col"><div class="stat-fill f3" style="height: 60%;"></div><span>P3</span></div>
+            <div class="stat-col"><div class="stat-fill f4" style="height: 94%;"></div><span>MAX</span></div>
+          </div>
+          <div class="hud-label">{label}</div>
+        </div>
+      </div>'''
+
+    elif theme in ("radar", "sonar", "scan"):
+        return f'''
+      <div class="clip-right-media">
+        <div class="motion-design-graphic motion-radar">
+          <div class="radar-hud-circle">
+            <div class="radar-sweep-line"></div>
+            <div class="radar-blip b1"></div>
+            <div class="radar-blip b2"></div>
+            <div class="radar-axis-x"></div>
+            <div class="radar-axis-y"></div>
+          </div>
+          <div class="hud-label">{label}</div>
+        </div>
+      </div>'''
+
     else:
         return f'''
       <div class="clip-right-media">

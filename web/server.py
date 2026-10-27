@@ -29,6 +29,13 @@ from scripts.config_loader import load_config
 from scripts.image_provider import search_multiple_gifs
 from scripts.long_video import JobCancelled, run_long_video, _clean_text
 from scripts.viral_clips import detect_viral_candidates, render_viral_clip
+from scripts.voice_cloner import (
+    CUSTOM_VOICES_DIR,
+    delete_custom_voice,
+    get_custom_voice,
+    list_custom_voices,
+    save_voice_profile,
+)
 
 app = Flask(
     __name__,
@@ -62,13 +69,29 @@ def index():
 def get_config_info():
     """Retorna opções disponíveis de paletas, vozes e estilos."""
     cfg = load_config()
-    voices = [
+    base_voices = [
         {"id": "pt-BR-AntonioSenior", "name": "👴 Antônio Sênior (Homem Mais Velho & Maduro — Tom Grave Solene)", "gender": "Masculina"},
         {"id": "pt-BR-AntonioDoc", "name": "🇧🇷 Antônio (Documentarista Brasileiro, Barítono com Pausas) - Padrão", "gender": "Masculina"},
         {"id": "pt-BR-AntonioNeural", "name": "🇧🇷 Antônio (Brasileiro, Tom Firme e Natural)", "gender": "Masculina"},
         {"id": "pt-BR-FranciscaNeural", "name": "🇧🇷 Francisca (Brasileira, Feminina Natural)", "gender": "Feminina"},
         {"id": "pt-BR-ThalitaMultilingualNeural", "name": "🇧🇷 Thalita (Brasileira, Feminina Jovem)", "gender": "Feminina"},
     ]
+
+    # Carrega vozes personalizadas gravadas ou clonadas pelo usuário
+    custom_voices_list = list_custom_voices()
+    formatted_custom = [
+        {
+            "id": cv["id"],
+            "name": f"🎙️ {cv['name']} (Sua Voz Clonada)",
+            "gender": cv.get("gender", "Personalizada"),
+            "is_custom": True,
+            "sample_url": cv.get("sample_url"),
+        }
+        for cv in custom_voices_list
+    ]
+
+    voices = formatted_custom + base_voices
+
     palettes = []
     for name, p in cfg.palettes.items():
         palettes.append({
@@ -116,7 +139,8 @@ def get_config_info():
         "palettes": palettes,
         "default_palette": cfg.video.default_palette,
         "voices": voices,
-        "default_voice": cfg.tts.voice,
+        "custom_voices": custom_voices_list,
+        "default_voice": formatted_custom[0]["id"] if formatted_custom else cfg.tts.voice,
         "voice_rates": voice_rates,
         "default_voice_rate": cfg.tts.rate or "-20%",
         "legend_styles": list(SUBTITLE_STYLES.keys()),
@@ -126,6 +150,62 @@ def get_config_info():
         "visual_modes": visual_modes,
         "default_visual_mode": "motion_design",
     })
+
+
+@app.route("/api/voices/custom", methods=["GET"])
+def api_list_custom_voices():
+    """Retorna lista de vozes clonadas cadastradas."""
+    return jsonify({"voices": list_custom_voices()})
+
+
+@app.route("/api/voices/clone", methods=["POST"])
+def api_clone_voice():
+    """Recebe áudio gravado no microfone ou upload de arquivo para criar perfil de voz clonada."""
+    name = request.form.get("name", "Minha Voz").strip()
+    gender = request.form.get("gender", "auto").strip()
+
+    file = request.files.get("audio")
+    if not file or not file.filename:
+        return jsonify({"error": "Nenhum arquivo de áudio foi enviado."}), 400
+
+    raw_bytes = file.read()
+    if len(raw_bytes) < 1000:
+        return jsonify({"error": "Arquivo de áudio muito curto ou vazio."}), 400
+
+    try:
+        profile = save_voice_profile(
+            name=name,
+            raw_audio_bytes=raw_bytes,
+            original_filename=file.filename,
+            gender_hint=gender,
+        )
+        return jsonify({
+            "success": True,
+            "message": f"Voz '{profile['name']}' clonada e configurada com sucesso!",
+            "profile": profile,
+        })
+    except Exception as exc:
+        logger.exception("Erro ao processar clonagem de voz")
+        return jsonify({"error": str(exc)}), 500
+
+
+@app.route("/api/voices/custom/<voice_id>", methods=["DELETE"])
+def api_delete_custom_voice(voice_id: str):
+    """Exclui um perfil de voz personalizada."""
+    success = delete_custom_voice(voice_id)
+    if success:
+        return jsonify({"success": True, "message": "Voz removida com sucesso."})
+    return jsonify({"error": "Voz não encontrada."}), 404
+
+
+@app.route("/api/voices/custom/<voice_id>/sample.wav", methods=["GET"])
+def api_get_custom_voice_sample(voice_id: str):
+    """Retorna o áudio de amostra gravado para pré-escuta."""
+    voice_dir = CUSTOM_VOICES_DIR / voice_id
+    sample_path = voice_dir / "sample.wav"
+    if sample_path.exists():
+        return send_file(sample_path, mimetype="audio/wav")
+    return jsonify({"error": "Amostra não encontrada."}), 404
 
 
 @app.route("/api/media/search_gifs", methods=["GET"])

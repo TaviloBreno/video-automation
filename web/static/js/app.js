@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function initApp() {
   setupEventListeners();
+  setupVoiceClonerModal();
   await loadConfig();
   await loadRecentJobs();
 }
@@ -159,7 +160,9 @@ function setupAudioPreviews() {
       }
 
       stopAllPreviews();
-      const audioUrl = `/static/audio/voices/${voiceId}.mp3`;
+      const audioUrl = voiceId.startsWith("custom_")
+        ? `/api/voices/custom/${voiceId}/sample.wav`
+        : `/static/audio/voices/${voiceId}.mp3`;
       currentPreviewAudio = new Audio(audioUrl);
       currentPreviewType = "voice";
 
@@ -1254,3 +1257,305 @@ function escapeHtml(text) {
   div.textContent = text || "";
   return div.innerHTML;
 }
+
+/* ==========================================================================
+   Voice Cloning Modal & Microfone Recording
+   ========================================================================== */
+
+function setupVoiceClonerModal() {
+  const modal = document.getElementById("cloneVoiceModal");
+  const btnOpen = document.getElementById("btnOpenCloneModal");
+  const btnClose = document.getElementById("btnCloseCloneModal");
+  const btnCancel = document.getElementById("btnCancelClone");
+  const btnSave = document.getElementById("btnSaveCloneVoice");
+
+  if (!modal || !btnOpen) return;
+
+  const tabRecordMic = document.getElementById("tabRecordMic");
+  const tabUploadAudio = document.getElementById("tabUploadAudio");
+  const panelRecordMic = document.getElementById("panelRecordMic");
+  const panelUploadAudio = document.getElementById("panelUploadAudio");
+
+  const btnStartRecord = document.getElementById("btnStartRecord");
+  const btnStopRecord = document.getElementById("btnStopRecord");
+  const recordTimer = document.getElementById("recordTimer");
+  const canvas = document.getElementById("micVisualizer");
+  const previewBox = document.getElementById("audioPreviewContainer");
+  const player = document.getElementById("recordedAudioPlayer");
+
+  const audioDropzone = document.getElementById("audioDropzone");
+  const audioFileInput = document.getElementById("audioFileInput");
+  const selectedFileInfo = document.getElementById("selectedFileInfo");
+  const selectedFileName = document.getElementById("selectedFileName");
+  const btnRemoveAudioFile = document.getElementById("btnRemoveAudioFile");
+
+  const voiceNameInput = document.getElementById("cloneVoiceName");
+  const voiceGenderSelect = document.getElementById("cloneVoiceGender");
+
+  let mediaRecorder = null;
+  let audioChunks = [];
+  let micStream = null;
+  let audioCtx = null;
+  let analyser = null;
+  let animId = null;
+  let timerInterval = null;
+  let secondsCount = 0;
+  let activeRecordedBlob = null;
+  let activeUploadedFile = null;
+
+  function openModal() {
+    modal.classList.remove("hidden");
+    resetState();
+  }
+
+  function closeModal() {
+    stopRecording(true);
+    modal.classList.add("hidden");
+    resetState();
+  }
+
+  function resetState() {
+    activeRecordedBlob = null;
+    activeUploadedFile = null;
+    btnSave.disabled = true;
+    previewBox.classList.add("hidden");
+    if (player) {
+      player.pause();
+      player.src = "";
+    }
+    if (selectedFileInfo) selectedFileInfo.classList.add("hidden");
+    if (recordTimer) recordTimer.textContent = "00:00";
+    secondsCount = 0;
+  }
+
+  btnOpen.addEventListener("click", openModal);
+  btnClose?.addEventListener("click", closeModal);
+  btnCancel?.addEventListener("click", closeModal);
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) closeModal();
+  });
+
+  // Troca de Abas
+  tabRecordMic?.addEventListener("click", () => {
+    tabRecordMic.classList.add("active");
+    tabUploadAudio.classList.remove("active");
+    panelRecordMic.classList.remove("hidden");
+    panelUploadAudio.classList.add("hidden");
+    resetState();
+  });
+
+  tabUploadAudio?.addEventListener("click", () => {
+    tabUploadAudio.classList.add("active");
+    tabRecordMic.classList.remove("active");
+    panelUploadAudio.classList.remove("hidden");
+    panelRecordMic.classList.add("hidden");
+    resetState();
+  });
+
+  // Gravação de Microfone
+  btnStartRecord?.addEventListener("click", async () => {
+    try {
+      micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      audioChunks = [];
+
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 256;
+      const source = audioCtx.createMediaStreamSource(micStream);
+      source.connect(analyser);
+
+      drawWaveform();
+
+      mediaRecorder = new MediaRecorder(micStream);
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data && e.data.size > 0) audioChunks.push(e.data);
+      };
+
+      mediaRecorder.onstop = () => {
+        activeRecordedBlob = new Blob(audioChunks, { type: "audio/webm" });
+        if (player) {
+          player.src = URL.createObjectURL(activeRecordedBlob);
+          previewBox.classList.remove("hidden");
+        }
+        btnSave.disabled = false;
+      };
+
+      mediaRecorder.start();
+      btnStartRecord.classList.add("hidden");
+      btnStopRecord.classList.remove("hidden");
+
+      secondsCount = 0;
+      recordTimer.textContent = "00:00";
+      timerInterval = setInterval(() => {
+        secondsCount++;
+        const m = Math.floor(secondsCount / 60).toString().padStart(2, "0");
+        const s = (secondsCount % 60).toString().padStart(2, "0");
+        recordTimer.textContent = `${m}:${s}`;
+      }, 1000);
+    } catch (err) {
+      alert("Não foi possível acessar o microfone. Verifique as permissões do navegador.");
+      console.error(err);
+    }
+  });
+
+  function stopRecording(cancel = false) {
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+    if (animId) {
+      cancelAnimationFrame(animId);
+      animId = null;
+    }
+    if (mediaRecorder && mediaRecorder.state !== "inactive") {
+      mediaRecorder.stop();
+    }
+    if (micStream) {
+      micStream.getTracks().forEach((t) => t.stop());
+      micStream = null;
+    }
+    if (audioCtx && audioCtx.state !== "closed") {
+      audioCtx.close();
+      audioCtx = null;
+    }
+    if (btnStartRecord) btnStartRecord.classList.remove("hidden");
+    if (btnStopRecord) btnStopRecord.classList.add("hidden");
+
+    if (canvas) {
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    if (cancel) {
+      activeRecordedBlob = null;
+      btnSave.disabled = true;
+    }
+  }
+
+  btnStopRecord?.addEventListener("click", () => stopRecording(false));
+
+  function drawWaveform() {
+    if (!canvas || !analyser) return;
+    const ctx = canvas.getContext("2d");
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+
+    function render() {
+      animId = requestAnimationFrame(render);
+      analyser.getByteFrequencyData(dataArray);
+
+      ctx.fillStyle = "rgba(10, 15, 29, 0.4)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const barWidth = (canvas.width / bufferLength) * 2.5;
+      let x = 0;
+      for (let i = 0; i < bufferLength; i++) {
+        const barHeight = (dataArray[i] / 255) * canvas.height;
+        ctx.fillStyle = "#00f2fe";
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = "#00f2fe";
+        ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+        x += barWidth + 1;
+      }
+    }
+    render();
+  }
+
+  // Upload de Arquivo
+  audioDropzone?.addEventListener("click", () => audioFileInput?.click());
+  audioDropzone?.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    audioDropzone.classList.add("hover");
+  });
+  audioDropzone?.addEventListener("dragleave", () => audioDropzone.classList.remove("hover"));
+  audioDropzone?.addEventListener("drop", (e) => {
+    e.preventDefault();
+    audioDropzone.classList.remove("hover");
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleSelectedAudio(e.dataTransfer.files[0]);
+    }
+  });
+
+  audioFileInput?.addEventListener("change", (e) => {
+    if (e.target.files && e.target.files[0]) {
+      handleSelectedAudio(e.target.files[0]);
+    }
+  });
+
+  function handleSelectedAudio(file) {
+    if (!file.type.startsWith("audio/") && !file.name.match(/\.(mp3|wav|ogg|m4a|webm)$/i)) {
+      alert("Por favor, selecione um arquivo de áudio válido (.mp3, .wav, .m4a).");
+      return;
+    }
+    activeUploadedFile = file;
+    selectedFileName.textContent = `${file.name} (${(file.size / 1024).toFixed(0)} KB)`;
+    selectedFileInfo.classList.remove("hidden");
+    if (player) {
+      player.src = URL.createObjectURL(file);
+      previewBox.classList.remove("hidden");
+    }
+    btnSave.disabled = false;
+  }
+
+  btnRemoveAudioFile?.addEventListener("click", () => {
+    activeUploadedFile = null;
+    selectedFileInfo.classList.add("hidden");
+    if (audioFileInput) audioFileInput.value = "";
+    previewBox.classList.add("hidden");
+    btnSave.disabled = true;
+  });
+
+  // Salvar Voz Clonada
+  btnSave?.addEventListener("click", async () => {
+    const name = voiceNameInput?.value.trim() || "Minha Voz Clonada";
+    const gender = voiceGenderSelect?.value || "auto";
+
+    let audioToSend = null;
+    if (activeRecordedBlob) {
+      audioToSend = new File([activeRecordedBlob], "recording.webm", { type: "audio/webm" });
+    } else if (activeUploadedFile) {
+      audioToSend = activeUploadedFile;
+    }
+
+    if (!audioToSend) {
+      alert("Grave sua voz ou envie um arquivo de áudio antes de salvar.");
+      return;
+    }
+
+    btnSave.disabled = true;
+    btnSave.textContent = "⏳ Processando Perfil Vocal...";
+
+    try {
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("gender", gender);
+      formData.append("audio", audioToSend);
+
+      const res = await fetch("/api/voices/clone", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+
+      if (!res.ok || data.error) {
+        throw new Error(data.error || "Falha ao processar clonagem de voz.");
+      }
+
+      alert(`✅ Voz "${data.profile.name}" clonada com sucesso!\nEla já está disponível e ativada no seu seletor de narração.`);
+      closeModal();
+
+      // Recarrega as configurações e seleciona a nova voz
+      await loadConfig();
+      const voiceSelect = document.getElementById("voiceSelect");
+      if (voiceSelect && data.profile && data.profile.id) {
+        voiceSelect.value = data.profile.id;
+      }
+    } catch (err) {
+      alert(`Erro: ${err.message}`);
+    } finally {
+      btnSave.disabled = false;
+      btnSave.textContent = "Salvar & Ativar Minha Voz";
+    }
+  });
+}
+

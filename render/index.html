@@ -8,10 +8,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --palettePrimary: #7B1FA2;
-      --paletteAccent: #E040FB;
-      --paletteText: #F3E5F5;
-      --paletteBackground: #1A0025;
+      --palettePrimary: #FF6F00;
+      --paletteAccent: #FFC107;
+      --paletteText: #3E2723;
+      --paletteBackground: #FFF3E0;
       --surface: color-mix(in srgb, var(--paletteBackground) 88%, white);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -632,6 +632,110 @@
       opacity: 0;
       pointer-events: none;
       z-index: 100;
+    }
+
+    /* ARQUÉTIPO: ANALYTICS & DADOS */
+    .motion-analytics {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      position: relative;
+      gap: 14px;
+    }
+    .analytics-hud-header {
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--paletteAccent);
+    }
+    .analytics-chart-svg {
+      overflow: visible;
+      filter: drop-shadow(0 0 10px color-mix(in srgb, var(--paletteAccent) 40%, transparent));
+    }
+    .analytics-bars-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 16px;
+      height: 70px;
+      padding: 0 20px;
+    }
+    .stat-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.6);
+      height: 100%;
+      justify-content: flex-end;
+    }
+    .stat-fill {
+      width: 24px;
+      background: linear-gradient(to top, var(--palettePrimary), var(--paletteAccent));
+      border-radius: 4px 4px 0 0;
+      box-shadow: 0 0 12px color-mix(in srgb, var(--paletteAccent) 50%, transparent);
+    }
+
+    /* ARQUÉTIPO: RADAR & VARREDURA */
+    .motion-radar {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    .radar-hud-circle {
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      border: 2px solid color-mix(in srgb, var(--palettePrimary) 40%, transparent);
+      box-shadow: inset 0 0 30px color-mix(in srgb, var(--palettePrimary) 20%, transparent), 0 0 20px color-mix(in srgb, var(--palettePrimary) 15%, transparent);
+      position: relative;
+      overflow: hidden;
+      background: radial-gradient(circle, transparent 40%, color-mix(in srgb, var(--paletteBackground) 80%, transparent) 100%);
+    }
+    .radar-sweep-line {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 140px;
+      height: 140px;
+      transform-origin: top left;
+      background: conic-gradient(from 0deg, color-mix(in srgb, var(--paletteAccent) 45%, transparent) 0deg, transparent 60deg);
+      border-radius: 100% 0 0 0;
+      animation: radarSweep 2.5s linear infinite;
+    }
+    @keyframes radarSweep {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .radar-axis-x, .radar-axis-y {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.15);
+    }
+    .radar-axis-x { top: 50%; left: 0; right: 0; height: 1px; }
+    .radar-axis-y { left: 50%; top: 0; bottom: 0; width: 1px; }
+    .radar-blip {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--paletteAccent);
+      box-shadow: 0 0 10px var(--paletteAccent);
+      animation: blipPulse 1.8s ease-in-out infinite alternate;
+    }
+    .radar-blip.b1 { top: 30%; left: 65%; animation-delay: 0.2s; }
+    .radar-blip.b2 { top: 70%; left: 35%; animation-delay: 0.8s; }
+    .radar-blip.b3 { top: 45%; left: 25%; animation-delay: 1.4s; }
+    @keyframes blipPulse {
+      from { opacity: 0.2; transform: scale(0.7); }
+      to { opacity: 1; transform: scale(1.3); }
+    }
+
     /* ARQUÉTIPO: POLÍTICA, INFLUÊNCIA & PODER */
     .motion-politics {
       display: flex;
@@ -783,7 +887,7 @@
 </head>
 <body>
   <div id="root" data-composition-id="main" data-start="0"
-       data-width="1920" data-height="1080" data-duration="44.114416" style="perspective: 1200px;">
+       data-width="1920" data-height="1080" data-duration="53.146375" style="perspective: 1200px;">
     <div class="bg-grid-overlay"></div>
     <div class="hud-border"></div>
     <div class="scene-wipe-beam"></div>
@@ -794,93 +898,153 @@
 
     
     <div id="el-1" class="explainer-clip"
-         data-start="0.000" data-duration="14.626">
+         data-start="0.000" data-duration="5.105">
       <div class="clip-left-content">
         <div class="clip-heading">
           <span class="clip-index">01</span>
           <span>A PERGUNTA / TÍTULO</span>
         </div>
-        <div class="clip-copy"><span class="kinetic-line">Ação: Você Está Pronto para Ser Parte do Futuro?</span></div>
+        <div class="clip-copy"><span class="kinetic-line">Você Pode Fazer Isso</span></div>
         
       </div>
       
       <div class="clip-right-media">
-        <div class="motion-design-graphic motion-politics">
-          <div class="polarization-hud">
-            <span class="hud-sub-badge">DINÂMICA DE PODER & INFLUÊNCIA</span>
-            <div class="polarity-spectrum">
-              <span class="pol-label left">POLO ALFA // 48%</span>
-              <div class="pol-bar"><div class="pol-needle"></div></div>
-              <span class="pol-label right">POLO BETA // 52%</span>
+        <div class="motion-design-graphic motion-psychology">
+          <div class="psych-hud-header">
+            <span class="hud-sub-badge">PROCESSAMENTO COGNITIVO & VIESES</span>
+          </div>
+          <div class="psych-brain-core">
+            <div class="synapse-ring s-outer"></div>
+            <div class="synapse-ring s-mid"></div>
+            <div class="decision-nucleus"></div>
+          </div>
+          <div class="bias-scales-box">
+            <div class="scale-row">
+              <span class="scale-lbl">GATILHO EMOCIONAL</span>
+              <div class="scale-track"><div class="scale-fill fill-accent" style="width: 86%;"></div></div>
+            </div>
+            <div class="scale-row">
+              <span class="scale-lbl">FILTRO RACIONAL</span>
+              <div class="scale-track"><div class="scale-fill fill-primary" style="width: 29%;"></div></div>
             </div>
           </div>
-          <svg class="influence-net-svg" viewBox="0 0 380 230" width="380" height="230">
-            <line class="inf-line" x1="60" y1="115" x2="190" y2="55" stroke="var(--palettePrimary)" stroke-width="2" stroke-dasharray="4 4"/>
-            <line class="inf-line" x1="60" y1="115" x2="190" y2="175" stroke="var(--palettePrimary)" stroke-width="2" stroke-dasharray="4 4"/>
-            <line class="inf-line" x1="320" y1="115" x2="190" y2="55" stroke="var(--paletteAccent)" stroke-width="2" stroke-dasharray="4 4"/>
-            <line class="inf-line" x1="320" y1="115" x2="190" y2="175" stroke="var(--paletteAccent)" stroke-width="2" stroke-dasharray="4 4"/>
-            <circle class="influencer-core core-a" cx="60" cy="115" r="22" fill="var(--palettePrimary)"/>
-            <circle class="influencer-core core-b" cx="320" cy="115" r="22" fill="var(--paletteAccent)"/>
-            <circle class="mass-node m-1" cx="190" cy="55" r="14" fill="rgba(255,255,255,0.7)"/>
-            <circle class="mass-node m-2" cx="190" cy="175" r="14" fill="rgba(255,255,255,0.7)"/>
-          </svg>
-          <div class="politics-readouts">
-            <div class="readout-pill">ÍNDICE DE PERSUASÃO: <b>89.4%</b></div>
-            <div class="readout-pill">DISPERSÃO DE NARRATIVA: <b>ALTA</b></div>
-          </div>
-          <div class="hud-label">DINÂMICA DE PODER & INFLUÊNCIA // AÇÃO VOCÊ ESTÁ PRONTO PARA SER</div>
+          <div class="hud-label">PSICOLOGIA COGNITIVA & MENTE // VOCÊ PODE FAZER ISSO</div>
         </div>
       </div>
     </div>
 
     <div id="el-2" class="explainer-clip"
-         data-start="14.626" data-duration="14.162">
+         data-start="5.105" data-duration="3.961">
       <div class="clip-left-content">
         <div class="clip-heading">
           <span class="clip-index">02</span>
           <span>MECANISMO &amp; CIÊNCIA</span>
         </div>
-        <div class="clip-copy"><span class="kinetic-line">E agora, é hora de concluir nossa jornada no reino das células imortais</span></div>
+        <div class="clip-copy"><span class="kinetic-line">Imagine agora que você está em controle do seu próprio destino.</span></div>
         
       </div>
       
       <div class="clip-right-media">
-        <div class="motion-design-graphic motion-politics">
-          <div class="polarization-hud">
-            <span class="hud-sub-badge">DINÂMICA DE PODER & INFLUÊNCIA</span>
-            <div class="polarity-spectrum">
-              <span class="pol-label left">POLO ALFA // 48%</span>
-              <div class="pol-bar"><div class="pol-needle"></div></div>
-              <span class="pol-label right">POLO BETA // 52%</span>
-            </div>
-          </div>
-          <svg class="influence-net-svg" viewBox="0 0 380 230" width="380" height="230">
-            <line class="inf-line" x1="60" y1="115" x2="190" y2="55" stroke="var(--palettePrimary)" stroke-width="2" stroke-dasharray="4 4"/>
-            <line class="inf-line" x1="60" y1="115" x2="190" y2="175" stroke="var(--palettePrimary)" stroke-width="2" stroke-dasharray="4 4"/>
-            <line class="inf-line" x1="320" y1="115" x2="190" y2="55" stroke="var(--paletteAccent)" stroke-width="2" stroke-dasharray="4 4"/>
-            <line class="inf-line" x1="320" y1="115" x2="190" y2="175" stroke="var(--paletteAccent)" stroke-width="2" stroke-dasharray="4 4"/>
-            <circle class="influencer-core core-a" cx="60" cy="115" r="22" fill="var(--palettePrimary)"/>
-            <circle class="influencer-core core-b" cx="320" cy="115" r="22" fill="var(--paletteAccent)"/>
-            <circle class="mass-node m-1" cx="190" cy="55" r="14" fill="rgba(255,255,255,0.7)"/>
-            <circle class="mass-node m-2" cx="190" cy="175" r="14" fill="rgba(255,255,255,0.7)"/>
+        <div class="motion-design-graphic motion-network">
+          <svg class="network-svg" viewBox="0 0 380 380" width="380" height="380">
+            <line x1="190" y1="190" x2="80" y2="90" stroke="rgba(255,255,255,0.2)" stroke-width="2" stroke-dasharray="4 4"/>
+            <line x1="190" y1="190" x2="300" y2="90" stroke="rgba(255,255,255,0.2)" stroke-width="2" stroke-dasharray="4 4"/>
+            <line x1="190" y1="190" x2="310" y2="280" stroke="rgba(255,255,255,0.2)" stroke-width="2" stroke-dasharray="4 4"/>
+            <line x1="190" y1="190" x2="70" y2="270" stroke="rgba(255,255,255,0.2)" stroke-width="2" stroke-dasharray="4 4"/>
+            <circle class="net-node node-a" cx="80" cy="90" r="14" fill="var(--paletteAccent)"/>
+            <circle class="net-node node-b" cx="300" cy="90" r="12" fill="var(--palettePrimary)"/>
+            <circle class="net-node node-c" cx="310" cy="280" r="15" fill="var(--paletteAccent)"/>
+            <circle class="net-node node-d" cx="70" cy="270" r="11" fill="var(--palettePrimary)"/>
           </svg>
-          <div class="politics-readouts">
-            <div class="readout-pill">ÍNDICE DE PERSUASÃO: <b>89.4%</b></div>
-            <div class="readout-pill">DISPERSÃO DE NARRATIVA: <b>ALTA</b></div>
-          </div>
-          <div class="hud-label">DINÂMICA DE PODER & INFLUÊNCIA // AÇÃO VOCÊ ESTÁ PRONTO PARA SER</div>
+          <div class="network-core"></div>
+          <div class="hud-label">BIOLOGIA & CÉLULAS // VOCÊ PODE FAZER ISSO</div>
         </div>
       </div>
     </div>
 
     <div id="el-3" class="explainer-clip"
-         data-start="28.788" data-duration="15.326">
+         data-start="9.066" data-duration="4.232">
       <div class="clip-left-content">
         <div class="clip-heading">
           <span class="clip-index">03</span>
           <span>MECANISMO &amp; CIÊNCIA</span>
         </div>
-        <div class="clip-copy"><span class="kinetic-line">Você está pronto para ser parte do futuro</span></div>
+        <div class="clip-copy"><span class="kinetic-line">Que você pode escolher viver mais tempo</span></div>
+        
+      </div>
+      
+      <div class="clip-right-media">
+        <div class="motion-design-graphic motion-network">
+          <svg class="network-svg" viewBox="0 0 380 380" width="380" height="380">
+            <line x1="190" y1="190" x2="80" y2="90" stroke="rgba(255,255,255,0.2)" stroke-width="2" stroke-dasharray="4 4"/>
+            <line x1="190" y1="190" x2="300" y2="90" stroke="rgba(255,255,255,0.2)" stroke-width="2" stroke-dasharray="4 4"/>
+            <line x1="190" y1="190" x2="310" y2="280" stroke="rgba(255,255,255,0.2)" stroke-width="2" stroke-dasharray="4 4"/>
+            <line x1="190" y1="190" x2="70" y2="270" stroke="rgba(255,255,255,0.2)" stroke-width="2" stroke-dasharray="4 4"/>
+            <circle class="net-node node-a" cx="80" cy="90" r="14" fill="var(--paletteAccent)"/>
+            <circle class="net-node node-b" cx="300" cy="90" r="12" fill="var(--palettePrimary)"/>
+            <circle class="net-node node-c" cx="310" cy="280" r="15" fill="var(--paletteAccent)"/>
+            <circle class="net-node node-d" cx="70" cy="270" r="11" fill="var(--palettePrimary)"/>
+          </svg>
+          <div class="network-core"></div>
+          <div class="hud-label">REDE DE CONEXÕES // VOCÊ PODE FAZER ISSO</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="el-4" class="explainer-clip"
+         data-start="13.298" data-duration="3.931">
+      <div class="clip-left-content">
+        <div class="clip-heading">
+          <span class="clip-index">04</span>
+          <span>MECANISMO &amp; CIÊNCIA</span>
+        </div>
+        <div class="clip-copy"><span class="kinetic-line">experimentar a vida até o fim e deixar uma marca imortal na Terra.</span></div>
+        
+      </div>
+      
+      <div class="clip-right-media">
+        <div class="motion-design-graphic motion-quantum">
+          <div class="quantum-orbit q-1"></div>
+          <div class="quantum-orbit q-2"></div>
+          <div class="quantum-orbit q-3"></div>
+          <div class="quantum-nucleus"></div>
+          <div class="hud-label">ESTRUTURA QUÂNTICA // VOCÊ PODE FAZER ISSO</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="el-5" class="explainer-clip"
+         data-start="17.229" data-duration="5.648">
+      <div class="clip-left-content">
+        <div class="clip-heading">
+          <span class="clip-index">05</span>
+          <span>MECANISMO &amp; CIÊNCIA</span>
+        </div>
+        <div class="clip-copy"><span class="kinetic-line">A promessa de longevidade humana é um conceito fascinante que nos leva a perguntar</span></div>
+        
+      </div>
+      
+      <div class="clip-right-media">
+        <div class="motion-design-graphic motion-formula">
+          <div class="formula-card">
+            <div class="formula-sub-badge">LEI CIENTÍFICA FUNDAMENTAL</div>
+            <div class="formula-math-display">E = m &middot; c<sup>2</sup></div>
+            <div class="formula-caption">Equivalência Massa-Energia de Einstein</div>
+            <div class="formula-vars-grid"><div class="formula-var-chip"><span class="var-sym">E</span><span class="var-lbl">Energia Repouso</span></div><div class="formula-var-chip"><span class="var-sym">m</span><span class="var-lbl">Massa Relativística</span></div><div class="formula-var-chip"><span class="var-sym">c</span><span class="var-lbl">Velocidade da Luz</span></div></div>
+          </div>
+          <div class="hud-label">EQUAÇÃO FUNDAMENTAL // VOCÊ PODE FAZER ISSO</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="el-6" class="explainer-clip"
+         data-start="22.877" data-duration="4.654">
+      <div class="clip-left-content">
+        <div class="clip-heading">
+          <span class="clip-index">06</span>
+          <span>MECANISMO &amp; CIÊNCIA</span>
+        </div>
+        <div class="clip-copy"><span class="kinetic-line">como podemos viver para sempre?</span></div>
         
       </div>
       
@@ -908,7 +1072,159 @@
             <div class="readout-pill">ÍNDICE DE PERSUASÃO: <b>89.4%</b></div>
             <div class="readout-pill">DISPERSÃO DE NARRATIVA: <b>ALTA</b></div>
           </div>
-          <div class="hud-label">DINÂMICA DE PODER & INFLUÊNCIA // AÇÃO VOCÊ ESTÁ PRONTO PARA SER</div>
+          <div class="hud-label">DINÂMICA DE PODER & INFLUÊNCIA // VOCÊ PODE FAZER ISSO</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="el-7" class="explainer-clip"
+         data-start="27.531" data-duration="5.301">
+      <div class="clip-left-content">
+        <div class="clip-heading">
+          <span class="clip-index">07</span>
+          <span>MECANISMO &amp; CIÊNCIA</span>
+        </div>
+        <div class="clip-copy"><span class="kinetic-line">Mas antes de mergulhar nesse universo hipotético</span></div>
+        
+      </div>
+      
+      <div class="clip-right-media">
+        <div class="motion-design-graphic motion-blueprint">
+          <div class="crosshair-axis axis-x"></div>
+          <div class="crosshair-axis axis-y"></div>
+          <div class="blueprint-reticle ret-outer"></div>
+          <div class="blueprint-reticle ret-mid"></div>
+          <div class="blueprint-reticle ret-inner"></div>
+          <div class="blueprint-corner tl"></div>
+          <div class="blueprint-corner tr"></div>
+          <div class="blueprint-corner bl"></div>
+          <div class="blueprint-corner br"></div>
+          <div class="blueprint-hud-coords">AZ: 184.22° // EL: +47.19° // RA: 12h 55m</div>
+          <div class="hud-label">DIAGRAMA TÉCNICO // VOCÊ PODE FAZER ISSO</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="el-8" class="explainer-clip"
+         data-start="32.832" data-duration="5.060">
+      <div class="clip-left-content">
+        <div class="clip-heading">
+          <span class="clip-index">08</span>
+          <span>MECANISMO &amp; CIÊNCIA</span>
+        </div>
+        <div class="clip-copy"><span class="kinetic-line">vamos revisitar os passos que nos levaram até aqui.</span></div>
+        
+      </div>
+      
+      <div class="clip-right-media">
+        <div class="motion-design-graphic motion-timeline">
+          <div class="timeline-axis"></div>
+          <div class="timeline-nodes">
+            <div class="tl-node n-1"><div class="tl-pulse"></div><span>T-0</span></div>
+            <div class="tl-node n-2"><div class="tl-pulse"></div><span>ERA I</span></div>
+            <div class="tl-node n-3"><div class="tl-pulse"></div><span>ERA II</span></div>
+            <div class="tl-node n-4 active"><div class="tl-pulse"></div><span>PRESENTE</span></div>
+          </div>
+          <div class="timeline-scanner-beam"></div>
+          <div class="hud-label">CRONOLOGIA HISTÓRICA // VOCÊ PODE FAZER ISSO</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="el-9" class="explainer-clip"
+         data-start="37.892" data-duration="4.111">
+      <div class="clip-left-content">
+        <div class="clip-heading">
+          <span class="clip-index">09</span>
+          <span>MECANISMO &amp; CIÊNCIA</span>
+        </div>
+        <div class="clip-copy"><span class="kinetic-line">Nós descobrimos que as células velhas podem ser revertidas para jovens novamente</span></div>
+        
+      </div>
+      
+      <div class="clip-right-media">
+        <div class="motion-design-graphic motion-spectrum">
+          <svg class="spectrum-svg" viewBox="0 0 420 280" width="420" height="280">
+            <path class="sine-wave wave-1" d="M 0 140 Q 52.5 60 105 140 T 210 140 T 315 140 T 420 140" fill="none" stroke="var(--palettePrimary)" stroke-width="3"/>
+            <path class="sine-wave wave-2" d="M 0 140 Q 52.5 210 105 140 T 210 140 T 315 140 T 420 140" fill="none" stroke="var(--paletteAccent)" stroke-width="2" stroke-dasharray="4 4"/>
+          </svg>
+          <div class="spectrum-dispersion-bar"></div>
+          <div class="spectral-absorption-lines">
+            <div class="abs-line line-1"></div>
+            <div class="abs-line line-2"></div>
+            <div class="abs-line line-3"></div>
+            <div class="abs-line line-4"></div>
+          </div>
+          <div class="hud-label">ESPECTRO & ONDAS // VOCÊ PODE FAZER ISSO</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="el-10" class="explainer-clip"
+         data-start="42.003" data-duration="4.804">
+      <div class="clip-left-content">
+        <div class="clip-heading">
+          <span class="clip-index">10</span>
+          <span>MECANISMO &amp; CIÊNCIA</span>
+        </div>
+        <div class="clip-copy"><span class="kinetic-line">e agora estamos prestes a descobrir o papel do fator de longevidade como chave para mudar</span></div>
+        
+      </div>
+      
+      <div class="clip-right-media">
+        <div class="motion-design-graphic motion-infographic">
+          <svg class="radial-gauge-svg" viewBox="0 0 360 360" width="360" height="360">
+            <circle class="gauge-bg" cx="180" cy="180" r="140" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="8"/>
+            <circle class="gauge-bar" cx="180" cy="180" r="140" fill="none" stroke="var(--palettePrimary)" stroke-width="10" stroke-dasharray="880" stroke-dashoffset="260" stroke-linecap="round"/>
+            <circle class="gauge-inner-ring" cx="180" cy="180" r="105" fill="none" stroke="var(--paletteAccent)" stroke-width="2" stroke-dasharray="6 8"/>
+          </svg>
+          <div class="infographic-bars">
+            <div class="meter-bar bar-1"></div>
+            <div class="meter-bar bar-2"></div>
+            <div class="meter-bar bar-3"></div>
+            <div class="meter-bar bar-4"></div>
+          </div>
+          <div class="gauge-center-readout">
+            <span class="readout-val">98.4%</span>
+            <span class="readout-unit">FLUXO RELATIVÍSTICO</span>
+          </div>
+          <div class="hud-label">TELEMETRIA & DADOS // VOCÊ PODE FAZER ISSO</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="el-11" class="explainer-clip"
+         data-start="46.807" data-duration="6.339">
+      <div class="clip-left-content">
+        <div class="clip-heading">
+          <span class="clip-index">11</span>
+          <span>MECANISMO &amp; CIÊNCIA</span>
+        </div>
+        <div class="clip-copy"><span class="kinetic-line">É hora de entender como esse gene simples pode transformar a história humana.</span></div>
+        
+      </div>
+      
+      <div class="clip-right-media">
+        <div class="motion-design-graphic motion-psychology">
+          <div class="psych-hud-header">
+            <span class="hud-sub-badge">PROCESSAMENTO COGNITIVO & VIESES</span>
+          </div>
+          <div class="psych-brain-core">
+            <div class="synapse-ring s-outer"></div>
+            <div class="synapse-ring s-mid"></div>
+            <div class="decision-nucleus"></div>
+          </div>
+          <div class="bias-scales-box">
+            <div class="scale-row">
+              <span class="scale-lbl">GATILHO EMOCIONAL</span>
+              <div class="scale-track"><div class="scale-fill fill-accent" style="width: 86%;"></div></div>
+            </div>
+            <div class="scale-row">
+              <span class="scale-lbl">FILTRO RACIONAL</span>
+              <div class="scale-track"><div class="scale-fill fill-primary" style="width: 29%;"></div></div>
+            </div>
+          </div>
+          <div class="hud-label">PSICOLOGIA COGNITIVA & MENTE // VOCÊ PODE FAZER ISSO</div>
         </div>
       </div>
     </div>

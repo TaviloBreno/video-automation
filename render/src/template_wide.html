@@ -632,6 +632,110 @@
       opacity: 0;
       pointer-events: none;
       z-index: 100;
+    }
+
+    /* ARQUÉTIPO: ANALYTICS & DADOS */
+    .motion-analytics {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      position: relative;
+      gap: 14px;
+    }
+    .analytics-hud-header {
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--paletteAccent);
+    }
+    .analytics-chart-svg {
+      overflow: visible;
+      filter: drop-shadow(0 0 10px color-mix(in srgb, var(--paletteAccent) 40%, transparent));
+    }
+    .analytics-bars-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 16px;
+      height: 70px;
+      padding: 0 20px;
+    }
+    .stat-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.6);
+      height: 100%;
+      justify-content: flex-end;
+    }
+    .stat-fill {
+      width: 24px;
+      background: linear-gradient(to top, var(--palettePrimary), var(--paletteAccent));
+      border-radius: 4px 4px 0 0;
+      box-shadow: 0 0 12px color-mix(in srgb, var(--paletteAccent) 50%, transparent);
+    }
+
+    /* ARQUÉTIPO: RADAR & VARREDURA */
+    .motion-radar {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    .radar-hud-circle {
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      border: 2px solid color-mix(in srgb, var(--palettePrimary) 40%, transparent);
+      box-shadow: inset 0 0 30px color-mix(in srgb, var(--palettePrimary) 20%, transparent), 0 0 20px color-mix(in srgb, var(--palettePrimary) 15%, transparent);
+      position: relative;
+      overflow: hidden;
+      background: radial-gradient(circle, transparent 40%, color-mix(in srgb, var(--paletteBackground) 80%, transparent) 100%);
+    }
+    .radar-sweep-line {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 140px;
+      height: 140px;
+      transform-origin: top left;
+      background: conic-gradient(from 0deg, color-mix(in srgb, var(--paletteAccent) 45%, transparent) 0deg, transparent 60deg);
+      border-radius: 100% 0 0 0;
+      animation: radarSweep 2.5s linear infinite;
+    }
+    @keyframes radarSweep {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .radar-axis-x, .radar-axis-y {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.15);
+    }
+    .radar-axis-x { top: 50%; left: 0; right: 0; height: 1px; }
+    .radar-axis-y { left: 50%; top: 0; bottom: 0; width: 1px; }
+    .radar-blip {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--paletteAccent);
+      box-shadow: 0 0 10px var(--paletteAccent);
+      animation: blipPulse 1.8s ease-in-out infinite alternate;
+    }
+    .radar-blip.b1 { top: 30%; left: 65%; animation-delay: 0.2s; }
+    .radar-blip.b2 { top: 70%; left: 35%; animation-delay: 0.8s; }
+    .radar-blip.b3 { top: 45%; left: 25%; animation-delay: 1.4s; }
+    @keyframes blipPulse {
+      from { opacity: 0.2; transform: scale(0.7); }
+      to { opacity: 1; transform: scale(1.3); }
+    }
+
     /* ARQUÉTIPO: POLÍTICA, INFLUÊNCIA & PODER */
     .motion-politics {
       display: flex;

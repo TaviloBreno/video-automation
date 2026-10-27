@@ -169,11 +169,16 @@
                 <!-- Voz da Narração -->
                 <div class="form-group">
                   <div class="label-with-value">
-                    <label for="voiceSelect">Voz Neural (Edge TTS pt-BR)</label>
-                    <button type="button" id="btnPreviewVoice" class="btn-preview-audio" title="Ouvir demonstração da voz selecionada">
-                      <span id="previewVoiceIcon">▶</span>
-                      <span id="previewVoiceText">Ouvir Voz</span>
-                    </button>
+                    <label for="voiceSelect">Voz da Narração (Vozes Neurais & Clonadas)</label>
+                    <div class="voice-actions-row">
+                      <button type="button" id="btnPreviewVoice" class="btn-preview-audio" title="Ouvir demonstração da voz selecionada">
+                        <span id="previewVoiceIcon">▶</span>
+                        <span id="previewVoiceText">Ouvir</span>
+                      </button>
+                      <button type="button" id="btnOpenCloneModal" class="btn-clone-voice" title="Gravar microfone ou enviar áudio para clonar voz">
+                        <span>🎙️ Clonar Minha Voz</span>
+                      </button>
+                    </div>
                   </div>
                   <select id="voiceSelect" class="custom-select">
                     <!-- Injetado via JS -->
@@ -593,6 +598,89 @@
     </div>
   </div>
 
-  <script src="/static/js/app.js?v=3"></script>
+  <!-- Modal de Clonagem de Voz Personalizada -->
+  <div id="cloneVoiceModal" class="modal-backdrop hidden">
+    <div class="modal-card glass clone-modal-card">
+      <div class="modal-header">
+        <div>
+          <h3>🎙️ Clonar Nova Voz Personalizada</h3>
+          <p class="meta-sub">Grave sua voz no microfone ou envie um arquivo de áudio de 5 a 30 segundos.</p>
+        </div>
+        <button id="btnCloseCloneModal" class="btn-close">&times;</button>
+      </div>
+
+      <div class="clone-modal-body">
+        <!-- Abas: Gravar Microfone vs Enviar Arquivo -->
+        <div class="clone-tabs">
+          <button type="button" id="tabRecordMic" class="clone-tab-btn active">🔴 Gravar no Microfone</button>
+          <button type="button" id="tabUploadAudio" class="clone-tab-btn">📁 Enviar Arquivo (.wav / .mp3)</button>
+        </div>
+
+        <!-- Painel Microfone -->
+        <div id="panelRecordMic" class="clone-tab-panel">
+          <div class="mic-recorder-box">
+            <canvas id="micVisualizer" width="340" height="60" class="mic-canvas"></canvas>
+            <div id="recordTimer" class="record-timer">00:00</div>
+            <div class="recorder-controls">
+              <button type="button" id="btnStartRecord" class="btn-record-action">
+                <span class="rec-dot"></span> Iniciar Gravação
+              </button>
+              <button type="button" id="btnStopRecord" class="btn-record-action stop hidden">
+                ⏹️ Parar Gravação
+              </button>
+            </div>
+            <p class="mic-guide-text">
+              💡 <b>Frase sugerida para ler ao vivo:</b><br>
+              <em>"A ciência não é apenas um conjunto de respostas prontas, mas uma busca constante para decifrar os mistérios mais profundos do cosmos."</em>
+            </p>
+          </div>
+        </div>
+
+        <!-- Painel Upload -->
+        <div id="panelUploadAudio" class="clone-tab-panel hidden">
+          <div class="audio-upload-dropzone" id="audioDropzone">
+            <span class="upload-icon">🎵</span>
+            <p>Arraste seu arquivo de áudio aqui ou clique para selecionar</p>
+            <span class="file-hint">Formatos suportados: .wav, .mp3, .m4a, .webm (Recomendado: 5 a 30 segundos)</span>
+            <input type="file" id="audioFileInput" accept="audio/*" class="hidden-file-input">
+          </div>
+          <div id="selectedFileInfo" class="selected-file-info hidden">
+            <span id="selectedFileName">arquivo.mp3</span>
+            <button type="button" id="btnRemoveAudioFile" class="btn-remove-file" title="Remover">&times;</button>
+          </div>
+        </div>
+
+        <!-- Preview do Áudio Gravado/Enviado -->
+        <div id="audioPreviewContainer" class="audio-preview-box hidden">
+          <label>Pré-escuta da Amostra Gravada:</label>
+          <audio id="recordedAudioPlayer" controls class="custom-audio-player"></audio>
+        </div>
+
+        <!-- Metadados da Voz -->
+        <div class="form-group clone-meta-row">
+          <div>
+            <label for="cloneVoiceName">Nome da Voz</label>
+            <input type="text" id="cloneVoiceName" class="custom-input" placeholder="Ex: Minha Voz Nerdociência" value="Minha Voz">
+          </div>
+          <div>
+            <label for="cloneVoiceGender">Gênero Vocal / Timbre</label>
+            <select id="cloneVoiceGender" class="custom-select">
+              <option value="auto">Detecção Automática</option>
+              <option value="masculina">Masculina (Barítono / Grave)</option>
+              <option value="feminina">Feminina (Natural / Média)</option>
+              <option value="jovem">Jovem / Aguda</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" id="btnCancelClone" class="btn-secondary">Cancelar</button>
+        <button type="button" id="btnSaveCloneVoice" class="btn-primary glow" disabled>Salvar & Ativar Minha Voz</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/js/app.js?v=4"></script>
 </body>
 </html>

@@ -112,10 +112,22 @@ def generate_voice(
     mp3_path = out_path / "voice.mp3"
     words_path = out_path / "voice.words.json"
 
-    # Perfil especial de documentarista maduro / homem mais velho
+    # Perfil especial de documentarista maduro / homem mais velho ou voz personalizada
     target_pitch = pitch
     target_rate = rate
-    if voice == "pt-BR-AntonioSenior":
+    if voice.startswith("custom_"):
+        from scripts.voice_cloner import get_custom_voice
+        prof = get_custom_voice(voice)
+        if prof:
+            target_voice = prof.get("base_model", "pt-BR-AntonioNeural")
+            if pitch == "+0Hz" or not pitch:
+                target_pitch = prof.get("calibrated_pitch", "-2Hz")
+            if rate == "+0%" or not rate:
+                target_rate = prof.get("calibrated_rate", "-10%")
+            logger.info("Usando voz personalizada '%s' (%s) com base '%s' (pitch %s, rate %s)", prof.get("name"), voice, target_voice, target_pitch, target_rate)
+        else:
+            target_voice = "pt-BR-AntonioNeural"
+    elif voice == "pt-BR-AntonioSenior":
         target_voice = "pt-BR-AntonioNeural"
         if pitch == "+0Hz" or not pitch:
             target_pitch = "-9Hz"

@@ -676,21 +676,9 @@ def build_chapter_scene(
     image_info: dict[str, Any] | None = None,
     topic: str = "",
 ) -> dict[str, Any]:
-    """Cria a cena de um capítulo: título + frases-chave sincronizadas à fala,
-    alternando dinamicamente entre Motion Design cinemático de abertura e Fotografia Real explicativa.
+    """Cria a cena de um capítulo com micro-cenas dinâmicas a cada 4-7s,
+    garantindo que o Motion Design mude de visual constantemente ao longo de todo o vídeo.
     """
-    points = chapter["key_points"]
-    segments = len(points) + 1
-    boundaries = [0.0]
-    for k in range(1, segments):
-        idx = min(len(words) - 1, max(0, round(len(words) * k / segments)))
-        boundaries.append(float(words[idx]["start"]))
-    boundaries.append(slot_seconds)
-    durations = [boundaries[i + 1] - boundaries[i] for i in range(segments)]
-    if min(durations) < 1.2:
-        durations = [slot_seconds / segments] * segments
-    durations[-1] = slot_seconds - sum(durations[:-1])
-
     image_dict: dict[str, Any] = {}
     if image_info:
         local_p = image_info.get("local_path")
@@ -708,7 +696,56 @@ def build_chapter_scene(
         detected_arch, _ = detect_visual_theme(topic or "", chapter.get("narration", ""), chapter.get("title", ""))
         archetype = detected_arch
 
-    # Elemento 1 (Título do Capítulo): Abre sempre com Motion Design Procedural Temático (sem congelar foto)
+    points = chapter.get("key_points", [])
+
+    # Se não houver imagem real (modo Motion Design), dividimos a narração em micro-cenas dinâmicas de 4 a 6.5s
+    if not image_dict:
+        narration_text = chapter.get("narration", "")
+        # Extrai frases completas ou orações ricas da narração
+        sentences = [
+            s.strip() for s in re.split(r"(?<=[.!?])\s+|—\s*|\.{3}\s*", narration_text)
+            if len(s.strip()) >= 10
+        ]
+        sub_points: list[str] = []
+        for s in sentences:
+            if len(s) > 95:
+                parts = [p.strip() for p in re.split(r"[,;:]\s+", s) if len(p.strip()) >= 12]
+                if parts:
+                    sub_points.extend(parts)
+                else:
+                    sub_points.append(s)
+            else:
+                sub_points.append(s)
+
+        # Meta de dinamismo: trocar de cena visual a cada ~5.5 segundos
+        target_scene_count = max(3, min(12, int(round(slot_seconds / 5.5))))
+        if len(sub_points) >= target_scene_count:
+            step = len(sub_points) / target_scene_count
+            points = [_smart_truncate(sub_points[int(k * step)], 90) for k in range(target_scene_count)]
+        elif sub_points:
+            points = [_smart_truncate(p, 90) for p in sub_points]
+        else:
+            points = [_smart_truncate(p, 90) for p in chapter.get("key_points", ["Destaque da Cena"])]
+
+    segments = len(points) + 1
+    boundaries = [0.0]
+    for k in range(1, segments):
+        idx = min(len(words) - 1, max(0, round(len(words) * k / segments)))
+        boundaries.append(float(words[idx]["start"]))
+    boundaries.append(slot_seconds)
+    durations = [boundaries[i + 1] - boundaries[i] for i in range(segments)]
+    if min(durations) < 1.2:
+        durations = [slot_seconds / segments] * segments
+    durations[-1] = slot_seconds - sum(durations[:-1])
+
+    # Piscina variada de Motion Design para não repetir o mesmo componente em sequência
+    archetypes_pool = [
+        archetype, "analytics", "network", "quantum", "formula",
+        "politics", "psychology", "blueprint", "timeline", "spectrum", "infographic"
+    ]
+    archetypes_pool = list(dict.fromkeys(archetypes_pool))
+
+    # Elemento 1 (Título do Capítulo): Abre sempre com Motion Design Procedural Temático
     elements: list[dict[str, Any]] = [
         {
             "type": "title",
@@ -720,19 +757,19 @@ def build_chapter_scene(
         }
     ]
 
-    # Elementos seguintes: Alternam entre Imagem Real da fonte e Motion Design/Infográfico
-    animations = ["fade", "slide-up", "slide-left"]
+    # Elementos seguintes: Alternam dinamicamente entre arquétipos de Motion Design ou Imagem Real
+    animations = ["fade", "slide-up", "slide-left", "zoom", "slide-up"]
     for i, point in enumerate(points):
+        scene_arch = archetypes_pool[(i + 1) % len(archetypes_pool)]
         el: dict[str, Any] = {
             "type": "body",
             "content": point,
             "position": "center",
             "animation": animations[i % len(animations)],
             "duration_seconds": round(durations[i + 1], 3),
-            "visual_archetype": archetype,
+            "visual_archetype": scene_arch,
         }
-        # O primeiro ponto sempre recebe a imagem real do capítulo.
-        # Se houver mais de um ponto, pontos pares recebem imagem e ímpares ficam com o Motion HUD
+        # Se houver imagem real disponível, alterna foto com o motion design
         if image_dict and (i == 0 or i % 2 == 0):
             el.update(image_dict)
 
