@@ -51,6 +51,17 @@ function setupEventListeners() {
     });
   }
 
+  // Seletor de Formato do Vídeo (16:9 vs 9:16)
+  const aspectCards = document.querySelectorAll(".aspect-ratio-card");
+  aspectCards.forEach((card) => {
+    card.addEventListener("click", () => {
+      aspectCards.forEach((c) => c.classList.remove("active"));
+      card.classList.add("active");
+      const radio = card.querySelector('input[type="radio"]');
+      if (radio) radio.checked = true;
+    });
+  });
+
   // Seletor de Estilo Visual dos Capítulos (Motion Design vs Imagens)
   const visualCards = document.querySelectorAll(".visual-mode-card");
   visualCards.forEach((card) => {
@@ -314,6 +325,7 @@ async function handleCreateVideo(e) {
   const research = document.getElementById("researchCheck").checked;
   const bgMusic = document.getElementById("bgMusicSelect") ? document.getElementById("bgMusicSelect").value : "space_ambient";
   const visualMode = document.querySelector('input[name="visualModeRadio"]:checked')?.value || "motion_design";
+  const aspectRatio = document.querySelector('input[name="aspectRatioRadio"]:checked')?.value || "16:9";
   const enableImages = (visualMode !== "motion_design");
 
   const activePaletteEl = document.querySelector(".palette-item.active");
@@ -340,6 +352,7 @@ async function handleCreateVideo(e) {
       body: JSON.stringify({
         topic,
         minutes,
+        aspect_ratio: aspectRatio,
         palette,
         voice,
         voice_rate: voiceRate,
@@ -1007,6 +1020,9 @@ function renderGalleryCards(jobs) {
           <span>📅 ${dateStr}</span>
         </div>
         <div class="gallery-badges-row">
+          <span class="gallery-badge ${j.aspect_ratio === '9:16' ? 'vertical-ratio' : 'horizontal-ratio'}">
+            ${j.aspect_ratio === '9:16' ? '📱 9:16 Vertical' : '🖥️ 16:9 Wide'}
+          </span>
           <span class="gallery-badge">${modeLabel}</span>
           ${shortsBadge}
         </div>

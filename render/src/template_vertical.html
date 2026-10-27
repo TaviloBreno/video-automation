@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html data-composition-variables='[]'>
+<head>
+  <meta charset="utf-8">
+  <title>Vertical Studio Scene (9:16)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --palettePrimary: {{PALETTE_PRIMARY}};
+      --paletteAccent: {{PALETTE_ACCENT}};
+      --paletteText: {{PALETTE_TEXT}};
+      --paletteBackground: {{PALETTE_BACKGROUND}};
+      --surface: color-mix(in srgb, var(--paletteBackground) 88%, white);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--paletteBackground);
+      color: var(--paletteText);
+      font-family: 'Plus Jakarta Sans', 'Segoe UI', -apple-system, Roboto, 'Helvetica Neue', Arial, sans-serif;
+      overflow: hidden;
+    }
+    #root {
+      width: 1080px;
+      height: 1920px;
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 85% 15%, color-mix(in srgb, var(--paletteAccent) 22%, transparent) 0%, transparent 45%),
+        radial-gradient(circle at 15% 85%, color-mix(in srgb, var(--palettePrimary) 18%, transparent) 0%, transparent 45%),
+        linear-gradient(135deg, var(--paletteBackground) 0%, var(--surface) 100%);
+    }
+
+    /* Grade Científica de Fundo e Moldura Neon */
+    .bg-grid-overlay {
+      position: absolute;
+      inset: 0;
+      background-size: 60px 60px;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      pointer-events: none;
+    }
+    .hud-border {
+      position: absolute;
+      inset: 36px;
+      border: 1px solid color-mix(in srgb, var(--palettePrimary) 22%, transparent);
+      pointer-events: none;
+    }
+    .hud-header {
+      position: absolute;
+      top: 56px;
+      left: 72px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--paletteAccent);
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+    }
+    .hud-dot {
+      width: 10px;
+      height: 10px;
+      background: var(--paletteAccent);
+      border-radius: 50%;
+      box-shadow: 0 0 12px var(--paletteAccent);
+    }
+
+    /* Container de Cada Clipe / Slide (Vertical 9:16) */
+    .explainer-clip {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 130px 48px 400px; /* Safe space para legendas e UI inferior de Reels/TikTok */
+      gap: 28px;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    /* Conteúdo de Texto e Tipografia Cinética em 9:16 */
+    .clip-left-content {
+      order: 2;
+      width: 100%;
+      max-width: 960px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 16px;
+      z-index: 2;
+    }
+
+    .clip-heading {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      color: var(--paletteAccent);
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 3px;
+    }
+
+    .clip-index {
+      display: inline-flex;
+      width: 42px;
+      height: 42px;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--paletteAccent);
+      border-radius: 50%;
+      font-size: 16px;
+      color: var(--paletteAccent);
+      box-shadow: 0 0 16px color-mix(in srgb, var(--paletteAccent) 40%, transparent);
+    }
+
+    .clip-copy {
+      font-size: clamp(34px, 4.2vw, 48px);
+      font-weight: 750;
+      line-height: 1.28;
+      color: var(--paletteText);
+      text-wrap: balance;
+      text-align: center;
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+      word-break: normal;
+      overflow-wrap: break-word;
+      max-height: 520px;
+    }
+    .stat-highlight {
+      color: var(--paletteAccent);
+      background: color-mix(in srgb, var(--paletteAccent) 15%, transparent);
+      padding: 2px 10px;
+      border-radius: 8px;
+      border-bottom: 2px solid var(--paletteAccent);
+      font-weight: 800;
+      display: inline-block;
+      text-shadow: 0 0 16px var(--paletteAccent);
+    }
+    .kinetic-line {
+      display: inline;
+    }
+
+    .clip-sources {
+      margin-top: 8px;
+      color: color-mix(in srgb, var(--paletteText) 75%, transparent);
+      font-size: 13.5px;
+      line-height: 1.6;
+      letter-spacing: .4px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      max-width: 960px;
+    }
+    .sources-tag {
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      color: var(--paletteAccent);
+      font-size: 12px;
+      text-transform: uppercase;
+      background: rgba(255, 255, 255, 0.06);
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+    .citation {
+      background: rgba(10, 16, 30, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      padding: 4px 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13.5px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
+    .citation b { color: var(--palettePrimary); }
+    .citation i { font-style: normal; opacity: 0.9; }
+
+    /* Coluna Direita: Imagem Real ou Motion Design Procedural */
+    .clip-right-media {
+      order: 1; width: 100%; max-width: 980px;
+      height: 640px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+    }
+
+    /* Mídia: Imagem Fotográfica com Créditos */
+    .media-image-frame {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 2px solid color-mix(in srgb, var(--paletteAccent) 40%, transparent);
+      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.7), 0 0 30px color-mix(in srgb, var(--paletteAccent) 20%, transparent);
+      background: #000;
+    }
+    .media-image-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transform-origin: center center;
+    }
+    .image-credit-badge {
+      position: absolute;
+      bottom: 14px;
+      right: 16px;
+      background: rgba(8, 12, 22, 0.85);
+      backdrop-filter: blur(10px);
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      color: #e2e8f0;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.5);
+    }
+    .image-credit-badge b {
+      color: var(--palettePrimary);
+    }
+
+    /* Mídia: Motion Design Vetorial Procedural Temático (7 Arquétipos Dinâmicos) */
+    .motion-design-graphic {
+      position: relative;
+      width: 460px;
+      height: 460px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* 1. Arquétipo Orbital / Astrofísica / Buracos Negros */
+    .motion-orbital .plasma-jet,
+    .motion-astro .plasma-jet {
+      position: absolute;
+      width: 6px;
+      height: 400px;
+      background: linear-gradient(to bottom, transparent, var(--paletteAccent), #ffffff, var(--paletteAccent), transparent);
+      box-shadow: 0 0 25px var(--paletteAccent);
+      border-radius: 3px;
+      z-index: 1;
+    }
+    .motion-orbital .accretion-disk,
+    .motion-astro .accretion-disk {
+      position: absolute;
+      border-radius: 50%;
+      border: 3px solid color-mix(in srgb, var(--palettePrimary) 70%, transparent);
+      box-shadow: 0 0 40px var(--palettePrimary), inset 0 0 30px var(--paletteAccent);
+      transform: rotateX(68deg);
+    }
+    .motion-orbital .disk-outer, .motion-astro .disk-outer { width: 420px; height: 420px; }
+    .motion-orbital .disk-inner, .motion-astro .disk-inner { width: 260px; height: 260px; border-style: dashed; }
+    .motion-orbital .event-horizon,
+    .motion-astro .event-horizon {
+      position: absolute;
+      width: 140px;
+      height: 140px;
+      background: #000000;
+      border-radius: 50%;
+      box-shadow: 0 0 24px var(--paletteAccent), 0 0 60px color-mix(in srgb, var(--palettePrimary) 40%, transparent);
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      z-index: 2;
+    }
+
+    /* 2. Arquétipo Infographic / Telemetria / Medidores de Energia */
+    .motion-infographic {
+      flex-direction: column;
+    }
+    .radial-gauge-svg {
+      filter: drop-shadow(0 0 18px color-mix(in srgb, var(--palettePrimary) 40%, transparent));
+    }
+    .infographic-bars {
+      position: absolute;
+      bottom: 50px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-end;
+      height: 70px;
+      z-index: 2;
+    }
+    .meter-bar {
+      width: 12px;
+      border-radius: 4px;
+      background: linear-gradient(to top, var(--palettePrimary), var(--paletteAccent));
+      box-shadow: 0 0 12px var(--paletteAccent);
+      transform-origin: bottom center;
+    }
+    .bar-1 { height: 40px; }
+    .bar-2 { height: 65px; }
+    .bar-3 { height: 50px; }
+    .bar-4 { height: 58px; }
+    .gauge-center-readout {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 3;
+    }
+    .readout-val {
+      font-size: 38px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      color: #ffffff;
+      text-shadow: 0 0 20px var(--palettePrimary);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .readout-unit {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--paletteAccent);
+    }
+
+    /* 3. Arquétipo Blueprint / Observatório / Engenharia / Mira Telescópica */
+    .crosshair-axis {
+      position: absolute;
+      background: color-mix(in srgb, var(--palettePrimary) 40%, transparent);
+    }
+    .axis-x { width: 420px; height: 1px; }
+    .axis-y { height: 420px; width: 1px; }
+    .blueprint-reticle {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid color-mix(in srgb, var(--palettePrimary) 50%, transparent);
+    }
+    .ret-outer {
+      width: 400px;
+      height: 400px;
+      border: 2px dashed color-mix(in srgb, var(--paletteAccent) 60%, transparent);
+      box-shadow: 0 0 25px color-mix(in srgb, var(--paletteAccent) 20%, transparent);
+    }
+    .ret-mid {
+      width: 280px;
+      height: 280px;
+      border: 1px solid color-mix(in srgb, var(--palettePrimary) 40%, transparent);
+    }
+    .ret-inner {
+      width: 140px;
+      height: 140px;
+      border: 2px solid var(--palettePrimary);
+      box-shadow: 0 0 15px var(--palettePrimary);
+    }
+    .blueprint-corner {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      border-color: var(--paletteAccent);
+      border-style: solid;
+    }
+    .blueprint-corner.tl { top: 30px; left: 30px; border-width: 2px 0 0 2px; }
+    .blueprint-corner.tr { top: 30px; right: 30px; border-width: 2px 2px 0 0; }
+    .blueprint-corner.bl { bottom: 30px; left: 30px; border-width: 0 0 2px 2px; }
+    .blueprint-corner.br { bottom: 30px; right: 30px; border-width: 0 2px 2px 0; }
+    .blueprint-hud-coords {
+      position: absolute;
+      top: 42px;
+      font-size: 11px;
+      font-family: monospace;
+      letter-spacing: 2px;
+      color: var(--paletteAccent);
+      background: rgba(0,0,0,0.6);
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+
+    /* 4. Arquétipo Spectrum / Ondas / Eletromagnetismo / Doppler */
+    .motion-spectrum {
+      flex-direction: column;
+    }
+    .spectrum-svg {
+      filter: drop-shadow(0 0 15px var(--palettePrimary));
+    }
+    .spectrum-dispersion-bar {
+      position: absolute;
+      bottom: 80px;
+      width: 380px;
+      height: 12px;
+      border-radius: 6px;
+      background: linear-gradient(90deg, #8b5cf6 0%, #06b6d4 25%, #10b981 50%, #f59e0b 75%, #ef4444 100%);
+      box-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
+    }
+    .spectral-absorption-lines {
+      position: absolute;
+      bottom: 74px;
+      width: 340px;
+      display: flex;
+      justify-content: space-around;
+      pointer-events: none;
+    }
+    .abs-line {
+      width: 3px;
+      height: 24px;
+      background: #000000;
+      border-left: 1px solid rgba(255, 255, 255, 0.4);
+    }
+
+    /* 5. Arquétipo Network / Redes / Conexões / Biologia / IA */
+    .network-svg {
+      filter: drop-shadow(0 0 18px color-mix(in srgb, var(--paletteAccent) 35%, transparent));
+    }
+    .network-core {
+      position: absolute;
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #ffffff 0%, var(--palettePrimary) 55%, transparent 100%);
+      box-shadow: 0 0 40px var(--palettePrimary), 0 0 70px var(--paletteAccent);
+      z-index: 2;
+    }
+
+    /* 6. Arquétipo Timeline / Cronologia Cósmica */
+    .motion-timeline {
+      flex-direction: column;
+    }
+    .timeline-axis {
+      position: absolute;
+      width: 420px;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--palettePrimary), var(--paletteAccent), transparent);
+      box-shadow: 0 0 15px var(--palettePrimary);
+    }
+    .timeline-nodes {
+      position: absolute;
+      width: 380px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 2;
+    }
+    .tl-node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--paletteText);
+    }
+    .tl-pulse {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--palettePrimary);
+      box-shadow: 0 0 18px var(--palettePrimary);
+      border: 2px solid #ffffff;
+    }
+    .tl-node.active .tl-pulse {
+      background: var(--paletteAccent);
+      box-shadow: 0 0 25px var(--paletteAccent);
+      transform: scale(1.2);
+    }
+    .timeline-scanner-beam {
+      position: absolute;
+      width: 2px;
+      height: 160px;
+      background: linear-gradient(to bottom, transparent, var(--paletteAccent), #ffffff, var(--paletteAccent), transparent);
+      box-shadow: 0 0 20px var(--paletteAccent);
+      z-index: 3;
+    }
+
+    /* 7. Arquétipo Quantum / Átomos / Física de Partículas */
+    .motion-quantum .quantum-orbit {
+      position: absolute;
+      border-radius: 50%;
+      border: 2px solid color-mix(in srgb, var(--paletteAccent) 60%, transparent);
+      box-shadow: 0 0 25px color-mix(in srgb, var(--paletteAccent) 20%, transparent);
+    }
+    .motion-quantum .q-1 { width: 380px; height: 140px; transform: rotate(0deg); }
+    .motion-quantum .q-2 { width: 380px; height: 140px; transform: rotate(60deg); }
+    .motion-quantum .q-3 { width: 380px; height: 140px; transform: rotate(120deg); }
+    .motion-quantum .quantum-nucleus {
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      background: radial-gradient(circle, #ffffff 0%, var(--palettePrimary) 60%, transparent 100%);
+      border-radius: 50%;
+      box-shadow: 0 0 45px var(--palettePrimary);
+      z-index: 2;
+    }
+
+    /* Anéis Procedurais Gerais */
+    .orbit-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 2px dashed color-mix(in srgb, var(--palettePrimary) 45%, transparent);
+    }
+    .ring-outer {
+      width: 420px;
+      height: 420px;
+      border-color: color-mix(in srgb, var(--paletteAccent) 50%, transparent);
+      box-shadow: 0 0 30px color-mix(in srgb, var(--paletteAccent) 15%, transparent);
+    }
+    .ring-mid {
+      width: 300px;
+      height: 300px;
+      border-style: solid;
+      border-width: 1px;
+      border-color: color-mix(in srgb, var(--palettePrimary) 40%, transparent);
+    }
+    .ring-inner {
+      width: 180px;
+      height: 180px;
+      border: 2px dashed color-mix(in srgb, var(--palettePrimary) 70%, transparent);
+    }
+    .pulse-core {
+      width: 90px;
+      height: 90px;
+      background: radial-gradient(circle, var(--palettePrimary) 0%, color-mix(in srgb, var(--paletteAccent) 60%, transparent) 70%, transparent 100%);
+      border-radius: 50%;
+      box-shadow: 0 0 50px var(--palettePrimary), 0 0 90px var(--paletteAccent);
+    }
+    .hud-label {
+      position: absolute;
+      bottom: -16px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: var(--palettePrimary);
+      background: rgba(4, 7, 16, 0.85);
+      backdrop-filter: blur(8px);
+      padding: 6px 16px;
+      border-radius: 6px;
+      border: 1px solid color-mix(in srgb, var(--palettePrimary) 40%, transparent);
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.6);
+      text-transform: uppercase;
+      white-space: nowrap;
+      z-index: 3;
+    }
+
+    /* ARQUÉTIPO: FÓRMULA MATEMÁTICA & LEIS FÍSICAS */
+    .motion-formula {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    .formula-card {
+      width: 580px;
+      padding: 34px 28px 26px;
+      background: rgba(6, 11, 24, 0.82);
+      border-radius: 20px;
+      border: 1px solid color-mix(in srgb, var(--palettePrimary) 45%, transparent);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75), 0 0 35px color-mix(in srgb, var(--palettePrimary) 20%, transparent);
+      backdrop-filter: blur(14px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      text-align: center;
+    }
+    .formula-sub-badge {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      color: var(--paletteAccent);
+      text-transform: uppercase;
+      background: color-mix(in srgb, var(--paletteAccent) 15%, transparent);
+      padding: 5px 14px;
+      border-radius: 20px;
+      border: 1px solid color-mix(in srgb, var(--paletteAccent) 35%, transparent);
+    }
+    .formula-math-display {
+      font-family: 'Cambria Math', 'Latin Modern Math', 'KaTeX_Math', 'Times New Roman', serif;
+      font-size: 52px;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 2px;
+      line-height: 1.25;
+      text-shadow: 0 0 24px var(--palettePrimary), 0 0 45px color-mix(in srgb, var(--paletteAccent) 50%, transparent);
+      margin: 2px 0;
+    }
+    .formula-math-display sup {
+      font-size: 0.6em;
+      vertical-align: super;
+      color: var(--paletteAccent);
+    }
+    .formula-math-display sub {
+      font-size: 0.6em;
+      vertical-align: sub;
+      color: var(--paletteAccent);
+    }
+    .formula-caption {
+      font-size: 16px;
+      font-weight: 600;
+      color: color-mix(in srgb, var(--paletteText) 85%, transparent);
+      letter-spacing: 0.5px;
+    }
+    .formula-vars-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      margin-top: 4px;
+    }
+    .formula-var-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      padding: 5px 12px;
+      font-size: 13px;
+    }
+    .formula-var-chip .var-sym {
+      color: var(--paletteAccent);
+      font-weight: 800;
+      font-family: 'Cambria Math', 'Latin Modern Math', 'Times New Roman', serif;
+    }
+    .formula-var-chip .var-lbl {
+      color: color-mix(in srgb, var(--paletteText) 75%, transparent);
+    }
+
+    /* Linha de Scanner / Feixe de Transição Cinematográfica */
+    .scene-wipe-beam {
+      position: absolute;
+      top: 0;
+      left: -250px;
+      width: 140px;
+      height: 1920px;
+      background: linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--palettePrimary) 40%, transparent) 40%, white 50%, color-mix(in srgb, var(--paletteAccent) 40%, transparent) 60%, transparent 100%);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    /* ARQUÉTIPO: ANALYTICS & DADOS */
+    .motion-analytics {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      position: relative;
+      gap: 14px;
+    }
+    .analytics-hud-header {
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--paletteAccent);
+    }
+    .analytics-chart-svg {
+      overflow: visible;
+      filter: drop-shadow(0 0 10px color-mix(in srgb, var(--paletteAccent) 40%, transparent));
+    }
+    .analytics-bars-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 16px;
+      height: 70px;
+      padding: 0 20px;
+    }
+    .stat-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.6);
+      height: 100%;
+      justify-content: flex-end;
+    }
+    .stat-fill {
+      width: 24px;
+      background: linear-gradient(to top, var(--palettePrimary), var(--paletteAccent));
+      border-radius: 4px 4px 0 0;
+      box-shadow: 0 0 12px color-mix(in srgb, var(--paletteAccent) 50%, transparent);
+    }
+
+    /* ARQUÉTIPO: RADAR & VARREDURA */
+    .motion-radar {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    .radar-hud-circle {
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      border: 2px solid color-mix(in srgb, var(--palettePrimary) 40%, transparent);
+      box-shadow: inset 0 0 30px color-mix(in srgb, var(--palettePrimary) 20%, transparent), 0 0 20px color-mix(in srgb, var(--palettePrimary) 15%, transparent);
+      position: relative;
+      overflow: hidden;
+      background: radial-gradient(circle, transparent 40%, color-mix(in srgb, var(--paletteBackground) 80%, transparent) 100%);
+    }
+    .radar-sweep-line {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 140px;
+      height: 140px;
+      transform-origin: top left;
+      background: conic-gradient(from 0deg, color-mix(in srgb, var(--paletteAccent) 45%, transparent) 0deg, transparent 60deg);
+      border-radius: 100% 0 0 0;
+      animation: radarSweep 2.5s linear infinite;
+    }
+    @keyframes radarSweep {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .radar-axis-x, .radar-axis-y {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.15);
+    }
+    .radar-axis-x { top: 50%; left: 0; right: 0; height: 1px; }
+    .radar-axis-y { left: 50%; top: 0; bottom: 0; width: 1px; }
+    .radar-blip {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--paletteAccent);
+      box-shadow: 0 0 10px var(--paletteAccent);
+      animation: blipPulse 1.8s ease-in-out infinite alternate;
+    }
+    .radar-blip.b1 { top: 30%; left: 65%; animation-delay: 0.2s; }
+    .radar-blip.b2 { top: 70%; left: 35%; animation-delay: 0.8s; }
+    .radar-blip.b3 { top: 45%; left: 25%; animation-delay: 1.4s; }
+    @keyframes blipPulse {
+      from { opacity: 0.2; transform: scale(0.7); }
+      to { opacity: 1; transform: scale(1.3); }
+    }
+
+    /* ARQUÉTIPO: POLÍTICA, INFLUÊNCIA & PODER */
+    .motion-politics {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    .polarization-hud {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+    .polarity-spectrum {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    .pol-label.left { color: var(--palettePrimary); }
+    .pol-label.right { color: var(--paletteAccent); }
+    .pol-bar {
+      width: 220px;
+      height: 8px;
+      background: linear-gradient(90deg, var(--palettePrimary) 0%, rgba(255,255,255,0.2) 50%, var(--paletteAccent) 100%);
+      border-radius: 6px;
+      position: relative;
+      box-shadow: 0 0 12px rgba(255,255,255,0.2);
+    }
+    .pol-needle {
+      position: absolute;
+      top: -6px;
+      left: 54%;
+      width: 4px;
+      height: 20px;
+      background: #ffffff;
+      box-shadow: 0 0 10px #ffffff;
+      border-radius: 2px;
+    }
+    .influencer-core {
+      filter: drop-shadow(0 0 12px var(--palettePrimary));
+    }
+    .influencer-core.core-b {
+      filter: drop-shadow(0 0 12px var(--paletteAccent));
+    }
+    .politics-readouts {
+      display: flex;
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .readout-pill {
+      font-size: 13px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      padding: 5px 12px;
+      color: #cbd5e1;
+    }
+    .readout-pill b {
+      color: var(--paletteAccent);
+    }
+
+    /* ARQUÉTIPO: PSICOLOGIA, MENTE & COMPORTAMENTO */
+    .motion-psychology {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    .psych-brain-core {
+      width: 200px;
+      height: 200px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 8px 0;
+    }
+    .synapse-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 2px dashed rgba(255, 255, 255, 0.2);
+    }
+    .s-outer {
+      width: 195px;
+      height: 195px;
+      border-color: var(--palettePrimary);
+      box-shadow: 0 0 20px color-mix(in srgb, var(--palettePrimary) 25%, transparent);
+    }
+    .s-mid {
+      width: 130px;
+      height: 130px;
+      border-color: var(--paletteAccent);
+      box-shadow: 0 0 20px color-mix(in srgb, var(--paletteAccent) 25%, transparent);
+    }
+    .decision-nucleus {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #ffffff 0%, var(--paletteAccent) 60%, transparent 100%);
+      box-shadow: 0 0 35px var(--paletteAccent), 0 0 60px var(--palettePrimary);
+    }
+    .bias-scales-box {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 320px;
+    }
+    .scale-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .scale-lbl {
+      color: #cbd5e1;
+      min-width: 135px;
+      letter-spacing: .5px;
+    }
+    .scale-track {
+      order: 2; width: 100%; text-align: center; align-items: center;
+      height: 7px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .scale-fill.fill-accent {
+      height: 100%;
+      background: var(--paletteAccent);
+      box-shadow: 0 0 10px var(--paletteAccent);
+    }
+    .scale-fill.fill-primary {
+      height: 100%;
+      background: var(--palettePrimary);
+      box-shadow: 0 0 10px var(--palettePrimary);
+    }
+  </style>
+</head>
+<body>
+  <div id="root" data-composition-id="main" data-start="0"
+       data-width="1080" data-height="1920" data-duration="{{SCENE_DURATION}}" style="perspective: 1200px;">
+    <div class="bg-grid-overlay"></div>
+    <div class="hud-border"></div>
+    <div class="scene-wipe-beam"></div>
+    <div class="hud-header">
+      <span class="hud-dot"></span>
+      <span>ESTÚDIO DE CIÊNCIA & EXPLICAÇÃO VISUAL</span>
+    </div>
+
+    {{CLIPS}}
+  </div>
+
+  <!-- GSAP Carregado Localmente Offline -->
+  <script src="src/gsap.min.js"></script>
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      const tl = gsap.timeline({ paused: true });
+      const clips = document.querySelectorAll(".explainer-clip");
+      const wipeBeam = document.querySelector(".scene-wipe-beam");
+
+      clips.forEach((el, idx) => {
+        const start = parseFloat(el.dataset.start || "0");
+        const dur = parseFloat(el.dataset.duration || "4");
+        const leftContent = el.querySelector(".clip-left-content");
+        const rightMedia = el.querySelector(".clip-right-media");
+        const img = el.querySelector(".media-image-frame img");
+        const kineticLines = el.querySelectorAll(".kinetic-line");
+
+        // 1. Torna o clipe visível no segundo exato de início
+        tl.set(el, { autoAlpha: 1, visibility: "visible" }, start);
+
+        // 2. Transição Cinematográfica: Feixe de Luz de Varredura Espacial (entre clipes)
+        if (idx > 0 && wipeBeam) {
+          tl.fromTo(wipeBeam, 
+            { x: -250, opacity: 0.9 }, 
+            { x: 2200, opacity: 0, duration: 0.65, ease: "power2.inOut" }, 
+            Math.max(0, start - 0.08)
+          );
+        }
+
+        // 3. Animação Cinética de Entrada (com profundidade 3D e rotação suave)
+        if (leftContent) {
+          tl.from(leftContent, {
+            y: 40,
+            x: -25,
+            opacity: 0,
+            duration: 0.75,
+            ease: "power3.out"
+          }, start);
+
+          // Animação progressiva das frases para eliminar monotonia de texto
+          if (kineticLines.length > 1) {
+            tl.from(kineticLines, {
+              opacity: 0.35,
+              y: 8,
+              stagger: 0.18,
+              duration: 0.5,
+              ease: "power1.out"
+            }, start + 0.1);
+          }
+        }
+
+        if (rightMedia) {
+          tl.from(rightMedia, {
+            scale: 0.9,
+            rotationY: 10,
+            opacity: 0,
+            duration: 0.85,
+            ease: "power3.out"
+          }, start + 0.08);
+        }
+
+        // 4. Ken Burns Suave para Fotografias e GIFs Reais
+        if (img) {
+          tl.fromTo(img, { scale: 1.0 }, { scale: 1.08, duration: dur, ease: "none" }, start);
+        }
+
+        // 5. Animações Dinâmicas dos Arquétipos de Motion Design:
+
+        // 0. Arquétipo Política & Dinâmica de Poder
+        const polNeedle = el.querySelector(".pol-needle");
+        if (polNeedle) {
+          tl.fromTo(polNeedle, { left: "35%" }, { left: "68%", yoyo: true, repeat: Math.ceil(dur * 1.5), duration: 1.2, ease: "sine.inOut" }, start);
+        }
+        const infLines = el.querySelectorAll(".inf-line");
+        infLines.forEach((line) => {
+          tl.fromTo(line, { strokeDashoffset: 0 }, { strokeDashoffset: 120, duration: dur, ease: "none" }, start);
+        });
+        const leadCores = el.querySelectorAll(".influencer-core");
+        leadCores.forEach((c, cIdx) => {
+          tl.fromTo(c, { scale: 0.9 }, { scale: 1.15, yoyo: true, repeat: Math.ceil(dur * 2), duration: 0.8 + cIdx * 0.2, ease: "sine.inOut" }, start);
+        });
+
+        // 0.1 Arquétipo Psicologia & Cognição
+        const sOuter = el.querySelector(".s-outer");
+        const sMid = el.querySelector(".s-mid");
+        const decNucleus = el.querySelector(".decision-nucleus");
+        if (sOuter) {
+          tl.fromTo(sOuter, { rotation: 0 }, { rotation: 240, duration: dur, ease: "none" }, start);
+        }
+        if (sMid) {
+          tl.fromTo(sMid, { rotation: 0 }, { rotation: -360, duration: dur, ease: "none" }, start);
+        }
+        if (decNucleus) {
+          tl.fromTo(decNucleus, { scale: 0.85 }, { scale: 1.2, yoyo: true, repeat: Math.ceil(dur * 2), duration: 0.7, ease: "sine.inOut" }, start);
+        }
+        const scaleFills = el.querySelectorAll(".scale-fill");
+        scaleFills.forEach((fill) => {
+          const targetW = fill.style.width || "75%";
+          tl.fromTo(fill, { width: "10%" }, { width: targetW, duration: Math.min(dur, 2.0), ease: "power2.out" }, start + 0.2);
+        });
+
+        // A. Arquétipo Fórmula Matemática & Leis Físicas
+        const formulaDisplay = el.querySelector(".formula-math-display");
+        const formulaVars = el.querySelectorAll(".formula-var-chip");
+        if (formulaDisplay) {
+          tl.fromTo(formulaDisplay, 
+            { scale: 0.85, opacity: 0, filter: "brightness(2)" }, 
+            { scale: 1.0, opacity: 1, filter: "brightness(1)", duration: 0.8, ease: "back.out(1.5)" }, 
+            start + 0.15
+          );
+          if (formulaVars.length > 0) {
+            tl.from(formulaVars, {
+              y: 16,
+              opacity: 0,
+              stagger: 0.08,
+              duration: 0.5,
+              ease: "power2.out"
+            }, start + 0.3);
+          }
+        }
+
+        // B. Arquétipo Orbital
+        const astroDisk = el.querySelector(".accretion-disk");
+        if (astroDisk) {
+          tl.fromTo(astroDisk, { rotation: 0 }, { rotation: 360, duration: dur, ease: "none" }, start);
+        }
+        const plasmaJet = el.querySelector(".plasma-jet");
+        if (plasmaJet) {
+          tl.fromTo(plasmaJet, { scaleY: 0.9, opacity: 0.8 }, { scaleY: 1.1, opacity: 1, yoyo: true, repeat: Math.ceil(dur * 2), duration: 0.6, ease: "sine.inOut" }, start);
+        }
+
+        // C. Arquétipo Infographic (Medidores & Barras)
+        const gaugeBar = el.querySelector(".gauge-bar");
+        if (gaugeBar) {
+          tl.fromTo(gaugeBar, { strokeDashoffset: 880 }, { strokeDashoffset: 240, duration: Math.min(dur, 2.5), ease: "power2.out" }, start + 0.2);
+        }
+        const meterBars = el.querySelectorAll(".meter-bar");
+        meterBars.forEach((bar, bIdx) => {
+          tl.fromTo(bar, { scaleY: 0.4 }, { scaleY: 1.25, yoyo: true, repeat: Math.ceil(dur * 2), duration: 0.5 + bIdx * 0.15, ease: "sine.inOut" }, start);
+        });
+
+        // D. Arquétipo Blueprint (Mira Telescópica)
+        const retOuter = el.querySelector(".ret-outer");
+        const retMid = el.querySelector(".ret-mid");
+        if (retOuter) {
+          tl.fromTo(retOuter, { rotation: 0 }, { rotation: 180, duration: dur, ease: "none" }, start);
+        }
+        if (retMid) {
+          tl.fromTo(retMid, { rotation: 0 }, { rotation: -240, duration: dur, ease: "none" }, start);
+        }
+
+        // E. Arquétipo Spectrum (Ondas Senoidais)
+        const wave1 = el.querySelector(".wave-1");
+        const wave2 = el.querySelector(".wave-2");
+        if (wave1) {
+          tl.fromTo(wave1, { strokeDashoffset: 0 }, { strokeDashoffset: 400, duration: dur, ease: "none" }, start);
+        }
+        if (wave2) {
+          tl.fromTo(wave2, { strokeDashoffset: 0 }, { strokeDashoffset: -400, duration: dur, ease: "none" }, start);
+        }
+
+        // F. Arquétipo Network (Teia & Sinapses)
+        const netCore = el.querySelector(".network-core");
+        if (netCore) {
+          tl.fromTo(netCore, { scale: 0.85 }, { scale: 1.15, yoyo: true, repeat: Math.ceil(dur), duration: 0.9, ease: "sine.inOut" }, start);
+        }
+        const netNodes = el.querySelectorAll(".net-node");
+        netNodes.forEach((node, nIdx) => {
+          tl.fromTo(node, { scale: 0.8 }, { scale: 1.3, yoyo: true, repeat: Math.ceil(dur * 1.5), duration: 0.6 + nIdx * 0.2, ease: "sine.inOut" }, start);
+        });
+
+        // G. Arquétipo Timeline (Varredura Temporal)
+        const scannerBeam = el.querySelector(".timeline-scanner-beam");
+        if (scannerBeam) {
+          tl.fromTo(scannerBeam, { x: -170 }, { x: 170, duration: dur, ease: "none" }, start);
+        }
+
+        // H. Arquétipo Quantum (Órbitas Atômicas)
+        const qOrbits = el.querySelectorAll(".quantum-orbit");
+        qOrbits.forEach((qOrb, qIdx) => {
+          const dir = qIdx % 2 === 0 ? 1 : -1;
+          tl.fromTo(qOrb, { rotation: qIdx * 60 }, { rotation: qIdx * 60 + 360 * dir, duration: dur, ease: "none" }, start);
+        });
+
+        // I. Fallback de Anéis Gerais
+        const ringOuter = el.querySelector(".ring-outer");
+        const ringInner = el.querySelector(".ring-inner");
+        const core = el.querySelector(".pulse-core");
+        if (ringOuter) {
+          tl.fromTo(ringOuter, { rotation: 0 }, { rotation: 220, duration: dur, ease: "none" }, start);
+        }
+        if (ringInner) {
+          tl.fromTo(ringInner, { rotation: 0 }, { rotation: -300, duration: dur, ease: "none" }, start);
+        }
+        if (core) {
+          tl.fromTo(core, { scale: 0.9 }, { scale: 1.15, yoyo: true, repeat: Math.ceil(dur), duration: 0.9, ease: "sine.inOut" }, start);
+        }
+
+        // 6. Transição de Saída Espacial Fluida (Zoom out cinematográfico com recuo)
+        const exitStart = Math.max(start + 0.3, start + dur - 0.45);
+        tl.to(el, {
+          opacity: 0,
+          scale: 0.94,
+          x: -30,
+          duration: 0.42,
+          ease: "power2.in"
+        }, exitStart);
+
+        // 7. Oculta completamente após o término da sua duração
+        tl.set(el, { autoAlpha: 0, visibility: "hidden" }, start + dur);
+      });
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+    });
+  </script>
+</body>
+</html>

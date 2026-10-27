@@ -1469,6 +1469,150 @@ textarea:focus, .custom-select:focus {
    Visual Mode Selector (Motion Design vs Imagens vs Híbrido)
    ========================================================================== */
 
+/* ==========================================================================
+   Aspect Ratio Selector (16:9 vs 9:16)
+   ========================================================================== */
+
+.aspect-ratio-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+@media (max-width: 680px) {
+  .aspect-ratio-selector {
+    grid-template-columns: 1fr;
+  }
+}
+
+.aspect-ratio-card {
+  position: relative;
+  display: block;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+.aspect-ratio-card input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.aspect-ratio-card:hover {
+  background: rgba(0, 242, 254, 0.04);
+  border-color: rgba(0, 242, 254, 0.35);
+  transform: translateY(-2px);
+}
+
+.aspect-ratio-card.active {
+  background: linear-gradient(135deg, rgba(0, 242, 254, 0.12) 0%, rgba(79, 172, 254, 0.06) 100%);
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 16px rgba(0, 242, 254, 0.22), inset 0 0 12px rgba(0, 242, 254, 0.05);
+}
+
+.aspect-body {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.aspect-preview-box {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.aspect-preview-box.horizontal {
+  width: 48px;
+  height: 32px;
+}
+
+.aspect-preview-box.vertical {
+  width: 28px;
+  height: 44px;
+  border-radius: 6px;
+}
+
+.aspect-preview-box .aspect-screen {
+  background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+  opacity: 0.5;
+  border-radius: 3px;
+  transition: opacity 0.2s ease;
+}
+
+.aspect-ratio-card.active .aspect-preview-box .aspect-screen {
+  opacity: 1;
+  box-shadow: 0 0 8px var(--accent-cyan);
+}
+
+.aspect-preview-box.horizontal .aspect-screen {
+  width: 36px;
+  height: 20px;
+}
+
+.aspect-preview-box.vertical .aspect-screen {
+  width: 18px;
+  height: 32px;
+}
+
+.aspect-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.aspect-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.aspect-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text-main);
+  letter-spacing: 0.3px;
+}
+
+.aspect-badge {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+.aspect-badge.youtube {
+  background: rgba(255, 0, 0, 0.15);
+  color: #ff4e4e;
+  border: 1px solid rgba(255, 0, 0, 0.3);
+}
+
+.aspect-badge.mobile {
+  background: rgba(236, 72, 153, 0.18);
+  color: #f472b6;
+  border: 1px solid rgba(236, 72, 153, 0.35);
+}
+
+.aspect-desc {
+  font-size: 11px;
+  color: var(--text-dim);
+  line-height: 1.35;
+}
+
 .visual-mode-selector {
   display: flex;
   flex-direction: column;
@@ -1664,6 +1808,20 @@ textarea:focus, .custom-select:focus {
   background: rgba(255, 65, 108, 0.15);
   border-color: rgba(255, 65, 108, 0.35);
   color: #ff416c;
+}
+
+.gallery-badge.vertical-ratio {
+  background: rgba(236, 72, 153, 0.16);
+  border-color: rgba(236, 72, 153, 0.35);
+  color: #f472b6;
+  font-weight: 600;
+}
+
+.gallery-badge.horizontal-ratio {
+  background: rgba(0, 242, 254, 0.12);
+  border-color: rgba(0, 242, 254, 0.3);
+  color: var(--accent-cyan);
+  font-weight: 600;
 }
 
 .gallery-actions-row {

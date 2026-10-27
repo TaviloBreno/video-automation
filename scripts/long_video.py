@@ -62,6 +62,7 @@ MAX_EXTRA_PAD = 2.0
 RATE_LIMIT = 25  # |ajuste de velocidade da voz| máximo, em %
 DURATION_TOLERANCE = 0.015
 WIDE_TEMPLATE = PROJECT_ROOT / "render" / "src" / "template_wide.html"
+VERTICAL_TEMPLATE = PROJECT_ROOT / "render" / "src" / "template_vertical.html"
 COMPOSITION_PATH = PROJECT_ROOT / "render" / "index.html"
 
 
@@ -837,6 +838,11 @@ def run_long_video(
     legend_style = str(params.get("legend_style") or "karaoke")
     if legend_style not in SUBTITLE_STYLES:
         raise ValueError(f"Estilo de legenda inválido: {legend_style!r}")
+    aspect_ratio = str(params.get("aspect_ratio") or "16:9").strip()
+    if aspect_ratio not in ("16:9", "9:16"):
+        aspect_ratio = "16:9"
+    is_vertical = aspect_ratio == "9:16"
+    chosen_template = VERTICAL_TEMPLATE if is_vertical else WIDE_TEMPLATE
     research = bool(params.get("research", True))
 
     job_dir = Path(job_dir)
@@ -966,14 +972,14 @@ def run_long_video(
         _save_json(scene_path, scene)
         img_sig = ch_img.get("filename", "") if ch_img else ""
         arch_sig = scene.get("visual_archetype", "")
-        sig = _signature(scene_path, words_path, d / "voice.mp3", WIDE_TEMPLATE, extra=f"{pad:.3f}|{palette}|{img_sig}|{arch_sig}|split_motion_v4")
+        sig = _signature(scene_path, words_path, d / "voice.mp3", chosen_template, extra=f"{pad:.3f}|{palette}|{img_sig}|{arch_sig}|{aspect_ratio}|split_motion_v4")
         pct = 0.45 + 0.43 * (i / n)
         if video_path.exists() and sig_path.exists() and sig_path.read_text().strip() == sig:
             progress(pct, f"Capítulo {i + 1}/{n} já renderizado.")
         else:
             progress(pct, f"Renderizando capítulo {i + 1}/{n} com visual…")
             build_composition(
-                str(scene_path), str(words_path), str(WIDE_TEMPLATE), str(COMPOSITION_PATH),
+                str(scene_path), str(words_path), str(chosen_template), str(COMPOSITION_PATH),
                 padding=pad,
             )
             render_scene(str(COMPOSITION_PATH), str(video_path), timeout=900)
@@ -1038,10 +1044,13 @@ def run_long_video(
     check()
     progress(0.93, "Queimando legendas dinâmicas…")
     final_path = job_dir / "video.mp4"
+    sub_w = 1080 if is_vertical else 1920
+    sub_h = 1920 if is_vertical else 1080
+    sub_margin_v = 380 if is_vertical else 70
     add_subtitles(
         str(words_all_path), str(long_silent), str(job_dir / "subs.ass"),
         str(final_path), legend_style, str(master_audio),
-        play_res_x=1920, play_res_y=1080, margin_v=70,
+        play_res_x=sub_w, play_res_y=sub_h, margin_v=sub_margin_v,
     )
     poster = job_dir / "poster.jpg"
     try:
@@ -1055,6 +1064,7 @@ def run_long_video(
         "topic": topic,
         "title": outline["title"],
         "palette": palette,
+        "aspect_ratio": aspect_ratio,
         "voice": voice,
         "voice_rate": rate,
         "legend_style": legend_style,

@@ -135,6 +135,23 @@ def get_config_info():
         {"id": "+0%", "name": "⚡ Padrão (+0%) — Mais Rápida"},
     ]
 
+    aspect_ratios = [
+        {
+            "id": "16:9",
+            "name": "16:9 Horizontal (YouTube padrão)",
+            "description": "Formato widescreen (1920x1080) com layout lateral e palco científico expandido.",
+            "icon": "desktop",
+            "badge": "YouTube",
+        },
+        {
+            "id": "9:16",
+            "name": "9:16 Vertical (Reels, TikTok, Shorts)",
+            "description": "Formato vertical (1080x1920) com visual no topo, texto centralizado e margem segura.",
+            "icon": "smartphone",
+            "badge": "Reels / TikTok / Shorts",
+        },
+    ]
+
     return jsonify({
         "palettes": palettes,
         "default_palette": cfg.video.default_palette,
@@ -149,6 +166,8 @@ def get_config_info():
         "default_bg_music": "space_ambient",
         "visual_modes": visual_modes,
         "default_visual_mode": "motion_design",
+        "aspect_ratios": aspect_ratios,
+        "default_aspect_ratio": "16:9",
     })
 
 
@@ -263,6 +282,14 @@ def list_jobs():
                 shorts_count = len(list(shorts_dir.glob("*.mp4"))) if shorts_dir.exists() else 0
 
                 has_video = (job_path / "video.mp4").exists()
+                aspect_ratio = "16:9"
+                if manifest_path.exists():
+                    try:
+                        m_data = json.loads(manifest_path.read_text(encoding="utf-8"))
+                        aspect_ratio = m_data.get("aspect_ratio", "16:9")
+                    except Exception:
+                        pass
+
                 jobs.append({
                     "id": job_id,
                     "topic": _clean_text(topic) or job_id,
@@ -273,6 +300,7 @@ def list_jobs():
                     "video_url": f"/media/{job_id}/video.mp4" if has_video else None,
                     "shorts_count": shorts_count,
                     "visual_mode": visual_mode,
+                    "aspect_ratio": aspect_ratio,
                     "bg_music": bg_music,
                     "created_at": job_path.stat().st_mtime,
                 })
@@ -473,9 +501,14 @@ def generate_video():
     ACTIVE_JOBS[job_id] = job_state
 
     visual_mode = data.get("visual_mode", "motion_design")
+    aspect_ratio = str(data.get("aspect_ratio") or "16:9").strip()
+    if aspect_ratio not in ("16:9", "9:16"):
+        aspect_ratio = "16:9"
+
     params = {
         "topic": topic,
         "minutes": minutes,
+        "aspect_ratio": aspect_ratio,
         "palette": data.get("palette"),
         "voice": data.get("voice"),
         "voice_rate": data.get("voice_rate") or cfg.tts.rate or "-20%",
