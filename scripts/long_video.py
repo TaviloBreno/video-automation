@@ -164,6 +164,16 @@ def _clean_text(text: str) -> str:
         "â€œ": "“", "â€": "”",
         "â€˜": "‘", "â€™": "’",
         "Â": "",
+        "Åô": "çõe",
+        "Åõe": "çõe",
+        "Åões": "ções",
+        "Åoe": "çõe",
+        "Åo": "ção",
+        "Å": "ç",
+        "çóes": "ções",
+        "çõo": "ção",
+        "ÇÓES": "ÇÕES",
+        "ÇÕO": "ÇÃO",
     }
     for bad, good in mojibake_map.items():
         if bad in text:

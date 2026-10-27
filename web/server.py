@@ -27,7 +27,7 @@ from scripts.add_subtitles import SUBTITLE_STYLES
 from scripts.bg_music import MUSIC_TRACKS
 from scripts.config_loader import load_config
 from scripts.image_provider import search_multiple_gifs
-from scripts.long_video import JobCancelled, run_long_video
+from scripts.long_video import JobCancelled, run_long_video, _clean_text
 from scripts.viral_clips import detect_viral_candidates, render_viral_clip
 
 app = Flask(
@@ -185,8 +185,8 @@ def list_jobs():
                 has_video = (job_path / "video.mp4").exists()
                 jobs.append({
                     "id": job_id,
-                    "topic": topic or job_id,
-                    "title": title or topic or "Vídeo",
+                    "topic": _clean_text(topic) or job_id,
+                    "title": _clean_text(title) or _clean_text(topic) or "Vídeo",
                     "status": status,
                     "minutes": target_min or 0,
                     "has_video": has_video,
