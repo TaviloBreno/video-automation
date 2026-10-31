@@ -243,10 +243,18 @@ def search_multiple_gifs(query: str, limit: int = 8) -> List[Dict[str, Any]]:
 
 # Mapeamento semântico rico para conceitos visuais de alta fidelidade (Geral & Científico)
 SCIENTIFIC_CONCEPTS_MAP = [
+    # Biologia, Origem da Vida, Biogênese, Abiogênese e Genética
+    (r"(biogênese|biogenese|abiogênese|abiogenese|geração espontânea|geracao espontanea|origem da vida|louis pasteur|pasteur|francesco redi|redi|caldo nutritivo|pescoço de cisne)", ["Biogenesis", "Cell_biology", "Louis_Pasteur", "Mitosis", "Spontaneous_generation", "Francesco_Redi"]),
+    (r"(célula imortal|hela|henrietta lacks)", ["HeLa", "Cell_biology", "Mitosis"]),
+    (r"(telômero|telomerase|senescência|envelhecimento celular|longevidade)", ["Telomere", "Aging", "Cell_biology", "DNA"]),
+    (r"(mitocôndria|energia celular|respiração celular)", ["Mitochondrion", "Cell_biology"]),
+    (r"(câncer|tumor|carcinoma|oncol|célula|biópsia|mutação celular|divisão celular|mitose|citoplasma|membrana plasmática)", ["Cell_biology", "Mitosis", "Cancer_cell", "Tumor"]),
+    (r"(imunoterap|sistema imune|anticorpo|linfócit|t-cell|car-t|imunidade|vírus|bactéria|microscópio)", ["Microscope", "Cell_biology", "Immunotherapy", "T_cell", "Antibody", "Immune_system"]),
+    (r"(dna|genoma|mutação|gene|genétic|crispr|código genético|cromossomo)", ["DNA", "Gene_editing", "Chromosome", "Mutation"]),
+
     # Gramática, Língua Portuguesa & Linguística (Didático & Aula)
     (r"(crase|acento grave|regência|regencia|preposição|preposicao|artigo)", ["Crase", "Preposition", "Portuguese_grammar", "Grammar", "Linguistics"]),
     (r"(gramática|gramatica|língua portuguesa|lingua portuguesa|linguística|linguistica|ortografia|acentuação|acentuacao|sintaxe|concordância|verbo|substantivo|adjetivo|pronome)", ["Portuguese_grammar", "Grammar", "Linguistics", "Syntax", "Morphology_(linguistics)"]),
-    (r"(aula|videoaula|escola|professor|professora|educação|educacao|estudo|estudante|lousa|quadro negro|didática|didatica)", ["Classroom", "Teacher", "Education", "Blackboard", "Book"]),
     (r"(redação|redacao|escrita|texto|livro|leitura|dicionário|dicionario)", ["Writing", "Book", "Dictionary", "Literature"]),
     # Economia, Finanças, Câmbio & Dólar
     (r"(dólar|dolar|câmbio|cambio|moeda|inflação|inflacao|juros|selic|bolsa de valores|ações|investimento|mercado financeiro)", ["United_States_dollar", "Currency", "Stock_market", "Finance", "Economy"]),
@@ -296,7 +304,7 @@ def extract_scientific_terms(topic: str, title: str, narration: str = "") -> lis
     # Extrai substantivos científicos e substantivos próprios do título
     words = [w for w in re.sub(r"[^\w\s]", " ", title).split() if len(w) > 3 and w.lower() not in (
         "como", "para", "onde", "qual", "mais", "sobre", "esse", "essa", "esses", "essas",
-        "segredo", "segredos", "nunca", "você", "estudo", "vídeo", "coisa", "algo"
+        "segredo", "segredos", "nunca", "você", "estudo", "vídeo", "coisa", "algo", "aula", "videoaula", "explicar", "explicação", "entenda", "entender", "aprender"
     )]
     for w in words[:3]:
         cap = w.capitalize()
@@ -485,6 +493,64 @@ def download_image(image_info: Dict[str, Any], dest_dir: Path, filename_prefix: 
     return None
 
 
+def generate_ai_image(
+    prompt: str,
+    dest_dir: Path,
+    filename_prefix: str = "ai_img",
+    width: int = 1280,
+    height: int = 720,
+) -> Optional[Dict[str, Any]]:
+    """Gera uma ilustração ou imagem representativa sob medida via IA (Pollinations / Flux)."""
+    dest_dir = Path(dest_dir)
+    dest_dir.mkdir(parents=True, exist_ok=True)
+
+    clean_p = prompt.strip()
+    enhanced = f"{clean_p}, clean pedagogical composition, professional educational illustration, highly detailed, 4k"
+    encoded = urllib.parse.quote(enhanced)
+    seed = abs(hash(clean_p)) % 100000
+    url = f"https://image.pollinations.ai/prompt/{encoded}?width={width}&height={height}&model=flux&nologo=true&seed={seed}"
+
+    url_hash = hashlib.md5(clean_p.encode()).hexdigest()[:8]
+    local_path = dest_dir / f"{filename_prefix}_{url_hash}.jpg"
+    meta_path = dest_dir / f"{filename_prefix}_{url_hash}.json"
+
+    if local_path.exists() and local_path.stat().st_size > 5000:
+        return {
+            "source": "ai_generated",
+            "title": clean_p[:80],
+            "image_url": url,
+            "local_path": str(local_path.resolve()),
+            "filename": local_path.name,
+            "author": "Ilustração Gerada por IA",
+            "license": "Domínio Público / IA",
+            "width": width,
+            "height": height,
+        }
+
+    try:
+        resp = requests.get(url, headers={"User-Agent": USER_AGENT}, timeout=25)
+        if resp.status_code == 200 and len(resp.content) > 5000:
+            local_path.write_bytes(resp.content)
+            info = {
+                "source": "ai_generated",
+                "title": clean_p[:80],
+                "image_url": url,
+                "local_path": str(local_path.resolve()),
+                "filename": local_path.name,
+                "author": "Ilustração Gerada por IA",
+                "license": "Domínio Público / IA",
+                "width": width,
+                "height": height,
+            }
+            meta_path.write_text(json.dumps(info, indent=2, ensure_ascii=False), encoding="utf-8")
+            logger.info("Imagem gerada por IA com sucesso: %s", local_path.name)
+            return info
+    except Exception as exc:
+        logger.warning("Falha ao gerar imagem por IA (%s): %s", clean_p[:50], exc)
+
+    return None
+
+
 def collect_chapter_images(
     chapters: List[Dict[str, Any]], topic: str, dest_dir: Path
 ) -> List[Optional[Dict[str, Any]]]:
@@ -516,6 +582,15 @@ def collect_chapter_images(
                 info["filename"] = local.name
                 images.append(info)
                 continue
+
+        # Fallback de IA: se não encontrar imagem livre exata na web, gera ilustração contextual sob medida
+        kw_str = ", ".join(visual_kws[:3]) if visual_kws else ch_title
+        ai_prompt = f"Educational illustration for '{topic}': {ch_title}, concepts: {kw_str}, pedagogical diagram"
+        ai_info = generate_ai_image(ai_prompt, dest_dir, filename_prefix=f"ch_{i+1:02d}_ai")
+        if ai_info:
+            images.append(ai_info)
+            continue
+
         images.append(None)
 
     return images

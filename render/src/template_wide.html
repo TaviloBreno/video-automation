@@ -534,7 +534,178 @@
     }
 
 
+
+    /* CAMADA HÍBRIDA: IMAGEM + MOTION DESIGN OVERLAY */
+    .clip-right-media.has-image-layer {
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .clip-right-media.has-image-layer .media-image-frame {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+    .clip-right-media.has-image-layer .media-image-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .media-backdrop-scrim {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(5, 10, 24, 0.35) 0%, rgba(5, 10, 24, 0.70) 50%, rgba(5, 10, 24, 0.92) 100%);
+      pointer-events: none;
+      z-index: 2;
+    }
+    .media-motion-overlay {
+      position: relative;
+      z-index: 4;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+    .clip-right-media.has-image-layer .motion-design-graphic {
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+    .clip-right-media.has-image-layer .grammar-interactive-board,
+    .clip-right-media.has-image-layer .lesson-chalkboard,
+    .clip-right-media.has-image-layer .comp-cards-container,
+    .clip-right-media.has-image-layer .formula-card {
+      background: rgba(5, 11, 26, 0.78) !important;
+      backdrop-filter: blur(12px) !important;
+      -webkit-backdrop-filter: blur(12px) !important;
+    }
+
     /* ARQUÉTIPO: GRAMÁTICA, LÍNGUA PORTUGUESA & NORMA PADRÃO */
+        /* ARQUÉTIPO: BIOGÊNESE, BIOLOGIA CELULAR & ORIGEM DA VIDA */
+    .motion-biogenesis {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    .bio-header-badge {
+      margin-bottom: 8px;
+    }
+    .bio-stage-layout {
+      width: 100%;
+      max-width: 620px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    .bio-vector-stage {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .cell-division-svg {
+      overflow: visible;
+      filter: drop-shadow(0 0 25px rgba(56, 189, 248, 0.2));
+    }
+    .bio-telemetry-badge {
+      margin-top: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--palettePrimary);
+      background: color-mix(in srgb, var(--palettePrimary) 12%, transparent);
+      padding: 3px 12px;
+      border-radius: 9999px;
+      border: 1px solid color-mix(in srgb, var(--palettePrimary) 30%, transparent);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .bio-pulse-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--paletteAccent);
+      box-shadow: 0 0 8px var(--paletteAccent);
+    }
+
+    /* CARDS EXPLICATIVOS PEDAGÓGICOS DINÂMICOS */
+    .pedagogical-callouts-box {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .pedagogical-callouts-box.compact {
+      gap: 6px;
+      max-width: 580px;
+    }
+    .pedag-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 8px 14px;
+      background: rgba(6, 14, 28, 0.82);
+      border-radius: 12px;
+      border: 1px solid color-mix(in srgb, var(--palettePrimary) 25%, transparent);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    .pedag-badge {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: var(--paletteAccent);
+      background: color-mix(in srgb, var(--paletteAccent) 15%, transparent);
+      padding: 3px 8px;
+      border-radius: 6px;
+      white-space: nowrap;
+      border: 1px solid color-mix(in srgb, var(--paletteAccent) 35%, transparent);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .pedag-body {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      text-align: left;
+    }
+    .pedag-title {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      color: #f8fafc;
+    }
+    .pedag-desc {
+      font-size: 12px;
+      color: #cbd5e1;
+      line-height: 1.35;
+    }
+    .clip-right-media.has-image-layer .pedag-item {
+      background: rgba(4, 9, 20, 0.90) !important;
+      border-color: color-mix(in srgb, var(--palettePrimary) 45%, transparent) !important;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8) !important;
+    }
+
     .motion-grammar {
       display: flex;
       flex-direction: column;
@@ -1211,6 +1382,58 @@
 
 
         // E. Arquétipos Didáticos & Aula (Gramática, Lousa, Comparação)
+                // Biogênese & Biologia Celular
+        const bioNuclei = el.querySelectorAll(".cell-nucleus");
+        if (bioNuclei.length > 0) {
+          tl.fromTo(bioNuclei, 
+            { scale: 0.94 }, 
+            { scale: 1.08, transformOrigin: "center center", yoyo: true, repeat: Math.ceil(dur * 2), duration: 1.1, ease: "sine.inOut" }, 
+            start
+          );
+        }
+        const bioOrganelles = el.querySelectorAll(".bio-organelle");
+        if (bioOrganelles.length > 0) {
+          tl.fromTo(bioOrganelles, 
+            { y: -3, rotation: "-=6" }, 
+            { y: 3, rotation: "+=6", yoyo: true, repeat: Math.ceil(dur * 1.5), duration: 1.4, ease: "sine.inOut" }, 
+            start
+          );
+        }
+        const bioParticles = el.querySelectorAll(".bio-particle");
+        if (bioParticles.length > 0) {
+          tl.fromTo(bioParticles, 
+            { y: -5, opacity: 0.4 }, 
+            { y: 5, opacity: 1, yoyo: true, repeat: Math.ceil(dur * 2), duration: 0.9, stagger: 0.15, ease: "sine.inOut" }, 
+            start
+          );
+        }
+        const contractileRing = el.querySelector(".contractile-ring");
+        if (contractileRing) {
+          tl.fromTo(contractileRing, 
+            { strokeDashoffset: 0 }, 
+            { strokeDashoffset: 24, duration: dur, ease: "none" }, 
+            start
+          );
+        }
+        const conceptWires = el.querySelectorAll(".concept-wire");
+        if (conceptWires.length > 0) {
+          tl.fromTo(conceptWires, 
+            { strokeDashoffset: 0 }, 
+            { strokeDashoffset: -40, duration: dur, ease: "none" }, 
+            start
+          );
+        }
+        const pedagItems = el.querySelectorAll(".pedag-item");
+        if (pedagItems.length > 0) {
+          tl.from(pedagItems, { 
+            x: -22, 
+            opacity: 0, 
+            stagger: 0.12, 
+            duration: 0.5, 
+            ease: "power2.out" 
+          }, start + 0.15);
+        }
+
         const grammarBoard = el.querySelector(".grammar-interactive-board");
         const caseChips = el.querySelectorAll(".case-chip");
         if (grammarBoard) {

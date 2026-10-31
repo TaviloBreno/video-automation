@@ -180,7 +180,7 @@ def get_config_info():
         "content_styles": content_styles,
         "default_content_style": "lesson",
         "visual_modes": visual_modes,
-        "default_visual_mode": "motion_design",
+        "default_visual_mode": "hybrid",
         "aspect_ratios": aspect_ratios,
         "default_aspect_ratio": "16:9",
     })
@@ -517,7 +517,7 @@ def generate_video():
     }
     ACTIVE_JOBS[job_id] = job_state
 
-    visual_mode = data.get("visual_mode", "motion_design")
+    visual_mode = data.get("visual_mode", "hybrid")
     aspect_ratio = str(data.get("aspect_ratio") or "16:9").strip()
     if aspect_ratio not in ("16:9", "9:16"):
         aspect_ratio = "16:9"

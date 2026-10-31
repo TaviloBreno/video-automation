@@ -1616,80 +1616,68 @@ textarea:focus,
   line-height: 1.35;
 }
 
-.visual-mode-selector {
+.visual-mode-selector,
+.content-style-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 6px;
+}
 
-  .visual-mode-selector,
-  .content-style-selector {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-top: 6px;
-  }
+.visual-mode-card,
+.content-style-card {
+  position: relative;
+  display: block;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: var(--transition);
+}
 
-  .visual-mode-card {
+.visual-mode-card input[type="radio"],
+.content-style-card input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
 
-    .visual-mode-card,
-    .content-style-card {
-      position: relative;
-      display: block;
-      background: rgba(255, 255, 255, 0.025);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-sm);
-      padding: 10px 14px;
-      cursor: pointer;
-      transition: var(--transition);
-    }
+.visual-mode-card:hover,
+.content-style-card:hover {
+  background: rgba(0, 242, 254, 0.05);
+  border-color: rgba(0, 242, 254, 0.3);
+}
 
-    .visual-mode-card input[type="radio"] {
+.visual-mode-card.active,
+.content-style-card.active {
+  background: rgba(0, 242, 254, 0.1);
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 14px rgba(0, 242, 254, 0.15);
+}
 
-      .visual-mode-card input[type="radio"],
-      .content-style-card input[type="radio"] {
-        position: absolute;
-        opacity: 0;
-        pointer-events: none;
-      }
+.visual-mode-body,
+.content-style-body {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
 
-      .visual-mode-card:hover {
+.mode-icon {
+  font-size: 22px;
+}
 
-        .visual-mode-card:hover,
-        .content-style-card:hover {
-          background: rgba(0, 242, 254, 0.05);
-          border-color: rgba(0, 242, 254, 0.3);
-        }
+.mode-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-main);
+}
 
-        .visual-mode-card.active {
-
-          .visual-mode-card.active,
-          .content-style-card.active {
-            background: rgba(0, 242, 254, 0.1);
-            border-color: var(--accent-cyan);
-            box-shadow: 0 0 14px rgba(0, 242, 254, 0.15);
-          }
-
-          .visual-mode-body {
-
-            .visual-mode-body,
-            .content-style-body {
-              display: flex;
-              align-items: center;
-              gap: 12px;
-            }
-
-            .mode-icon {
-              font-size: 22px;
-            }
-
-            .mode-title {
-              font-size: 13px;
-              font-weight: 600;
-              color: var(--text-main);
-            }
-
-            .mode-desc {
-              font-size: 11px;
-              color: var(--text-dim);
-              margin-top: 2px;
-            }
+.mode-desc {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
 
             /* ==========================================================================
    Gallery View (Meus Vídeos Criados)
@@ -1783,14 +1771,19 @@ textarea:focus,
             .gallery-thumb-wrapper {
               position: relative;
               width: 100%;
-              aspect-ratio: 16 / 9;
-              background: #000;
+              height: 220px;
+              background: #050a14;
+              border-bottom: 1px solid var(--border-color);
+              overflow: hidden;
+              display: flex;
+              align-items: center;
+              justify-content: center;
             }
 
             .gallery-thumb-wrapper video {
-              width: 100%;
-              height: 100%;
-              object-fit: cover;
+              max-width: 100%;
+              max-height: 100%;
+              object-fit: contain;
               display: block;
             }
 

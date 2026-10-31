@@ -1076,15 +1076,9 @@ def run_long_video(
         progress(0.42, "Buscando imagens livres e dados visuais para os capítulos…")
         try:
             raw_images = collect_chapter_images(chapters, topic, job_dir / "images")
-            if visual_mode == "hybrid":
-                # No modo híbrido: primeiro capítulo (gancho) e último (conclusão) têm motion design; intermediários têm fotos
-                for idx in range(len(chapters)):
-                    if idx == 0 or idx == len(chapters) - 1:
-                        images_info[idx] = None  # Motion design puro
-                    else:
-                        images_info[idx] = raw_images[idx] if idx < len(raw_images) else None
-            else:
-                images_info = raw_images
+            # No modo híbrido com camadas: capítulos recebem a imagem/ilustração de base
+            # e os elementos explicativos em motion design são renderizados por cima!
+            images_info = raw_images
         except Exception as exc:
             logger.warning("Falha ao coletar imagens: %s", exc)
             images_info = [None] * len(chapters)

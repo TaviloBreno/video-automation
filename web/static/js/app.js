@@ -356,7 +356,7 @@ async function handleCreateVideo(e) {
   const research = document.getElementById("researchCheck").checked;
   const bgMusic = document.getElementById("bgMusicSelect") ? document.getElementById("bgMusicSelect").value : "space_ambient";
   const contentStyle = document.querySelector('input[name="contentStyleRadio"]:checked')?.value || "lesson";
-  const visualMode = document.querySelector('input[name="visualModeRadio"]:checked')?.value || "motion_design";
+  const visualMode = document.querySelector('input[name="visualModeRadio"]:checked')?.value || "hybrid";
   const aspectRatio = document.querySelector('input[name="aspectRatioRadio"]:checked')?.value || "16:9";
   const enableImages = (visualMode !== "motion_design");
 
