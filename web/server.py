@@ -152,6 +152,19 @@ def get_config_info():
         },
     ]
 
+    content_styles = [
+        {
+            "id": "lesson",
+            "name": "🎓 Estilo Aula & Didático (Videoaula)",
+            "description": "Professor dinâmico, direto ao ponto, regras claras, exemplos práticos e macetes de fixação.",
+        },
+        {
+            "id": "documentary",
+            "name": "🎬 Estilo Documentário & Ciência",
+            "description": "Narrativa cinematográfica profunda, mistério cósmico, tom investigativo e reflexão solene.",
+        },
+    ]
+
     return jsonify({
         "palettes": palettes,
         "default_palette": cfg.video.default_palette,
@@ -159,11 +172,13 @@ def get_config_info():
         "custom_voices": custom_voices_list,
         "default_voice": formatted_custom[0]["id"] if formatted_custom else cfg.tts.voice,
         "voice_rates": voice_rates,
-        "default_voice_rate": cfg.tts.rate or "-20%",
+        "default_voice_rate": cfg.tts.rate or "-8%",
         "legend_styles": list(SUBTITLE_STYLES.keys()),
         "default_legend_style": "karaoke",
         "bg_music_options": bg_music_list,
-        "default_bg_music": "space_ambient",
+        "default_bg_music": "lofi_chill",
+        "content_styles": content_styles,
+        "default_content_style": "lesson",
         "visual_modes": visual_modes,
         "default_visual_mode": "motion_design",
         "aspect_ratios": aspect_ratios,
@@ -407,15 +422,17 @@ def rebuild_job(job_id: str):
     minutes = float(data.get("minutes") or (base_data.get("actual_seconds", base_data.get("target_seconds", 120)) / 60))
     visual_mode = data.get("visual_mode") or base_data.get("visual_mode", "motion_design")
 
+    content_style = data.get("content_style") or base_data.get("content_style", "lesson")
     params = {
         "topic": topic,
         "minutes": minutes,
+        "content_style": content_style,
         "palette": data.get("palette") or base_data.get("palette"),
         "voice": data.get("voice") or base_data.get("voice"),
-        "voice_rate": data.get("voice_rate") or base_data.get("voice_rate") or cfg.tts.rate or "-20%",
+        "voice_rate": data.get("voice_rate") or base_data.get("voice_rate") or cfg.tts.rate or "-8%",
         "legend_style": data.get("legend_style") or base_data.get("legend_style", "karaoke"),
         "research": False,
-        "bg_music": data.get("bg_music") or base_data.get("bg_music", "space_ambient"),
+        "bg_music": data.get("bg_music") or base_data.get("bg_music", "lofi_chill"),
         "visual_mode": visual_mode,
         "enable_images": (visual_mode != "motion_design"),
     }
@@ -505,16 +522,18 @@ def generate_video():
     if aspect_ratio not in ("16:9", "9:16"):
         aspect_ratio = "16:9"
 
+    content_style = data.get("content_style", "lesson")
     params = {
         "topic": topic,
         "minutes": minutes,
+        "content_style": content_style,
         "aspect_ratio": aspect_ratio,
         "palette": data.get("palette"),
         "voice": data.get("voice"),
-        "voice_rate": data.get("voice_rate") or cfg.tts.rate or "-20%",
+        "voice_rate": data.get("voice_rate") or cfg.tts.rate or "-8%",
         "legend_style": data.get("legend_style", "karaoke"),
         "research": bool(data.get("research", True)),
-        "bg_music": data.get("bg_music", "space_ambient"),
+        "bg_music": data.get("bg_music", "lofi_chill"),
         "visual_mode": visual_mode,
         "enable_images": (visual_mode != "motion_design") and bool(data.get("enable_images", True)),
     }

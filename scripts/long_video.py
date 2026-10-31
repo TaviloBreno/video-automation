@@ -293,36 +293,71 @@ def generate_outline(
     sources: list[dict[str, str]] | None,
     cfg: AppConfig,
     cancelled: CancelFn = _never_cancelled,
+    content_style: str = "lesson",
 ) -> dict[str, Any]:
     known_ids = {s["id"] for s in sources} if sources else None
-    prompt = (
-        "Você é roteirista sênior e diretor criativo de documentários científicos de alto impacto no YouTube "
-        "para o canal Nerdociência (no estilo Cosmos com Carl Sagan e Neil deGrasse Tyson, Kurzgesagt e Veritasium).\n"
-        f"Tema do documentário: {topic}\n"
-        f"Planeje um documentário fascinante estruturado em exatamente {n_chapters} capítulos narrativos "
-        f"de cerca de {int(chapter_seconds)} segundos cada.\n\n"
-        "ESTRUTURA OBRIGATÓRIA DE STORYTELLING E RETENÇÃO:\n"
-        "1. Capítulo 1 (Hook Magnético de 7 Segundos + Promessa & Curiosidade):\n"
-        "   - Os primeiros 7 segundos (cerca de 15 a 18 palavras) DEVEM ser um gancho arrebatador.\n"
-        "   - Deve conter 3 elementos indispensáveis: 1) Uma PROMESSA clara sobre o que será desvendado; "
-        "2) Criação de alta EXPECTATIVA sobre o peso da descoberta; 3) Uma CURIOSIDADE provocativa que o telespectador sinta a necessidade urgente de resolver.\n"
-        "2. Capítulos Intermediários (Jornada de Investigação Progressiva):\n"
-        "   - Desenvolva o tema em camadas progressivas, apresentando fatos, dados, mecanismos e exemplos práticos com clareza e dinamismo, prendendo a atenção do início ao fim.\n"
-        "3. Capítulo Final (Resolução do Enigma & CTA Nerdociência):\n"
-        "   - Entregue a resposta definitiva da promessa inicial com maravilhamento e emoção.\n"
-        "   - Termine OBRIGATORIAMENTE com um Call to Action (CTA) dinâmico e caloroso para o público curtir o vídeo, compartilhar com outros curiosos e deixar seu comentário no canal Nerdociência.\n\n"
-        'Responda em JSON: {"title": "título magnético e irresistível para o YouTube", "chapters": ['
-        '{"title": "título curto do capítulo (até 60 caracteres)", '
-        '"summary": "direção narrativa e emocional do que será explorado"'
-        + (', "source_ids": ["S1"]' if known_ids else "")
-        + "}]}\n"
-        + (
-            "Cada capítulo deve citar em source_ids as fontes que sustentam o seu conteúdo "
-            "(use somente IDs listados).\n"
-            if known_ids else ""
+    is_lesson = content_style in ("lesson", "aula", "didatico")
+
+    if is_lesson:
+        prompt = (
+            "Você é um professor e educador de excelência no YouTube Brasil, especialista em criar videoaulas "
+            "dinâmicas, altamente didáticas, claras e práticas (no estilo dos melhores canais educativos: "
+            "Professor Noslen, Khan Academy, Descomplica, Manual do Mundo).\n"
+            f"Tema da aula: {topic}\n"
+            f"Planeje uma aula completa, didática e prática dividida em exatamente {n_chapters} partes/etapas lógicas "
+            f"de cerca de {int(chapter_seconds)} segundos cada.\n\n"
+            "ESTRUTURA PEDAGÓGICA DE ALTA RETENÇÃO & APRENDIZADO:\n"
+            "1. Etapa 1 (Abertura Direta & Promessa de Aprendizado):\n"
+            "   - Comece direto no ponto: mostre a dúvida real que as pessoas têm ou o erro comum que cometem no cotidiano.\n"
+            "   - Faça uma promessa clara do que o aluno vai dominar nesta aula sem rodeios ou mistérios cósmicos falsos.\n"
+            "2. Etapas Centrais (Desenvolvimento Didático em Camadas Práticas):\n"
+            "   - Explique o conceito ou regra fundamental de forma cristalina.\n"
+            "   - Apresente exemplos práticos do cotidiano e o contraste entre o uso certo e o uso errado.\n"
+            "   - Ensine um macete mnemônico simples para o aluno nunca mais esquecer ou errar.\n"
+            "3. Etapa Final (Resumo Prático dos Pontos-Chave & CTA Educacional):\n"
+            "   - Recapitulação relâmpago dos pontos vitais da aula.\n"
+            "   - Convite caloroso para o aluno curtir a aula se aprendeu algo novo, salvar para revisar e deixar nos comentários qual a próxima dúvida que quer aprender.\n\n"
+            'Responda em JSON: {"title": "título didático, claro e atrativo para o YouTube", "chapters": ['
+            '{"title": "título curto da etapa (até 60 caracteres)", '
+            '"summary": "objetivo pedagógico e o que será ensinado nesta etapa"'
+            + (', "source_ids": ["S1"]' if known_ids else "")
+            + "]}\n"
+            + (
+                "Cada etapa deve citar em source_ids as fontes que sustentam o seu conteúdo "
+                "(use somente IDs listados).\n"
+                if known_ids else ""
+            )
+            + _evidence_block(sources)
         )
-        + _evidence_block(sources)
-    )
+    else:
+        prompt = (
+            "Você é roteirista sênior e diretor criativo de documentários científicos de alto impacto no YouTube "
+            "para o canal Nerdociência (no estilo Cosmos com Carl Sagan e Neil deGrasse Tyson, Kurzgesagt e Veritasium).\n"
+            f"Tema do documentário: {topic}\n"
+            f"Planeje um documentário fascinante estruturado em exatamente {n_chapters} capítulos narrativos "
+            f"de cerca de {int(chapter_seconds)} segundos cada.\n\n"
+            "ESTRUTURA OBRIGATÓRIA DE STORYTELLING E RETENÇÃO:\n"
+            "1. Capítulo 1 (Hook Magnético de 7 Segundos + Promessa & Curiosidade):\n"
+            "   - Os primeiros 7 segundos (cerca de 15 a 18 palavras) DEVEM ser um gancho arrebatador.\n"
+            "   - Deve conter 3 elementos indispensáveis: 1) Uma PROMESSA clara sobre o que será desvendado; "
+            "2) Criação de alta EXPECTATIVA sobre o peso da descoberta; 3) Uma CURIOSIDADE provocativa que o telespectador sinta a necessidade urgente de resolver.\n"
+            "2. Capítulos Intermediários (Jornada de Investigação Progressiva):\n"
+            "   - Desenvolva o tema em camadas progressivas, apresentando fatos, dados, mecanismos e exemplos práticos com clareza e dinamismo, prendendo a atenção do início ao fim.\n"
+            "3. Capítulo Final (Resolução do Enigma & CTA Nerdociência):\n"
+            "   - Entregue a resposta definitiva da promessa inicial com maravilhamento e emoção.\n"
+            "   - Termine OBRIGATORIAMENTE com um Call to Action (CTA) dinâmico e caloroso para o público curtir o vídeo, compartilhar com outros curiosos e deixar seu comentário no canal Nerdociência.\n\n"
+            'Responda em JSON: {"title": "título magnético e irresistível para o YouTube", "chapters": ['
+            '{"title": "título curto do capítulo (até 60 caracteres)", '
+            '"summary": "direção narrativa e emocional do que será explorado"'
+            + (', "source_ids": ["S1"]' if known_ids else "")
+            + "]}\n"
+            + (
+                "Cada capítulo deve citar em source_ids as fontes que sustentam o seu conteúdo "
+                "(use somente IDs listados).\n"
+                if known_ids else ""
+            )
+            + _evidence_block(sources)
+        )
 
     def validate(data: Any) -> dict[str, Any]:
         if not isinstance(data, dict):
@@ -370,76 +405,130 @@ def write_chapter(
     prev_tail: str,
     cfg: AppConfig,
     cancelled: CancelFn = _never_cancelled,
+    content_style: str = "lesson",
 ) -> dict[str, Any]:
     chapters = outline["chapters"]
     chapter = chapters[index]
     n = len(chapters)
     lo, hi = max(15, int(target_words * 0.75)), int(target_words * 1.3) + 1
-    if index == 0 and n == 1:
-        role = (
-            "Este é o único capítulo do vídeo:\n"
-            "- HOOK DE 7 SEGUNDOS (Abertura imediata): As primeiras 15 a 18 palavras faladas DEVEM conter: "
-            "1) Uma PROMESSA clara sobre o mistério que será revelado; 2) Criação de alta EXPECTATIVA; "
-            "3) Uma CURIOSIDADE provocativa que o telespectador sinta a necessidade urgente de resolver.\n"
-            "- DESENVOLVIMENTO: Explique o tema com rigor científico e analogias visuais humanas.\n"
-            "- ENCERRAMENTO COM CTA NERDOCIÊNCIA: Termine com um Call to Action caloroso convidando a CURTIR o vídeo, "
-            "COMPARTILHAR com amigos e COMENTAR sua opinião aqui no canal Nerdociência."
-        )
-    elif index == 0:
-        role = (
-            "Este é o capítulo de Abertura (Capítulo 1):\n"
-            "- HOOK OBRIGATÓRIO DE 7 SEGUNDOS: Comece IMEDIATAMENTE (nas primeiras 15 a 18 palavras faladas) com um gancho arrebatador contendo 3 pilares:\n"
-            "  1) UMA PROMESSA: Declare com clareza o que será desvendado neste documentário;\n"
-            "  2) ALTA EXPECTATIVA: Demonstre a magnitude ou o impacto chocante do tema no cosmos ou na nossa existência;\n"
-            "  3) UMA CURIOSIDADE INTRIGANTE: Lance uma pergunta ou paradoxo que o telespectador sinta a necessidade absoluta de resolver até o fim do vídeo.\n"
-            "- PROIBIDO introduções mornas, saudações burocráticas ou definições secas. Vá direto na ferida da curiosidade."
-        )
-    elif index == n - 1:
-        role = (
-            "Este é o capítulo Final e Conclusão:\n"
-            "- RESOLUÇÃO DA PROMESSA: Entregue a resposta definitiva do enigma prometido no início do vídeo com reflexão e maravilhamento cósmico.\n"
-            "- CALL TO ACTION (CTA) OBRIGATÓRIO DO CANAL NERDOCIÊNCIA: Termine a narração convidando calorosamente o espectador a:\n"
-            "  1) CURTIR o vídeo se ele aprendeu algo fascinante;\n"
-            "  2) COMPARTILHAR com pessoas que amam ciência e mistérios do universo;\n"
-            "  3) COMENTAR suas próprias teorias e reflexões aqui nos comentários do canal Nerdociência."
-        )
+    is_lesson = content_style in ("lesson", "aula", "didatico")
+    if is_lesson:
+        if index == 0 and n == 1:
+            role = (
+                "Esta é uma aula completa de parte única:\n"
+                "- ABERTURA DIRETA: Comece nas primeiras 15 palavras apresentando a dúvida prática ou o erro comum do cotidiano e a promessa da regra definitiva.\n"
+                "- EXPLICAÇÃO E PRÁTICA: Explique a regra com clareza cristalina, cite exemplos práticos e forneça um macete mnemônico infalível.\n"
+                "- ENCERRAMENTO COM CTA DIDÁTICO: Finalize com um resumo relâmpago e convide o aluno a curtir a aula, salvar para revisar e comentar suas dúvidas."
+            )
+        elif index == 0:
+            role = (
+                "Esta é a Abertura da aula (Parte 1):\n"
+                "- Comece direto na dúvida/problema prático: apresente a confusão comum das pessoas sobre o assunto e prometa que hoje ele vai aprender o método simples para nunca mais errar.\n"
+                "- PROIBIDO enrolações, saudações burocráticas ('Olá a todos, hoje vamos...') ou suspense dramático cósmico se o tema for gramática ou outro assunto escolar. Seja dinâmico, motivador e direto ao ponto."
+            )
+        elif index == n - 1:
+            role = (
+                "Esta é a Conclusão e Resumo da aula:\n"
+                "- RESUMO RELÂMPAGO: Recapitule os pontos principais e a regra de ouro em 2 a 3 frases simples e diretas.\n"
+                "- CALL TO ACTION (CTA) DIDÁTICO: Convide o aluno a CURTIR a aula se clareou suas dúvidas, SALVAR para revisar antes de provas ou redações, e COMENTAR qual outro tema ele quer aprender."
+            )
+        else:
+            role = (
+                "Continue a explicação pedagógica aprofundando a regra, apresentando exemplos reais do dia a dia, contrastando o certo versus o errado e ensinando um macete prático de fixação."
+            )
     else:
-        role = (
-            "Continue de forma fluida e eletrizante a partir do capítulo anterior, aprofundando as evidências "
-            "e mantendo viva a expectativa de resolver a pergunta inicial do documentário."
-        )
+        if index == 0 and n == 1:
+            role = (
+                "Este é o único capítulo do vídeo:\n"
+                "- HOOK DE 7 SEGUNDOS (Abertura imediata): As primeiras 15 a 18 palavras faladas DEVEM conter: "
+                "1) Uma PROMESSA clara sobre o mistério que será revelado; 2) Criação de alta EXPECTATIVA; "
+                "3) Uma CURIOSIDADE provocativa que o telespectador sinta a necessidade urgente de resolver.\n"
+                "- DESENVOLVIMENTO: Explique o tema com rigor científico e analogias visuais humanas.\n"
+                "- ENCERRAMENTO COM CTA NERDOCIÊNCIA: Termine com um Call to Action caloroso convidando a CURTIR o vídeo, "
+                "COMPARTILHAR com amigos e COMENTAR sua opinião aqui no canal Nerdociência."
+            )
+        elif index == 0:
+            role = (
+                "Este é o capítulo de Abertura (Capítulo 1):\n"
+                "- HOOK OBRIGATÓRIO DE 7 SEGUNDOS: Comece IMEDIATAMENTE (nas primeiras 15 a 18 palavras faladas) com um gancho arrebatador contendo 3 pilares:\n"
+                "  1) UMA PROMESSA: Declare com clareza o que será desvendado neste documentário;\n"
+                "  2) ALTA EXPECTATIVA: Demonstre a magnitude ou o impacto chocante do tema no cosmos ou na nossa existência;\n"
+                "  3) UMA CURIOSIDADE INTRIGANTE: Lance uma pergunta ou paradoxo que o telespectador sinta a necessidade absoluta de resolver até o fim do vídeo.\n"
+                "- PROIBIDO introduções mornas, saudações burocráticas ou definições secas. Vá direto na ferida da curiosidade."
+            )
+        elif index == n - 1:
+            role = (
+                "Este é o capítulo Final e Conclusão:\n"
+                "- RESOLUÇÃO DA PROMESSA: Entregue a resposta definitiva do enigma prometido no início do vídeo com reflexão e maravilhamento cósmico.\n"
+                "- CALL TO ACTION (CTA) OBRIGATÓRIO DO CANAL NERDOCIÊNCIA: Termine a narração convidando calorosamente o espectador a:\n"
+                "  1) CURTIR o vídeo se ele aprendeu algo fascinante;\n"
+                "  2) COMPARTILHAR com pessoas que amam ciência e mistérios do universo;\n"
+                "  3) COMENTAR suas próprias teorias e reflexões aqui nos comentários do canal Nerdociência."
+            )
+        else:
+            role = (
+                "Continue de forma fluida e eletrizante a partir do capítulo anterior, aprofundando as evidências "
+                "e mantendo viva a expectativa de resolver a pergunta inicial do documentário."
+            )
+
     outline_text = "\n".join(f"{i + 1}. {c['title']} — {c['summary']}" for i, c in enumerate(chapters))
     chapter_sources = None
     if sources:
         wanted = set(chapter.get("source_ids", []))
         chapter_sources = [s for s in sources if s["id"] in wanted] or sources
-    prompt = (
-        "Você é o narrador e roteirista do canal de divulgação científica Nerdociência no YouTube Brasil "
-        "(estilo Cosmos com Carl Sagan e Neil deGrasse Tyson, Kurzgesagt e BBC Earth).\n"
-        f"Tema do documentário: {topic}\nTítulo: {outline['title']}\n"
-        f"Arco narrativo completo:\n{outline_text}\n\n"
-        f'Escreva a narração falada do capítulo {index + 1} de {n}: "{chapter["title"]}".\n'
-        f"Objetivo deste capítulo: {chapter['summary']}\n"
-        f"{role}\n\n"
-        "DIRETRIZES FUNDAMENTAIS DE NARRATIVA HUMANA, EMPÁTICA E ENVOLVENTE:\n"
-        "1. Conexão e Empatia com o Espectador: Fale diretamente com quem está assistindo ('você', 'imagine por um instante...', 'olhe ao seu redor...'). Trate o público como um parceiro de exploração cósmica.\n"
-        "2. Cadência e Pontuação para Voz Neural Natural: O texto será sintetizado em áudio. Use pontuação expressiva para ditar o ritmo da fala humana:\n"
-        "   - Use reticências (...) para pausas dramáticas de expectativa, suspense ou admiração reflexiva.\n"
-        "   - Use vírgulas com frequência para criar respiração e cadência tranquila.\n"
-        "   - Use perguntas retóricas instigantes para provocar reflexão ('Mas como algo assim pode existir?').\n"
-        "3. Zero Academicismo Frio: Em vez de definições enciclopédicas secas, use metáforas sensoriais vívidas e analogias visuais que façam o espectador visualizar a cena mentalmente.\n"
-        "4. Sem Clichês Mecânicos: NUNCA diga 'Olá pessoal', 'Neste vídeo vamos ver', nem coloque títulos, subtítulos ou tópicos dentro da narração.\n"
-        + (f'5. Transição com o capítulo anterior: Ele encerrou com: "{prev_tail}". Faça uma ponte de transição fluida e elegante.\n' if prev_tail else "")
-        + "6. Fidelidade factual: Ancore os dados nas fontes científicas sem inventar fatos.\n"
-        + "7. Ortografia e Acentuação Estritas: Escreva em Português do Brasil com acentuação e gramática perfeitas (ex: 'espaço', 'matéria', 'atração', 'está', 'reação', 'início'). NUNCA gere palavras sem acento, truncadas ou corrompidas.\n"
-        + "8. Ritmo Fluido & Retenção Magnética (Zero Monotonia): NUNCA crie blocos monolíticos ou discursos lentos que expulsem o espectador. Use frases curtas, ágeis e conversacionais. A cada 15 a 20 segundos de fala, quebre o padrão: insira uma pergunta retórica provocadora, uma analogia tátil ou um 'open loop' (uma nova dúvida intrigante antes de resolver a anterior), mantendo a curiosidade em alta tensão até o desfecho.\n"
-        + "9. Fórmulas e Leis Científicas: Ao tratar de leis fundamentais da física, gravidade, energia, cosmologia ou quântica, sinta-se à vontade para selecionar o arquétipo 'formula' e citar a equação de forma clara e instigante.\n"
-        '- "key_points": 1 a 3 frases explicativas curtas e impactantes (de 20 a 80 caracteres) para aparecer na tela. PROIBIDO responder apenas com "..." ou reticências!\n'
-        '- "visual_keywords": 2 a 3 termos de busca em inglês específicos para ilustrar este capítulo, incluindo simulações ou GIFs quando couber (ex: "Black hole accretion simulation gif", "James Webb mirror", "Quantum wave packet").\n'
-        '- "visual_archetype": escolha um estilo de motion design único para este capítulo entre: "orbital", "infographic", "blueprint", "spectrum", "network", "timeline", "quantum", "formula".\n\n'
-        'Responda em JSON: {"narration": "texto falado do capítulo com pontuação expressiva e pausas", "key_points": ["Ponto central 1", "Ponto central 2"], "visual_keywords": ["relevant_term_1", "relevant_term_2"], "visual_archetype": "infographic"}'
-        + _evidence_block(chapter_sources)
-    )
+
+    if is_lesson:
+        prompt = (
+            "Você é um professor carismático, didático e motivador de uma videoaula no YouTube Brasil "
+            "(estilo Professor Noslen, Khan Academy, Descomplica, Manual do Mundo).\n"
+            f"Tema da aula: {topic}\nTítulo: {outline['title']}\n"
+            f"Estrutura da aula completa:\n{outline_text}\n\n"
+            f'Escreva a narração falada da parte {index + 1} de {n}: "{chapter["title"]}".\n'
+            f"Objetivo pedagógico desta parte: {chapter['summary']}\n"
+            f"{role}\n\n"
+            "DIRETRIZES DIDÁTICAS DE ALTA RETENÇÃO & APRENDIZADO:\n"
+            "1. Conexão e Didática Humana: Fale diretamente com o estudante ('você', 'repare bem neste detalhe', 'olha como é fácil', 'nunca mais confunda isso'). Seja empático, claro e estimulante.\n"
+            "2. Exemplos Práticos Imediatos: Sempre que ensinar uma regra, dê exemplos concretos de uso. Mostre o contraste prático entre o uso correto e o erro comum.\n"
+            "3. Macetes e Mnemônicos: Forneça atalhos mentais rápidos para facilitar a fixação na memória (ex: troque por palavra masculina para testar crase).\n"
+            "4. Dicção e Ritmo Natural de Professor: O texto será sintetizado em voz neural. Use pontuação expressiva (vírgulas para respiração, pontos para pausas de assimilação e perguntas retóricas para manter o aluno ativo).\n"
+            "5. Zero Academicismo Chato: Nada de jargões herméticos ou definições de dicionário secas sem aplicação real.\n"
+            "6. Sem Clichês Mecânicos: NUNCA diga 'Olá pessoal', 'Neste vídeo vamos ver', nem coloque tópicos ou cabeçalhos dentro do texto falado.\n"
+            + (f'7. Transição: A parte anterior encerrou com: "{prev_tail}". Faça uma ponte fluida e natural.\n' if prev_tail else "")
+            + "8. Ortografia e Acentuação Estritas: Português do Brasil impecável, com acentuação rigorosa em todas as palavras (ex: 'está', 'fácil', 'prática', 'atenção').\n"
+            '- "key_points": 1 a 3 frases didáticas curtas e impactantes (máximo 60 caracteres) para aparecer na lousa/tela da aula. PROIBIDO responder apenas com "..." ou reticências!\n'
+            '- "visual_keywords": 2 a 3 termos de busca específicos em português ou inglês para ilustrar a aula (ex: "Grammar rule diagram", "Chalkboard writing", "Notebook study", "Grammar checkmark icon").\n'
+            '- "visual_archetype": escolha o estilo visual ideal para este momento entre: "grammar" (para regras de português/crase), "lesson" (lousa didática com tópicos), "comparison" (certo vs errado), "formula" (estruturas/regras), "infographic" (esquemas conceituais), "timeline" (passo a passo).\n\n'
+            'Responda em JSON: {"narration": "texto falado da aula com pontuação expressiva", "key_points": ["Ponto chave 1", "Ponto chave 2"], "visual_keywords": ["grammar_rule", "study_notes"], "visual_archetype": "grammar"}'
+            + _evidence_block(chapter_sources)
+        )
+    else:
+        prompt = (
+            "Você é o narrador e roteirista do canal de divulgação científica Nerdociência no YouTube Brasil "
+            "(estilo Cosmos com Carl Sagan e Neil deGrasse Tyson, Kurzgesagt e BBC Earth).\n"
+            f"Tema do documentário: {topic}\nTítulo: {outline['title']}\n"
+            f"Arco narrativo completo:\n{outline_text}\n\n"
+            f'Escreva a narração falada do capítulo {index + 1} de {n}: "{chapter["title"]}".\n'
+            f"Objetivo deste capítulo: {chapter['summary']}\n"
+            f"{role}\n\n"
+            "DIRETRIZES FUNDAMENTAIS DE NARRATIVA HUMANA, EMPÁTICA E ENVOLVENTE:\n"
+            "1. Conexão e Empatia com o Espectador: Fale diretamente com quem está assistindo ('você', 'imagine por um instante...', 'olhe ao seu redor...'). Trate o público como um parceiro de exploração cósmica.\n"
+            "2. Cadência e Pontuação para Voz Neural Natural: O texto será sintetizado em áudio. Use pontuação expressiva para ditar o ritmo da fala humana:\n"
+            "   - Use reticências (...) para pausas dramáticas de expectativa, suspense ou admiração reflexiva.\n"
+            "   - Use vírgulas com frequência para criar respiração e cadência tranquila.\n"
+            "   - Use perguntas retóricas instigantes para provocar reflexão ('Mas como algo assim pode existir?').\n"
+            "3. Zero Academicismo Frio: Em vez de definições enciclopédicas secas, use metáforas sensoriais vívidas e analogias visuais que façam o espectador visualizar a cena mentalmente.\n"
+            "4. Sem Clichês Mecânicos: NUNCA diga 'Olá pessoal', 'Neste vídeo vamos ver', nem coloque títulos, subtítulos ou tópicos dentro da narração.\n"
+            + (f'5. Transição com o capítulo anterior: Ele encerrou com: "{prev_tail}". Faça uma ponte de transição fluida e elegante.\n' if prev_tail else "")
+            + "6. Fidelidade factual: Ancore os dados nas fontes científicas sem inventar fatos.\n"
+            + "7. Ortografia e Acentuação Estritas: Escreva em Português do Brasil com acentuação e gramática perfeitas (ex: 'espaço', 'matéria', 'atração', 'está', 'reação', 'início'). NUNCA gere palavras sem acento, truncadas ou corrompidas.\n"
+            + "8. Ritmo Fluido & Retenção Magnética (Zero Monotonia): NUNCA crie blocos monolíticos ou discursos lentos que expulsem o espectador. Use frases curtas, ágeis e conversacionais. A cada 15 a 20 segundos de fala, quebre o padrão: insira uma pergunta retórica provocadora, uma analogia tátil ou um 'open loop' (uma nova dúvida intrigante antes de resolver a anterior), mantendo a curiosidade em alta tensão até o desfecho.\n"
+            + "9. Fórmulas e Leis Científicas: Ao tratar de leis fundamentais da física, gravidade, energia, cosmologia ou quântica, sinta-se à vontade para selecionar o arquétipo 'formula' e citar a equação de forma clara e instigante.\n"
+            '- "key_points": 1 a 3 frases explicativas curtas e impactantes (de 20 a 80 caracteres) para aparecer na tela. PROIBIDO responder apenas com "..." ou reticências!\n'
+            '- "visual_keywords": 2 a 3 termos de busca em inglês específicos para ilustrar este capítulo, incluindo simulações ou GIFs quando couber (ex: "Black hole accretion simulation gif", "James Webb mirror", "Quantum wave packet").\n'
+            '- "visual_archetype": escolha um estilo de motion design único para este capítulo entre: "orbital", "infographic", "blueprint", "spectrum", "network", "timeline", "quantum", "formula".\n\n'
+            'Responda em JSON: {"narration": "texto falado do capítulo com pontuação expressiva e pausas", "key_points": ["Ponto central 1", "Ponto central 2"], "visual_keywords": ["relevant_term_1", "relevant_term_2"], "visual_archetype": "infographic"}'
+            + _evidence_block(chapter_sources)
+        )
 
     def validate(data: Any) -> dict[str, Any]:
         if not isinstance(data, dict):
@@ -932,10 +1021,12 @@ def run_long_video(
     else:
         check()
         progress(0.04, "Planejando a estrutura do vídeo…")
-        outline = generate_outline(topic, n_chapters, target / n_chapters, sources, cfg, cancelled)
+        content_style = str(params.get("content_style", "lesson")).strip().lower()
+        outline = generate_outline(topic, n_chapters, target / n_chapters, sources, cfg, cancelled, content_style=content_style)
         chapters = outline["chapters"]
         n = len(chapters)
-        base_rate_num = _parse_rate(params.get("voice_rate") or cfg.tts.rate or "-20%")
+        default_rate = "-8%" if content_style in ("lesson", "aula", "didatico") else "-20%"
+        base_rate_num = _parse_rate(params.get("voice_rate") or cfg.tts.rate or default_rate)
         # Calibra palavras/segundo com base na taxa lenta para que o roteiro não fique longo demais:
         # A -20%, ~1.55 palavras/s (~93 wpm); a -15%, ~1.65 palavras/s; a 0%, ~1.95 palavras/s.
         words_per_second = max(1.35, min(2.2, round(1.95 * (1.0 + base_rate_num / 100), 2)))
@@ -944,7 +1035,7 @@ def run_long_video(
         for i in range(n):
             check()
             progress(0.07 + 0.23 * (i / n), f"Escrevendo capítulo {i + 1}/{n}: {chapters[i]['title']}")
-            written = write_chapter(topic, outline, i, per_chapter, sources, prev_tail, cfg, cancelled)
+            written = write_chapter(topic, outline, i, per_chapter, sources, prev_tail, cfg, cancelled, content_style=content_style)
             chapters[i]["narration"] = written["narration"]
             chapters[i]["key_points"] = written["key_points"]
             prev_tail = " ".join(written["narration"].split()[-18:])
@@ -969,6 +1060,7 @@ def run_long_video(
             "title": outline["title"],
             "target_seconds": target,
             "voice_rate": rate,
+            "content_style": params.get("content_style", "lesson"),
             "chapters": chapters,
             "sources": sources,
         },

@@ -1,7 +1,7 @@
 {
   "version": 1,
   "historyId": "8d4187f1-fb29-45c7-90b0-47f2dd063f88",
-  "currentRevision": "05545c9c-6a20-4eb1-82f2-6d7ff95ba847",
+  "currentRevision": "985a0a25-5486-4370-979d-360fd211a795",
   "pendingChanges": false,
   "files": {
     "AGENTS.md": {
@@ -17,8 +17,8 @@
       "content": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\53\\53dbce1e19aa713cbb12ee0bc4d206143b45ab15e6ffbfcaa8f69572d4d24d50"
     },
     "index.html": {
-      "hash": "2bf798e3d5327c783caf1349b3e832d244a8803d10aa06ba83adf2f76562e8f2",
-      "content": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\2b\\2bf798e3d5327c783caf1349b3e832d244a8803d10aa06ba83adf2f76562e8f2"
+      "hash": "c1a3b5df53957319eb0b52d9b0223f37bf8a958f3410413ba83c9f480e60968b",
+      "content": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\c1\\c1a3b5df53957319eb0b52d9b0223f37bf8a958f3410413ba83c9f480e60968b"
     },
     "meta.json": {
       "hash": "a98496daea3fdeab65a83404bcbc034263c25d5571e5eaf23caa4b7c9eced945",
@@ -49,16 +49,16 @@
       "content": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\d0\\d0352355bbe9e871c1a472c2dd4ead6d5a5c54e74c6dc292cf5544f42f31fb84"
     },
     "src/template_wide.html": {
-      "hash": "c516dbcc1e8981a0d5f601ce30279c0b52544900a7954e437b7487d8f53f6502",
-      "content": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\c5\\c516dbcc1e8981a0d5f601ce30279c0b52544900a7954e437b7487d8f53f6502"
+      "hash": "0ac4b2b3762225676d01e64ad0bf0e7675b0364bc8bdd771aacc38b916bc43b7",
+      "content": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\0a\\0ac4b2b3762225676d01e64ad0bf0e7675b0364bc8bdd771aacc38b916bc43b7"
     },
     "src/gsap.min.js": {
       "hash": "28033e449a31ebcc396e5be8b13b63152bf03094288fb5867034321927bce087",
       "content": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\28\\28033e449a31ebcc396e5be8b13b63152bf03094288fb5867034321927bce087"
     },
     "src/template_vertical.html": {
-      "hash": "0fc94ec6ae8fab00ca710bb5af02cbdef7eed9a351ae9193be6358d6a7c44f1c",
-      "content": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\0f\\0fc94ec6ae8fab00ca710bb5af02cbdef7eed9a351ae9193be6358d6a7c44f1c"
+      "hash": "105480ddb00379e6f5419ad074a9a1e0aa62b1dc55a098fbfc7eed088c61ece9",
+      "content": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\10\\105480ddb00379e6f5419ad074a9a1e0aa62b1dc55a098fbfc7eed088c61ece9"
     }
   },
   "revisions": {
@@ -3411,6 +3411,115 @@
           "after": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\2b\\2bf798e3d5327c783caf1349b3e832d244a8803d10aa06ba83adf2f76562e8f2"
         }
       }
+    },
+    "c27cc414-191c-4e7b-a5eb-cde3760ccfef": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793423921556,
+      "endedAt": 1793423921571,
+      "files": {
+        "src/template_vertical.html": {
+          "before": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\0f\\0fc94ec6ae8fab00ca710bb5af02cbdef7eed9a351ae9193be6358d6a7c44f1c",
+          "after": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\10\\105480ddb00379e6f5419ad074a9a1e0aa62b1dc55a098fbfc7eed088c61ece9"
+        },
+        "src/template_wide.html": {
+          "before": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\c5\\c516dbcc1e8981a0d5f601ce30279c0b52544900a7954e437b7487d8f53f6502",
+          "after": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\0a\\0ac4b2b3762225676d01e64ad0bf0e7675b0364bc8bdd771aacc38b916bc43b7"
+        }
+      }
+    },
+    "81f42d9f-27c5-40a3-8d8a-3903dca025e0": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793424189075,
+      "endedAt": 1793424189078,
+      "files": {
+        "index.html": {
+          "before": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\2b\\2bf798e3d5327c783caf1349b3e832d244a8803d10aa06ba83adf2f76562e8f2",
+          "after": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\b2\\b207ed8f3fbc9d217bae76fa3c677ce5e07711a2d8bb84e9ec2c5878fc40c985"
+        }
+      }
+    },
+    "54b97d07-e582-45e0-ad8a-251d031ba187": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793424275860,
+      "endedAt": 1793424275864,
+      "files": {
+        "index.html": {
+          "before": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\b2\\b207ed8f3fbc9d217bae76fa3c677ce5e07711a2d8bb84e9ec2c5878fc40c985",
+          "after": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\e3\\e36abd216401327fcfaa1a1aa0e2fe89071bf8159c780de15511105ee2d5c8a6"
+        }
+      }
+    },
+    "360b7bcd-9570-4ca4-b341-144c4148a4ba": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793424358217,
+      "endedAt": 1793424358220,
+      "files": {
+        "index.html": {
+          "before": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\e3\\e36abd216401327fcfaa1a1aa0e2fe89071bf8159c780de15511105ee2d5c8a6",
+          "after": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\95\\9568bead3c478798b212c6bfe6a7eceb8bfe1e12f1685cb42579a40af565c74c"
+        }
+      }
+    },
+    "deb23c78-b4f3-4551-aa76-73255d138f52": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793425022570,
+      "endedAt": 1793425022573,
+      "files": {
+        "index.html": {
+          "before": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\95\\9568bead3c478798b212c6bfe6a7eceb8bfe1e12f1685cb42579a40af565c74c",
+          "after": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\34\\3496b8909418fe3dcf73223a7626ba04550774448a888fc2bfa0ccdf80a79741"
+        }
+      }
+    },
+    "2ea78cbe-31ff-4e62-bdca-7d06b99268b3": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793425096759,
+      "endedAt": 1793425096762,
+      "files": {
+        "index.html": {
+          "before": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\34\\3496b8909418fe3dcf73223a7626ba04550774448a888fc2bfa0ccdf80a79741",
+          "after": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\85\\85f7ddcdfad47e33a55d5808e94cb8529cc8a0b7e9e737621e34664d3f405003"
+        }
+      }
+    },
+    "985a0a25-5486-4370-979d-360fd211a795": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793425166300,
+      "endedAt": 1793425166303,
+      "files": {
+        "index.html": {
+          "before": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\85\\85f7ddcdfad47e33a55d5808e94cb8529cc8a0b7e9e737621e34664d3f405003",
+          "after": "C:\\Users\\Tavilo Breno\\.cache\\hyperframes\\history\\8d4187f1-fb29-45c7-90b0-47f2dd063f88\\blobs\\c1\\c1a3b5df53957319eb0b52d9b0223f37bf8a958f3410413ba83c9f480e60968b"
+        }
+      }
     }
   },
   "checks": {
@@ -3475,6 +3584,36 @@
           "status": "cleaned",
           "cleanedAfterRender": "07a0ec62-1503-4f7c-81f6-767783f12523"
         }
+      ],
+      "c27cc414-191c-4e7b-a5eb-cde3760ccfef": [
+        {
+          "id": "dc0823ca-f180-4e4d-b43a-417e28875e0a",
+          "scope": "project",
+          "metadata": {
+            "ok": true,
+            "browserSkipped": false,
+            "options": {
+              "samples": 9,
+              "atTransitions": false,
+              "maxIssues": 80,
+              "collapseStatic": true,
+              "tolerance": 2,
+              "timeout": 10000,
+              "contrast": true,
+              "strict": false,
+              "snapshots": false,
+              "browserGpuMode": "auto"
+            }
+          },
+          "createdAt": 1793423938561,
+          "contentHash": "46d81f6dffa40611f9a190585885662558c65e3c9cb2904535d1490ec29d036f",
+          "revision": "c27cc414-191c-4e7b-a5eb-cde3760ccfef",
+          "inputFingerprint": "38242dc1bb7a517e2250f1411708c77cee006514f85f9c43da6148cb677178fc",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision",
+          "status": "cleaned",
+          "cleanedAfterRender": "7c9e3135-666e-406a-a59d-2f7daf834326"
+        }
       ]
     },
     "unversioned": []
@@ -3486,15 +3625,15 @@
   },
   "renders": {
     "latest": {
-      "id": "03194d71-80bf-4c0a-ad01-bac4d34bd51b",
-      "completedAt": 1793422564875,
-      "output": "C:\\programacao\\projetos\\video-automation\\output\\jobs\\job_1793422020_6f87af\\chapters\\ch03\\chapter.mp4",
+      "id": "bbba331e-22db-468f-8811-fd4ad9b61646",
+      "completedAt": 1793425254052,
+      "output": "C:\\programacao\\projetos\\video-automation\\output\\jobs\\job_1793424727_5180ca\\chapters\\ch03\\chapter.mp4",
       "status": "completed",
-      "revision": "05545c9c-6a20-4eb1-82f2-6d7ff95ba847"
+      "revision": "985a0a25-5486-4370-979d-360fd211a795"
     },
     "retainedRevisions": [
-      "05545c9c-6a20-4eb1-82f2-6d7ff95ba847",
-      "65f9d10a-47d7-4cd8-8810-247556dbf9d1"
+      "985a0a25-5486-4370-979d-360fd211a795",
+      "2ea78cbe-31ff-4e62-bdca-7d06b99268b3"
     ]
   },
   "pendingArtifactCleanup": []

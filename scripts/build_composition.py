@@ -120,7 +120,19 @@ def detect_visual_theme(
     c_text = (content or "").lower()
     combined_text = f"{topic} {chapter_title} {content}".lower()
 
-        # 0. Finanças, Moedas, Dólar, Investimentos, Risco, Probabilidade & Mercado
+    # 0.0 Gramática, Língua Portuguesa, Crase, Regras e Ortografia
+    if re.search(r"(\bcrase\b|acento grave|regência|regencia|preposição|preposicao|artigo feminino|substantivo|verbo transitivo|concordância|concordancia|ortografia|acentuação|acentuacao|sintaxe|pontuação|pontuacao|oração|oracao|vocábulo|vocabulo|língua portuguesa|lingua portuguesa|gramática|gramatica)", c_text) or re.search(r"(\bcrase\b|gramática|gramatica|língua portuguesa|português|portugues)", combined_text):
+        return "grammar", f"NORMA PADRÃO & GRAMÁTICA // {label_suffix}"
+
+    # 0.01 Certo vs Errado / Comparação Prática
+    if re.search(r"(certo ou errado|correto ou incorreto|permitido ou proibido|nunca use|evite usar|forma errada|forma certa|versus|diferença entre|antes de palavra)", c_text):
+        return "comparison", f"CERTO vs ERRADO // {label_suffix}"
+
+    # 0.02 Didática, Aulas, Exemplos, Macetes e Dicas de Fixação
+    if re.search(r"(macete|dica de ouro|mnemônico|mnemonico|como usar|aprenda|passo a passo|não erre|exemplo prático|exemplo pratico|na prática|na pratica|em sala|memorizar|fixar|revisão|revisao|videoaula)", c_text) or re.search(r"(aula|aprender|dica)", combined_text):
+        return "lesson", f"AULA & DICA DE FIXAÇÃO // {label_suffix}"
+
+    # 0. Finanças, Moedas, Dólar, Investimentos, Risco, Probabilidade & Mercado
     if re.search(r"(\bdólar|dolar|câmbio|cambio|real|moeda|inflação|inflacao|juros|selic|mercado|bolsa|ações|acoes|ibov|investiment|lucro|preço|preco|volatilidade|risco|probabilidade|chance|ganhar|dinheiro|bilhões|bilhoes|previsão financeira|carteira)", c_text):
         return "finance", f"MERCADO & RISCO // {label_suffix}"
 
@@ -169,7 +181,7 @@ def detect_visual_theme(
         return "psychology", f"PSICOLOGIA COGNITIVA // {label_suffix}"
 
     # 10. Prioridade Semântica da Sentença: Política, Poder, Governo & Dinâmica Social
-    if re.search(r"(polític|manipula|agitador|eleiç|poder|propaganda|retórica|ideolog|governo|estado|voto|partido|líder|democrac|polariza|massa|autorit|opinião pública|populis|discurso)", c_text):
+    if re.search(r"(polític|agitador|eleiç|urna|\b(poder executivo|poder judiciário|poder político|luta pelo poder|tomada de poder)\b|propaganda partidária|ideolog|governo|partido político|democrac|polariza|autorit|opinião pública|populis)", c_text):
         return "politics", f"DINÂMICA DE PODER // {label_suffix}"
 
     # 11. Prioridade Semântica da Sentença: Astrofísica Orbital, Buracos Negros, Quasars & Gravidade
@@ -180,6 +192,9 @@ def detect_visual_theme(
     if explicit_archetype:
         arch = explicit_archetype.lower().strip()
         arch_labels = {
+            "grammar": ("grammar", f"NORMA PADRÃO & GRAMÁTICA // {label_suffix}"),
+            "lesson": ("lesson", f"VIDEOAULA & FIXAÇÃO // {label_suffix}"),
+            "comparison": ("comparison", f"CERTO vs ERRADO // {label_suffix}"),
             "politics": ("politics", f"DINÂMICA DE PODER // {label_suffix}"),
             "psychology": ("psychology", f"PSICOLOGIA COGNITIVA // {label_suffix}"),
             "orbital": ("orbital", f"ASTROFÍSICA ORBITAL // {label_suffix}"),
@@ -268,9 +283,103 @@ def _get_formula_preset(text: str) -> dict[str, Any]:
         }
 
 
-def generate_thematic_motion_html(theme: str, label: str) -> str:
+def generate_thematic_motion_html(theme: str, label: str, content: str = "") -> str:
     """Retorna Motion Design vetorial procedural específico do assunto falado."""
-    if theme in ("finance", "economy", "money", "market"):
+    if theme in ("grammar", "language", "portuguese"):
+        is_crase = bool(re.search(r"(crase|acento grave|à|preposição|fusão)", f"{label} {content}".lower()))
+        if is_crase:
+            eq_html = '''
+          <div class="grammar-formula-box">
+            <div class="gf-part"><span class="gf-tag">PREPOSIÇÃO</span><span class="gf-word">A</span></div>
+            <div class="gf-symbol">+</div>
+            <div class="gf-part"><span class="gf-tag">ARTIGO FEMININO</span><span class="gf-word">A</span></div>
+            <div class="gf-symbol">=</div>
+            <div class="gf-result"><span class="gf-tag">FUSÃO</span><span class="gf-accent">&Agrave;</span></div>
+          </div>
+          <div class="grammar-cases-row">
+            <div class="case-chip chip-correct"><span class="case-icon">✔</span> <span>Vou <b>&agrave;</b> praia (Volto <b>da</b> praia)</span></div>
+            <div class="case-chip chip-prohibited"><span class="case-icon">✖</span> <span>Vou <b>a</b> p&eacute; (Palavra masculina)</span></div>
+          </div>
+          <div class="grammar-mnemonic">
+            <span class="mnem-star">💡</span> <b>MACETE DE OURO:</b> "Se vou <i>A</i> e volto <i>DA</i>, crase h&aacute;! Se vou <i>A</i> e volto <i>DE</i>, crase pra qu&ecirc;?"
+          </div>'''
+        else:
+            eq_html = '''
+          <div class="grammar-formula-box general">
+            <div class="gf-part"><span class="gf-tag">TERMO REGENTE</span><span class="gf-word">EXIGÊNCIA</span></div>
+            <div class="gf-symbol">➔</div>
+            <div class="gf-part"><span class="gf-tag">TERMO REGIDO</span><span class="gf-word">COMPLEMENTO</span></div>
+          </div>
+          <div class="grammar-cases-row">
+            <div class="case-chip chip-correct"><span class="case-icon">✔</span> <span>Aplicação Correta na Norma Culta</span></div>
+            <div class="case-chip chip-prohibited"><span class="case-icon">✖</span> <span>Erro Comum do Cotidiano</span></div>
+          </div>
+          <div class="grammar-mnemonic">
+            <span class="mnem-star">📌</span> <b>REGRA FUNDAMENTAL:</b> Observe a regência do verbo e a classe da palavra seguinte.
+          </div>'''
+        return f'''
+      <div class="clip-right-media">
+        <div class="motion-design-graphic motion-grammar">
+          <div class="grammar-hud-header">
+            <span class="hud-sub-badge">NORMA PADRÃO & LÍNGUA PORTUGUESA</span>
+          </div>
+          <div class="grammar-interactive-board">
+            {eq_html}
+          </div>
+          <div class="hud-label">{label}</div>
+        </div>
+      </div>'''
+
+    elif theme in ("lesson", "classroom", "education", "study"):
+        return f'''
+      <div class="clip-right-media">
+        <div class="motion-design-graphic motion-lesson">
+          <div class="lesson-hud-header">
+            <span class="hud-sub-badge">VIDEOAULA // CONCEITO E FIXAÇÃO</span>
+          </div>
+          <div class="lesson-chalkboard">
+            <div class="chalk-item item-1">
+              <span class="chalk-badge">01</span>
+              <div class="chalk-text"><b>ENTENDA A REGRA:</b> Mecanismo e estrutura fundamental</div>
+            </div>
+            <div class="chalk-item item-2">
+              <span class="chalk-badge">02</span>
+              <div class="chalk-text"><b>APLICAÇÃO PRÁTICA:</b> Exemplos reais do dia a dia</div>
+            </div>
+            <div class="chalk-item item-3">
+              <span class="chalk-badge">03</span>
+              <div class="chalk-text"><b>MACETE DE MEMÓRIA:</b> Atalho mental para não esquecer</div>
+            </div>
+          </div>
+          <div class="lesson-footer-pill">
+            <span class="pill-dot"></span> FOCO EM RETENÇÃO & CLAREZA
+          </div>
+          <div class="hud-label">{label}</div>
+        </div>
+      </div>'''
+
+    elif theme in ("comparison", "contrast", "versus"):
+        return f'''
+      <div class="clip-right-media">
+        <div class="motion-design-graphic motion-comparison">
+          <div class="comp-hud-header">
+            <span class="hud-sub-badge">COMPARAÇÃO & APLICAÇÃO PRÁTICA</span>
+          </div>
+          <div class="comp-cards-container">
+            <div class="comp-card card-correct">
+              <div class="comp-status-row"><span class="comp-icon">✔</span> <span class="comp-label">CORRETO / PERMITIDO</span></div>
+              <div class="comp-desc">Forma consagrada pela norma culta e clareza do contexto</div>
+            </div>
+            <div class="comp-card card-wrong">
+              <div class="comp-status-row"><span class="comp-icon">✖</span> <span class="comp-label">INCORRETO / EVITAR</span></div>
+              <div class="comp-desc">Pegadinha frequente em provas, redações e conversas</div>
+            </div>
+          </div>
+          <div class="hud-label">{label}</div>
+        </div>
+      </div>'''
+
+    elif theme in ("finance", "economy", "money", "market"):
         return f'''
       <div class="clip-right-media">
         <div class="motion-design-graphic motion-finance">
@@ -632,7 +741,7 @@ def build_composition(
             arch = el.get("visual_archetype") or scene.get("visual_archetype") or ""
             ch_title = scene.get("chapter_title") or ""
             theme_key, theme_label = detect_visual_theme(topic_text, raw_content, ch_title, explicit_archetype=arch)
-            media_html = generate_thematic_motion_html(theme_key, theme_label)
+            media_html = generate_thematic_motion_html(theme_key, theme_label, raw_content)
 
         role = html.escape(role_labels.get(el.get("type"), "EXPLICAÇÃO"))
 

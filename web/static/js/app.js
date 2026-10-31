@@ -51,6 +51,37 @@ function setupEventListeners() {
     });
   }
 
+  // Seletor de Estilo de Conteúdo (Aula vs Documentário)
+  const contentStyleCards = document.querySelectorAll(".content-style-card");
+  contentStyleCards.forEach((card) => {
+    card.addEventListener("click", () => {
+      contentStyleCards.forEach((c) => c.classList.remove("active"));
+      card.classList.add("active");
+      const radio = card.querySelector('input[type="radio"]');
+      if (radio) {
+        radio.checked = true;
+        const styleVal = radio.value;
+        const rateSelect = document.getElementById("voiceRateSelect");
+        const musicSelect = document.getElementById("bgMusicSelect");
+        if (styleVal === "lesson") {
+          if (rateSelect && (rateSelect.value === "-20%" || rateSelect.value === "-15%")) {
+            rateSelect.value = "-8%";
+          }
+          if (musicSelect && musicSelect.value === "space_ambient") {
+            musicSelect.value = "lofi_chill";
+          }
+        } else if (styleVal === "documentary") {
+          if (rateSelect && rateSelect.value === "-8%") {
+            rateSelect.value = "-20%";
+          }
+          if (musicSelect && musicSelect.value === "lofi_chill") {
+            musicSelect.value = "space_ambient";
+          }
+        }
+      }
+    });
+  });
+
   // Seletor de Formato do Vídeo (16:9 vs 9:16)
   const aspectCards = document.querySelectorAll(".aspect-ratio-card");
   aspectCards.forEach((card) => {
@@ -324,6 +355,7 @@ async function handleCreateVideo(e) {
   const legendStyle = document.getElementById("legendStyleSelect").value;
   const research = document.getElementById("researchCheck").checked;
   const bgMusic = document.getElementById("bgMusicSelect") ? document.getElementById("bgMusicSelect").value : "space_ambient";
+  const contentStyle = document.querySelector('input[name="contentStyleRadio"]:checked')?.value || "lesson";
   const visualMode = document.querySelector('input[name="visualModeRadio"]:checked')?.value || "motion_design";
   const aspectRatio = document.querySelector('input[name="aspectRatioRadio"]:checked')?.value || "16:9";
   const enableImages = (visualMode !== "motion_design");
@@ -352,6 +384,7 @@ async function handleCreateVideo(e) {
       body: JSON.stringify({
         topic,
         minutes,
+        content_style: contentStyle,
         aspect_ratio: aspectRatio,
         palette,
         voice,

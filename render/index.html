@@ -8,10 +8,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --palettePrimary: #00E5FF;
-      --paletteAccent: #FF00E5;
-      --paletteText: #FFFFFF;
-      --paletteBackground: #0A0A0A;
+      --palettePrimary: #1E88E5;
+      --paletteAccent: #FF7043;
+      --paletteText: #212121;
+      --paletteBackground: #FAFAFA;
       --surface: color-mix(in srgb, var(--paletteBackground) 88%, white);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -541,6 +541,249 @@
       z-index: 3;
     }
 
+
+    /* ARQUÉTIPO: GRAMÁTICA, LÍNGUA PORTUGUESA & NORMA PADRÃO */
+    .motion-grammar {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    .grammar-hud-header {
+      margin-bottom: 12px;
+    }
+    .grammar-interactive-board {
+      width: 900px;
+      padding: 26px 24px 20px;
+      background: rgba(6, 12, 28, 0.85);
+      border-radius: 20px;
+      border: 1px solid color-mix(in srgb, var(--palettePrimary) 40%, transparent);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 30px color-mix(in srgb, var(--palettePrimary) 18%, transparent);
+      backdrop-filter: blur(14px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      text-align: center;
+    }
+    .grammar-formula-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 14px 22px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      width: 100%;
+    }
+    .gf-part {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .gf-tag {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: var(--paletteAccent);
+      text-transform: uppercase;
+    }
+    .gf-word {
+      font-size: 28px;
+      font-weight: 800;
+      color: #ffffff;
+    }
+    .gf-symbol {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--paletteAccent);
+    }
+    .gf-result {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .gf-accent {
+      font-size: 38px;
+      font-weight: 900;
+      color: var(--palettePrimary);
+      text-shadow: 0 0 20px var(--palettePrimary);
+    }
+    .grammar-cases-row {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 100%;
+    }
+    .case-chip {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      text-align: left;
+    }
+    .chip-correct {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: #a7f3d0;
+    }
+    .chip-prohibited {
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      color: #fca5a5;
+    }
+    .case-icon {
+      font-size: 15px;
+      font-weight: 900;
+    }
+    .grammar-mnemonic {
+      font-size: 13px;
+      line-height: 1.4;
+      color: #e2e8f0;
+      background: color-mix(in srgb, var(--paletteAccent) 10%, transparent);
+      border: 1px dashed color-mix(in srgb, var(--paletteAccent) 40%, transparent);
+      border-radius: 10px;
+      padding: 10px 14px;
+      width: 100%;
+    }
+
+    /* ARQUÉTIPO: VIDEOAULA & LOUSA DIDÁTICA */
+    .motion-lesson {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    .lesson-hud-header {
+      margin-bottom: 12px;
+    }
+    .lesson-chalkboard {
+      width: 900px;
+      padding: 24px;
+      background: rgba(6, 14, 26, 0.88);
+      border-radius: 18px;
+      border: 1px solid color-mix(in srgb, var(--paletteAccent) 40%, transparent);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 28px color-mix(in srgb, var(--paletteAccent) 15%, transparent);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .chalk-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, 0.035);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .chalk-badge {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--palettePrimary);
+      background: color-mix(in srgb, var(--palettePrimary) 18%, transparent);
+      padding: 4px 10px;
+      border-radius: 8px;
+      border: 1px solid color-mix(in srgb, var(--palettePrimary) 35%, transparent);
+    }
+    .chalk-text {
+      font-size: 14px;
+      color: #f1f5f9;
+      line-height: 1.35;
+    }
+    .lesson-footer-pill {
+      margin-top: 10px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--paletteAccent);
+      background: color-mix(in srgb, var(--paletteAccent) 12%, transparent);
+      padding: 4px 14px;
+      border-radius: 20px;
+      border: 1px solid color-mix(in srgb, var(--paletteAccent) 30%, transparent);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .pill-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--paletteAccent);
+      box-shadow: 0 0 8px var(--paletteAccent);
+    }
+
+    /* ARQUÉTIPO: COMPARAÇÃO (CERTO vs ERRADO) */
+    .motion-comparison {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    .comp-hud-header {
+      margin-bottom: 14px;
+    }
+    .comp-cards-container {
+      width: 900px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .comp-card {
+      padding: 18px 20px;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .card-correct {
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      box-shadow: 0 10px 30px rgba(16, 185, 129, 0.1);
+    }
+    .card-wrong {
+      background: rgba(239, 68, 68, 0.08);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      box-shadow: 0 10px 30px rgba(239, 68, 68, 0.1);
+    }
+    .comp-status-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-correct .comp-label {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      color: #34d399;
+    }
+    .card-wrong .comp-label {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      color: #f87171;
+    }
+    .comp-desc {
+      font-size: 14px;
+      color: #cbd5e1;
+      line-height: 1.4;
+    }
+
     /* ARQUÉTIPO: FÓRMULA MATEMÁTICA & LEIS FÍSICAS */
     .motion-formula {
       display: flex;
@@ -895,7 +1138,7 @@
 </head>
 <body>
   <div id="root" data-composition-id="main" data-start="0"
-       data-width="1080" data-height="1920" data-duration="33.485374666666665" style="perspective: 1200px;">
+       data-width="1080" data-height="1920" data-duration="50.22031966666667" style="perspective: 1200px;">
     <div class="bg-grid-overlay"></div>
     <div class="hud-border"></div>
     <div class="scene-wipe-beam"></div>
@@ -906,125 +1149,229 @@
 
     
     <div id="el-1" class="explainer-clip clip"
-         data-start="0.000" data-duration="9.172">
+         data-start="0.000" data-duration="6.853">
       <div class="clip-left-content">
         <div class="clip-heading">
           <span class="clip-index">01</span>
           <span>DESTAQUE // INTRODUÇÃO</span>
         </div>
-        <div class="clip-copy"><span class="kinetic-line">Imagine que você está lendo uma frase simples como &#x27;a crase é um sinal de pontuação&#x27;. </span><span class="kinetic-line">Mas olhe para perto! </span></div>
-        <div class="clip-sources">FONTES & REFERÊNCIAS  /  <span class="citation" title="https://aulakeyboard.com/download-category/software-driver/"><b>[S4</b> <i>Software Driver - Aula Keyboard</i></span>  ·  <span class="citation" title="https://www.aulagaming.com/pages/download"><b>[S5</b> <i>Download</i></span>  ·  <span class="citation" title="https://www.ulbra.br/canoas/espaco-academico/aula-ava"><b>[S6</b> <i>Aula (AVA) - Espaço Acadêmico - Ulbra Canoas</i></span></div>
+        <div class="clip-copy"><span class="kinetic-line">Imagine que você está preparando uma refeição equilibrada para si mesmo ou para sua família.</span></div>
+        <div class="clip-sources">FONTES & REFERÊNCIAS  /  <span class="citation" title="https://general.aula.education/"><b>[S2</b> <i>Aula</i></span>  ·  <span class="citation" title="https://classroom.google.com/?hl=pt-BR"><b>[S3</b> <i>Fazer login nas Contas do Google</i></span></div>
       </div>
       
       <div class="clip-right-media">
-        <div class="motion-design-graphic motion-radar">
-          <div class="radar-hud-circle">
-            <div class="radar-sweep-line"></div>
-            <div class="radar-blip b1"></div>
-            <div class="radar-blip b2"></div>
-            <div class="radar-axis-x"></div>
-            <div class="radar-axis-y"></div>
+        <div class="motion-design-graphic motion-lesson">
+          <div class="lesson-hud-header">
+            <span class="hud-sub-badge">VIDEOAULA // CONCEITO E FIXAÇÃO</span>
           </div>
-          <div class="hud-label">VARREDURA & DETECÇÃO // A CRASE EM AÇÃO COMO USÁLA COM</div>
+          <div class="lesson-chalkboard">
+            <div class="chalk-item item-1">
+              <span class="chalk-badge">01</span>
+              <div class="chalk-text"><b>ENTENDA A REGRA:</b> Mecanismo e estrutura fundamental</div>
+            </div>
+            <div class="chalk-item item-2">
+              <span class="chalk-badge">02</span>
+              <div class="chalk-text"><b>APLICAÇÃO PRÁTICA:</b> Exemplos reais do dia a dia</div>
+            </div>
+            <div class="chalk-item item-3">
+              <span class="chalk-badge">03</span>
+              <div class="chalk-text"><b>MACETE DE MEMÓRIA:</b> Atalho mental para não esquecer</div>
+            </div>
+          </div>
+          <div class="lesson-footer-pill">
+            <span class="pill-dot"></span> FOCO EM RETENÇÃO & CLAREZA
+          </div>
+          <div class="hud-label">AULA & DICA DE FIXAÇÃO // USO CERTO E ERRADO DAS VITAMINAS</div>
         </div>
       </div>
     </div>
 
     <div id="el-2" class="explainer-clip clip"
-         data-start="9.172" data-duration="6.774">
+         data-start="6.853" data-duration="11.164">
       <div class="clip-left-content">
         <div class="clip-heading">
           <span class="clip-index">02</span>
           <span>EXPLICAÇÃO</span>
         </div>
-        <div class="clip-copy"><span class="kinetic-line">A crase pode fazer uma diferença enorme na forma como a frase é compreendida.</span></div>
-        <div class="clip-sources">FONTES & REFERÊNCIAS  /  <span class="citation" title="https://aulakeyboard.com/download-category/software-driver/"><b>[S4</b> <i>Software Driver - Aula Keyboard</i></span>  ·  <span class="citation" title="https://www.aulagaming.com/pages/download"><b>[S5</b> <i>Download</i></span>  ·  <span class="citation" title="https://www.ulbra.br/canoas/espaco-academico/aula-ava"><b>[S6</b> <i>Aula (AVA) - Espaço Acadêmico - Ulbra Canoas</i></span></div>
+        <div class="clip-copy"><span class="kinetic-line">O uso correto das vitaminas é fundamental para garantir que você esteja obtendo todos os nutrientes necessários para manter seu corpo saudável e funcionando bem.</span></div>
+        <div class="clip-sources">FONTES & REFERÊNCIAS  /  <span class="citation" title="https://general.aula.education/"><b>[S2</b> <i>Aula</i></span>  ·  <span class="citation" title="https://classroom.google.com/?hl=pt-BR"><b>[S3</b> <i>Fazer login nas Contas do Google</i></span></div>
       </div>
       
       <div class="clip-right-media">
-        <div class="motion-design-graphic motion-infographic">
-          <svg class="radial-gauge-svg" viewBox="0 0 360 360" width="360" height="360">
-            <circle class="gauge-bg" cx="180" cy="180" r="140" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="8"/>
-            <circle class="gauge-bar" cx="180" cy="180" r="140" fill="none" stroke="var(--palettePrimary)" stroke-width="10" stroke-dasharray="880" stroke-dashoffset="260" stroke-linecap="round"/>
-            <circle class="gauge-inner-ring" cx="180" cy="180" r="105" fill="none" stroke="var(--paletteAccent)" stroke-width="2" stroke-dasharray="6 8"/>
-          </svg>
-          <div class="infographic-bars">
-            <div class="meter-bar bar-1"></div>
-            <div class="meter-bar bar-2"></div>
-            <div class="meter-bar bar-3"></div>
-            <div class="meter-bar bar-4"></div>
+        <div class="motion-design-graphic motion-lesson">
+          <div class="lesson-hud-header">
+            <span class="hud-sub-badge">VIDEOAULA // CONCEITO E FIXAÇÃO</span>
           </div>
-          <div class="gauge-center-readout">
-            <span class="readout-val">98.4%</span>
-            <span class="readout-unit">MÉTRICA // ÍNDICE</span>
+          <div class="lesson-chalkboard">
+            <div class="chalk-item item-1">
+              <span class="chalk-badge">01</span>
+              <div class="chalk-text"><b>ENTENDA A REGRA:</b> Mecanismo e estrutura fundamental</div>
+            </div>
+            <div class="chalk-item item-2">
+              <span class="chalk-badge">02</span>
+              <div class="chalk-text"><b>APLICAÇÃO PRÁTICA:</b> Exemplos reais do dia a dia</div>
+            </div>
+            <div class="chalk-item item-3">
+              <span class="chalk-badge">03</span>
+              <div class="chalk-text"><b>MACETE DE MEMÓRIA:</b> Atalho mental para não esquecer</div>
+            </div>
           </div>
-          <div class="hud-label">TELEMETRIA & DADOS // A CRASE EM AÇÃO COMO USÁLA COM</div>
+          <div class="lesson-footer-pill">
+            <span class="pill-dot"></span> FOCO EM RETENÇÃO & CLAREZA
+          </div>
+          <div class="hud-label">AULA & DICA DE FIXAÇÃO // USO CERTO E ERRADO DAS VITAMINAS</div>
         </div>
       </div>
     </div>
 
     <div id="el-3" class="explainer-clip clip"
-         data-start="15.946" data-duration="8.024">
+         data-start="18.017" data-duration="4.598">
       <div class="clip-left-content">
         <div class="clip-heading">
           <span class="clip-index">03</span>
           <span>EXPLICAÇÃO</span>
         </div>
-        <div class="clip-copy"><span class="kinetic-line">Ela pode mudar o significado da frase, tornando-a mais clara ou até mesmo mais confusa.</span></div>
-        <div class="clip-sources">FONTES & REFERÊNCIAS  /  <span class="citation" title="https://aulakeyboard.com/download-category/software-driver/"><b>[S4</b> <i>Software Driver - Aula Keyboard</i></span>  ·  <span class="citation" title="https://www.aulagaming.com/pages/download"><b>[S5</b> <i>Download</i></span>  ·  <span class="citation" title="https://www.ulbra.br/canoas/espaco-academico/aula-ava"><b>[S6</b> <i>Aula (AVA) - Espaço Acadêmico - Ulbra Canoas</i></span></div>
+        <div class="clip-copy"><span class="kinetic-line">Por exemplo, a vitamina C é essencial para o sistema imunológico</span></div>
+        <div class="clip-sources">FONTES & REFERÊNCIAS  /  <span class="citation" title="https://general.aula.education/"><b>[S2</b> <i>Aula</i></span>  ·  <span class="citation" title="https://classroom.google.com/?hl=pt-BR"><b>[S3</b> <i>Fazer login nas Contas do Google</i></span></div>
       </div>
       
       <div class="clip-right-media">
-        <div class="motion-design-graphic motion-infographic">
-          <svg class="radial-gauge-svg" viewBox="0 0 360 360" width="360" height="360">
-            <circle class="gauge-bg" cx="180" cy="180" r="140" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="8"/>
-            <circle class="gauge-bar" cx="180" cy="180" r="140" fill="none" stroke="var(--palettePrimary)" stroke-width="10" stroke-dasharray="880" stroke-dashoffset="260" stroke-linecap="round"/>
-            <circle class="gauge-inner-ring" cx="180" cy="180" r="105" fill="none" stroke="var(--paletteAccent)" stroke-width="2" stroke-dasharray="6 8"/>
-          </svg>
-          <div class="infographic-bars">
-            <div class="meter-bar bar-1"></div>
-            <div class="meter-bar bar-2"></div>
-            <div class="meter-bar bar-3"></div>
-            <div class="meter-bar bar-4"></div>
+        <div class="motion-design-graphic motion-lesson">
+          <div class="lesson-hud-header">
+            <span class="hud-sub-badge">VIDEOAULA // CONCEITO E FIXAÇÃO</span>
           </div>
-          <div class="gauge-center-readout">
-            <span class="readout-val">98.4%</span>
-            <span class="readout-unit">MÉTRICA // ÍNDICE</span>
+          <div class="lesson-chalkboard">
+            <div class="chalk-item item-1">
+              <span class="chalk-badge">01</span>
+              <div class="chalk-text"><b>ENTENDA A REGRA:</b> Mecanismo e estrutura fundamental</div>
+            </div>
+            <div class="chalk-item item-2">
+              <span class="chalk-badge">02</span>
+              <div class="chalk-text"><b>APLICAÇÃO PRÁTICA:</b> Exemplos reais do dia a dia</div>
+            </div>
+            <div class="chalk-item item-3">
+              <span class="chalk-badge">03</span>
+              <div class="chalk-text"><b>MACETE DE MEMÓRIA:</b> Atalho mental para não esquecer</div>
+            </div>
           </div>
-          <div class="hud-label">TELEMETRIA & DADOS // A CRASE EM AÇÃO COMO USÁLA COM</div>
+          <div class="lesson-footer-pill">
+            <span class="pill-dot"></span> FOCO EM RETENÇÃO & CLAREZA
+          </div>
+          <div class="hud-label">AULA & DICA DE FIXAÇÃO // USO CERTO E ERRADO DAS VITAMINAS</div>
         </div>
       </div>
     </div>
 
     <div id="el-4" class="explainer-clip clip"
-         data-start="23.970" data-duration="9.515">
+         data-start="22.615" data-duration="7.313">
       <div class="clip-left-content">
         <div class="clip-heading">
           <span class="clip-index">04</span>
           <span>EXPLICAÇÃO</span>
         </div>
-        <div class="clip-copy"><span class="kinetic-line">Vamos explorar juntos como essa pequena alteração no texto escrito pode ter um impacto tão grande.</span></div>
-        <div class="clip-sources">FONTES & REFERÊNCIAS  /  <span class="citation" title="https://aulakeyboard.com/download-category/software-driver/"><b>[S4</b> <i>Software Driver - Aula Keyboard</i></span>  ·  <span class="citation" title="https://www.aulagaming.com/pages/download"><b>[S5</b> <i>Download</i></span>  ·  <span class="citation" title="https://www.ulbra.br/canoas/espaco-academico/aula-ava"><b>[S6</b> <i>Aula (AVA) - Espaço Acadêmico - Ulbra Canoas</i></span></div>
+        <div class="clip-copy"><span class="kinetic-line">enquanto a vitamina D ajuda na absorção de cálcio e fosfato, fundamentais para a saúde óssea.</span></div>
+        <div class="clip-sources">FONTES & REFERÊNCIAS  /  <span class="citation" title="https://general.aula.education/"><b>[S2</b> <i>Aula</i></span>  ·  <span class="citation" title="https://classroom.google.com/?hl=pt-BR"><b>[S3</b> <i>Fazer login nas Contas do Google</i></span></div>
       </div>
       
       <div class="clip-right-media">
-        <div class="motion-design-graphic motion-infographic">
-          <svg class="radial-gauge-svg" viewBox="0 0 360 360" width="360" height="360">
-            <circle class="gauge-bg" cx="180" cy="180" r="140" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="8"/>
-            <circle class="gauge-bar" cx="180" cy="180" r="140" fill="none" stroke="var(--palettePrimary)" stroke-width="10" stroke-dasharray="880" stroke-dashoffset="260" stroke-linecap="round"/>
-            <circle class="gauge-inner-ring" cx="180" cy="180" r="105" fill="none" stroke="var(--paletteAccent)" stroke-width="2" stroke-dasharray="6 8"/>
-          </svg>
-          <div class="infographic-bars">
-            <div class="meter-bar bar-1"></div>
-            <div class="meter-bar bar-2"></div>
-            <div class="meter-bar bar-3"></div>
-            <div class="meter-bar bar-4"></div>
+        <div class="motion-design-graphic motion-lesson">
+          <div class="lesson-hud-header">
+            <span class="hud-sub-badge">VIDEOAULA // CONCEITO E FIXAÇÃO</span>
           </div>
-          <div class="gauge-center-readout">
-            <span class="readout-val">98.4%</span>
-            <span class="readout-unit">MÉTRICA // ÍNDICE</span>
+          <div class="lesson-chalkboard">
+            <div class="chalk-item item-1">
+              <span class="chalk-badge">01</span>
+              <div class="chalk-text"><b>ENTENDA A REGRA:</b> Mecanismo e estrutura fundamental</div>
+            </div>
+            <div class="chalk-item item-2">
+              <span class="chalk-badge">02</span>
+              <div class="chalk-text"><b>APLICAÇÃO PRÁTICA:</b> Exemplos reais do dia a dia</div>
+            </div>
+            <div class="chalk-item item-3">
+              <span class="chalk-badge">03</span>
+              <div class="chalk-text"><b>MACETE DE MEMÓRIA:</b> Atalho mental para não esquecer</div>
+            </div>
           </div>
-          <div class="hud-label">TELEMETRIA & DADOS // A CRASE EM AÇÃO COMO USÁLA COM</div>
+          <div class="lesson-footer-pill">
+            <span class="pill-dot"></span> FOCO EM RETENÇÃO & CLAREZA
+          </div>
+          <div class="hud-label">AULA & DICA DE FIXAÇÃO // USO CERTO E ERRADO DAS VITAMINAS</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="el-5" class="explainer-clip clip"
+         data-start="29.928" data-duration="10.618">
+      <div class="clip-left-content">
+        <div class="clip-heading">
+          <span class="clip-index">05</span>
+          <span>EXPLICAÇÃO</span>
+        </div>
+        <div class="clip-copy"><span class="kinetic-line">Por outro lado, um uso errado dessas vitaminas pode levar a problemas de saúde graves, como desnutrição ou até mesmo doenças crônicas.</span></div>
+        <div class="clip-sources">FONTES & REFERÊNCIAS  /  <span class="citation" title="https://general.aula.education/"><b>[S2</b> <i>Aula</i></span>  ·  <span class="citation" title="https://classroom.google.com/?hl=pt-BR"><b>[S3</b> <i>Fazer login nas Contas do Google</i></span></div>
+      </div>
+      
+      <div class="clip-right-media">
+        <div class="motion-design-graphic motion-lesson">
+          <div class="lesson-hud-header">
+            <span class="hud-sub-badge">VIDEOAULA // CONCEITO E FIXAÇÃO</span>
+          </div>
+          <div class="lesson-chalkboard">
+            <div class="chalk-item item-1">
+              <span class="chalk-badge">01</span>
+              <div class="chalk-text"><b>ENTENDA A REGRA:</b> Mecanismo e estrutura fundamental</div>
+            </div>
+            <div class="chalk-item item-2">
+              <span class="chalk-badge">02</span>
+              <div class="chalk-text"><b>APLICAÇÃO PRÁTICA:</b> Exemplos reais do dia a dia</div>
+            </div>
+            <div class="chalk-item item-3">
+              <span class="chalk-badge">03</span>
+              <div class="chalk-text"><b>MACETE DE MEMÓRIA:</b> Atalho mental para não esquecer</div>
+            </div>
+          </div>
+          <div class="lesson-footer-pill">
+            <span class="pill-dot"></span> FOCO EM RETENÇÃO & CLAREZA
+          </div>
+          <div class="hud-label">AULA & DICA DE FIXAÇÃO // USO CERTO E ERRADO DAS VITAMINAS</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="el-6" class="explainer-clip clip"
+         data-start="40.546" data-duration="9.674">
+      <div class="clip-left-content">
+        <div class="clip-heading">
+          <span class="clip-index">06</span>
+          <span>EXPLICAÇÃO</span>
+        </div>
+        <div class="clip-copy"><span class="kinetic-line">Então, é importante entender o uso certo das vitaminas e evitar os erros comuns que podem causar danos à sua saúde.</span></div>
+        <div class="clip-sources">FONTES & REFERÊNCIAS  /  <span class="citation" title="https://general.aula.education/"><b>[S2</b> <i>Aula</i></span>  ·  <span class="citation" title="https://classroom.google.com/?hl=pt-BR"><b>[S3</b> <i>Fazer login nas Contas do Google</i></span></div>
+      </div>
+      
+      <div class="clip-right-media">
+        <div class="motion-design-graphic motion-lesson">
+          <div class="lesson-hud-header">
+            <span class="hud-sub-badge">VIDEOAULA // CONCEITO E FIXAÇÃO</span>
+          </div>
+          <div class="lesson-chalkboard">
+            <div class="chalk-item item-1">
+              <span class="chalk-badge">01</span>
+              <div class="chalk-text"><b>ENTENDA A REGRA:</b> Mecanismo e estrutura fundamental</div>
+            </div>
+            <div class="chalk-item item-2">
+              <span class="chalk-badge">02</span>
+              <div class="chalk-text"><b>APLICAÇÃO PRÁTICA:</b> Exemplos reais do dia a dia</div>
+            </div>
+            <div class="chalk-item item-3">
+              <span class="chalk-badge">03</span>
+              <div class="chalk-text"><b>MACETE DE MEMÓRIA:</b> Atalho mental para não esquecer</div>
+            </div>
+          </div>
+          <div class="lesson-footer-pill">
+            <span class="pill-dot"></span> FOCO EM RETENÇÃO & CLAREZA
+          </div>
+          <div class="hud-label">AULA & DICA DE FIXAÇÃO // USO CERTO E ERRADO DAS VITAMINAS</div>
         </div>
       </div>
     </div>
@@ -1096,6 +1443,27 @@
         }
 
         // 5. Animações Dinâmicas dos Arquétipos de Motion Design:
+
+
+        // E. Arquétipos Didáticos & Aula (Gramática, Lousa, Comparação)
+        const grammarBoard = el.querySelector(".grammar-interactive-board");
+        const caseChips = el.querySelectorAll(".case-chip");
+        if (grammarBoard) {
+          tl.from(grammarBoard, { scale: 0.9, opacity: 0, duration: 0.7, ease: "back.out(1.4)" }, start + 0.15);
+          if (caseChips.length > 0) {
+            tl.from(caseChips, { y: 15, opacity: 0, stagger: 0.15, duration: 0.5, ease: "power2.out" }, start + 0.35);
+          }
+        }
+
+        const chalkItems = el.querySelectorAll(".chalk-item");
+        if (chalkItems.length > 0) {
+          tl.from(chalkItems, { x: -25, opacity: 0, stagger: 0.16, duration: 0.55, ease: "power2.out" }, start + 0.2);
+        }
+
+        const compCards = el.querySelectorAll(".comp-card");
+        if (compCards.length > 0) {
+          tl.from(compCards, { y: 20, opacity: 0, stagger: 0.2, duration: 0.6, ease: "back.out(1.2)" }, start + 0.2);
+        }
 
         // 0. Arquétipo Política & Dinâmica de Poder
         const polNeedle = el.querySelector(".pol-needle");

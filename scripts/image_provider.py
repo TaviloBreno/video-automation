@@ -243,6 +243,11 @@ def search_multiple_gifs(query: str, limit: int = 8) -> List[Dict[str, Any]]:
 
 # Mapeamento semântico rico para conceitos visuais de alta fidelidade (Geral & Científico)
 SCIENTIFIC_CONCEPTS_MAP = [
+    # Gramática, Língua Portuguesa & Linguística (Didático & Aula)
+    (r"(crase|acento grave|regência|regencia|preposição|preposicao|artigo)", ["Crase", "Preposition", "Portuguese_grammar", "Grammar", "Linguistics"]),
+    (r"(gramática|gramatica|língua portuguesa|lingua portuguesa|linguística|linguistica|ortografia|acentuação|acentuacao|sintaxe|concordância|verbo|substantivo|adjetivo|pronome)", ["Portuguese_grammar", "Grammar", "Linguistics", "Syntax", "Morphology_(linguistics)"]),
+    (r"(aula|videoaula|escola|professor|professora|educação|educacao|estudo|estudante|lousa|quadro negro|didática|didatica)", ["Classroom", "Teacher", "Education", "Blackboard", "Book"]),
+    (r"(redação|redacao|escrita|texto|livro|leitura|dicionário|dicionario)", ["Writing", "Book", "Dictionary", "Literature"]),
     # Economia, Finanças, Câmbio & Dólar
     (r"(dólar|dolar|câmbio|cambio|moeda|inflação|inflacao|juros|selic|bolsa de valores|ações|investimento|mercado financeiro)", ["United_States_dollar", "Currency", "Stock_market", "Finance", "Economy"]),
     (r"(probabilidade|risco|estatística|chance|volatilidade)", ["Probability", "Risk", "Statistics"]),
