@@ -14,6 +14,14 @@ import re
 import sys
 from pathlib import Path
 
+from scripts.educational_vectors import (
+    detect_vestibular_concurso_archetype,
+    svg_law_constitution, svg_law_limpe, svg_logic_venn, svg_logic_truth_table,
+    svg_grammar_syntax, svg_redacao_enem, svg_math_cartesian, svg_physics_mechanics,
+    svg_physics_circuits, svg_chemistry_organic, svg_chemistry_reaction,
+    svg_bio_ecology, svg_bio_neuron, svg_history_brazil, svg_geo_plates
+)
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
@@ -298,8 +306,9 @@ def detect_visual_theme(
     content: str,
     chapter_title: str = "",
     explicit_archetype: str = "",
+    sentence_index: int = 0,
 ) -> tuple[str, str]:
-    """Detecta o campo do conhecimento e subtema para gerar Motion Design estritamente contextualizado ao assunto falado."""
+    """Detecta o campo do conhecimento e subtema específico para gerar Motion Design variado em todas as cenas."""
     raw_sub = re.sub(r"[^\w\s]", "", chapter_title or topic).strip()
     if len(raw_sub) > 36:
         cutoff = raw_sub[:36].rfind(" ")
@@ -309,18 +318,82 @@ def detect_visual_theme(
     label_suffix = clean_sub if clean_sub else "DADOS & CONCEITO"
 
     c_text = (content or "").lower()
-    combined_text = f"{topic} {chapter_title} {content}".lower()
+    combined_domain = f"{topic} {chapter_title}".lower()
 
-    # 1. Biogênese, Abiogênese, Origem da Vida, Pasteur e Redi
-    if re.search(r"(\bbiogênese\b|\bbiogenese\b|\babiogênese\b|\babiogenese\b|geração espontânea|geracao espontanea|origem da vida|louis pasteur|\bpasteur\b|francesco redi|\bredi\b|caldo nutritivo|pescoço de cisne|surgimento da vida)", c_text) or re.search(r"(\bbiogênese\b|\bbiogenese\b|\babiogênese\b|\babiogenese\b|geração espontânea|origem da vida|\bpasteur\b|\bredi\b)", combined_text):
-        return "biogenesis", f"BIOGÊNESE & ORIGEM DA VIDA // {label_suffix}"
+    # Verificação de alta fidelidade para Vestibulares (ENEM, Fuvest) e Concursos Públicos
+    edu_arch, edu_label = detect_vestibular_concurso_archetype(content, topic=topic, chapter_title=chapter_title, sentence_index=sentence_index)
+    if edu_arch:
+        return edu_arch, f"{edu_label} // {label_suffix}"
 
-    # 2. Biologia Celular, Mitose, Genética e DNA
-    if re.search(r"(célula|celular|mitose|meiose|divisão celular|citoplasma|membrana plasmática|núcleo celular|organela|mitocôndria|dna|genoma|mutação|gene|imunoterap|anticorpo|linfócit|vírus|bactéria|vacina|biolog|sangue|telômero|organismo vivo|evolução)", c_text) or re.search(r"(célula|celular|dna|genoma|biolog|mitose)", combined_text):
-        return "biology", f"BIOLOGIA CELULAR // {label_suffix}"
+    # Se um arquétipo explícito válido for fornecido, honra-o
+    if explicit_archetype:
+        arch = explicit_archetype.lower().strip()
+        arch_labels = {
+            "biogenesis_pasteur": ("biogenesis_pasteur", f"EXPERIMENTO DE PASTEUR // {label_suffix}"),
+            "biogenesis_redi": ("biogenesis_redi", f"EXPERIMENTO DE REDI // {label_suffix}"),
+            "biogenesis_microscope": ("biogenesis_microscope", f"MICRORGANISMOS // {label_suffix}"),
+            "biogenesis_dna": ("biogenesis_dna", f"CÓDIGO GENÉTICO // {label_suffix}"),
+            "biogenesis_puzzle": ("biogenesis_puzzle", f"MECANISMO VITAL // {label_suffix}"),
+            "biogenesis_versus": ("biogenesis_versus", f"ABIOGÊNESE vs BIOGÊNESE // {label_suffix}"),
+            "biogenesis_cell": ("biogenesis_cell", f"DIVISÃO CELULAR // {label_suffix}"),
+            "biogenesis": ("biogenesis_cell", f"BIOGÊNESE & VIDA // {label_suffix}"),
+            "biology": ("biogenesis_cell", f"BIOLOGIA CELULAR // {label_suffix}"),
+            "grammar": ("grammar", f"NORMA PADRÃO & GRAMÁTICA // {label_suffix}"),
+            "lesson": ("lesson", f"VIDEOAULA & FIXAÇÃO // {label_suffix}"),
+            "comparison": ("comparison", f"CERTO vs ERRADO // {label_suffix}"),
+            "politics": ("politics", f"DINÂMICA DE PODER // {label_suffix}"),
+            "psychology": ("psychology", f"PSICOLOGIA COGNITIVA // {label_suffix}"),
+            "orbital": ("orbital", f"ASTROFÍSICA ORBITAL // {label_suffix}"),
+            "infographic": ("infographic", f"TELEMETRIA & DADOS // {label_suffix}"),
+            "blueprint": ("blueprint", f"DIAGRAMA TÉCNICO // {label_suffix}"),
+            "spectrum": ("spectrum", f"ESPECTROGRAFIA // {label_suffix}"),
+            "network": ("network", f"REDE & SISTEMAS // {label_suffix}"),
+            "timeline": ("timeline", f"REGISTRO HISTÓRICO // {label_suffix}"),
+            "quantum": ("quantum", f"ESTRUTURA QUÂNTICA // {label_suffix}"),
+            "formula": ("formula", f"EQUAÇÃO FUNDAMENTAL // {label_suffix}"),
+            "radar": ("radar", f"VARREDURA & DETECÇÃO // {label_suffix}"),
+            "analytics": ("analytics", f"DADOS & TENDÊNCIA // {label_suffix}"),
+        }
+        if arch in arch_labels:
+            return arch_labels[arch]
+
+    # 1. BIOGÊNESE, BIOLOGIA CELULAR & ORIGEM DA VIDA (Variedade em cada cena)
+    is_bio_domain = bool(re.search(r"(\bbiogênese\b|\bbiogenese\b|\babiogênese\b|\babiogenese\b|geração espontânea|geracao espontanea|origem da vida|biolog|louis pasteur|\bpasteur\b|francesco redi|\bredi\b)", combined_domain))
+
+    if is_bio_domain or re.search(r"(\bbiogênese\b|\bbiogenese\b|\babiogênese\b|\babiogenese\b|geração espontânea|geracao espontanea|origem da vida|\bpasteur\b|\bredi\b)", c_text):
+        if re.search(r"(pasteur|pescoço de cisne|pescoco de cisne|caldo fervido|fervura|esterilização|esterilizacao|gargalo)", c_text):
+            return "biogenesis_pasteur", f"EXPERIMENTO DE PASTEUR // {label_suffix}"
+        if re.search(r"(redi|francesco|carne|pote|potes|mosca|moscas|larva|larvas|gaze)", c_text):
+            return "biogenesis_redi", f"EXPERIMENTO DE REDI // {label_suffix}"
+        if re.search(r"(microscópio|microscopio|bactéria|bacteria|bactérias|bacterias|vírus|virus|micróbio|microbio|microrganismo|invisível|invisivel|lente)", c_text):
+            return "biogenesis_microscope", f"MICRORGANISMOS & CÉLULAS // {label_suffix}"
+        if re.search(r"(dna|genética|genetica|gene|genes|código genético|codigo genetico|dupla hélice|dupla helice|replicação|replicacao)", c_text):
+            return "biogenesis_dna", f"CÓDIGO GENÉTICO // {label_suffix}"
+        if re.search(r"(puzzle|fábrica|fabrica|máquina|maquina|máquinas|maquinas|engrenagem|peça|peças|montagem|montados|sistema)", c_text):
+            return "biogenesis_puzzle", f"MECANISMO INTEGRADO // {label_suffix}"
+        if re.search(r"(abiogênese|abiogenese|geração espontânea|geracao espontanea|mito|do nada|inanimada|versus|vs|oposição)", c_text):
+            return "biogenesis_versus", f"ABIOGÊNESE vs BIOGÊNESE // {label_suffix}"
+        if re.search(r"(célula|celular|mitose|divisão celular|divisao celular|citocinese|reprodução|reproducao|organela)", c_text):
+            return "biogenesis_cell", f"DIVISÃO CELULAR // {label_suffix}"
+
+        # Rotação inteligente para sentenças gerais da aula, garantindo cenas visuais sempre distintas
+        bio_variations = [
+            ("biogenesis_cell", f"DIVISÃO CELULAR // {label_suffix}"),
+            ("biogenesis_pasteur", f"EXPERIMENTO DE PASTEUR // {label_suffix}"),
+            ("biogenesis_microscope", f"MICRORGANISMOS // {label_suffix}"),
+            ("biogenesis_dna", f"CÓDIGO GENÉTICO // {label_suffix}"),
+            ("biogenesis_versus", f"ABIOGÊNESE vs BIOGÊNESE // {label_suffix}"),
+            ("biogenesis_puzzle", f"MECANISMO VITAL // {label_suffix}"),
+            ("biogenesis_redi", f"MÉTODO DE REDI // {label_suffix}"),
+        ]
+        return bio_variations[sentence_index % len(bio_variations)]
+
+    # 2. Biologia Geral e Celular
+    if re.search(r"(célula|celular|mitose|meiose|divisão celular|citoplasma|membrana plasmática|núcleo celular|organela|mitocôndria|dna|genoma|mutação|gene|imunoterap|anticorpo|linfócit|vírus|bactéria|vacina|biolog|sangue|telômero|organismo vivo|evolução)", c_text) or re.search(r"(célula|celular|dna|genoma|biolog|mitose)", combined_domain):
+        return "biogenesis_cell", f"BIOLOGIA CELULAR // {label_suffix}"
 
     # 3. Gramática, Língua Portuguesa, Crase, Regras e Ortografia
-    if re.search(r"(\bcrase\b|acento grave|regência|regencia|preposição|preposicao|artigo feminino|substantivo|verbo transitivo|concordância|concordancia|ortografia|acentuação|acentuacao|sintaxe|pontuação|pontuacao|oração|oracao|vocábulo|vocabulo|língua portuguesa|lingua portuguesa|gramática|gramatica)", c_text) or re.search(r"(\bcrase\b|gramática|gramatica|língua portuguesa|português|portugues)", combined_text):
+    if re.search(r"(\bcrase\b|acento grave|regência|regencia|preposição|preposicao|artigo feminino|substantivo|verbo transitivo|concordância|concordancia|ortografia|acentuação|acentuacao|sintaxe|pontuação|pontuacao|oração|oracao|vocábulo|vocabulo|língua portuguesa|lingua portuguesa|gramática|gramatica)", c_text) or re.search(r"(\bcrase\b|gramática|gramatica|língua portuguesa|português|portugues)", combined_domain):
         return "grammar", f"NORMA PADRÃO & GRAMÁTICA // {label_suffix}"
 
     # 4. Certo vs Errado / Comparação Prática
@@ -359,47 +432,18 @@ def detect_visual_theme(
     if re.search(r"(psicolog|mente|comportamento|persuas|viés|cogni|emoç|influên|cérebro|percepç|decisão|inconsciente|hábito|atitude)", c_text):
         return "psychology", f"PSICOLOGIA COGNITIVA // {label_suffix}"
 
-    # 13. Didática Específica, Macetes e Dicas de Fixação (Apenas se a frase for estritamente uma dica)
+    # 13. Didática Específica, Macetes e Dicas de Fixação
     if re.search(r"(macete|dica de ouro|mnemônico|mnemonico|como usar|aprenda|passo a passo|não erre|exemplo prático|exemplo pratico|na prática|na pratica|em sala|memorizar|fixar|revisão|revisao)", c_text):
         return "lesson", f"AULA & DICA DE FIXAÇÃO // {label_suffix}"
 
-    # 14. Se a sentença não tiver termos específicos próprios, recorre ao arquétipo explícito válido
-    if explicit_archetype:
-        arch = explicit_archetype.lower().strip()
-        arch_labels = {
-            "biogenesis": ("biogenesis", f"BIOGÊNESE // {label_suffix}"),
-            "biology": ("biology", f"BIOLOGIA & CÉLULAS // {label_suffix}"),
-            "grammar": ("grammar", f"NORMA PADRÃO & GRAMÁTICA // {label_suffix}"),
-            "lesson": ("lesson", f"VIDEOAULA & FIXAÇÃO // {label_suffix}"),
-            "comparison": ("comparison", f"CERTO vs ERRADO // {label_suffix}"),
-            "politics": ("politics", f"DINÂMICA DE PODER // {label_suffix}"),
-            "psychology": ("psychology", f"PSICOLOGIA COGNITIVA // {label_suffix}"),
-            "orbital": ("orbital", f"ASTROFÍSICA ORBITAL // {label_suffix}"),
-            "infographic": ("infographic", f"TELEMETRIA & DADOS // {label_suffix}"),
-            "blueprint": ("blueprint", f"DIAGRAMA TÉCNICO // {label_suffix}"),
-            "spectrum": ("spectrum", f"ESPECTROGRAFIA // {label_suffix}"),
-            "network": ("network", f"REDE & SISTEMAS // {label_suffix}"),
-            "timeline": ("timeline", f"REGISTRO HISTÓRICO // {label_suffix}"),
-            "quantum": ("quantum", f"ESTRUTURA QUÂNTICA // {label_suffix}"),
-            "formula": ("formula", f"EQUAÇÃO FUNDAMENTAL // {label_suffix}"),
-            "radar": ("radar", f"VARREDURA & DETECÇÃO // {label_suffix}"),
-            "analytics": ("analytics", f"DADOS & TENDÊNCIA // {label_suffix}"),
-        }
-        if arch in arch_labels:
-            return arch_labels[arch]
-
-    # Recorre ao tema global combinado (tópico e título do capítulo)
-    if re.search(r"(biogênese|biogenese|abiogênese|abiogenese|origem da vida|pasteur|redi)", combined_text):
-        return "biogenesis", f"BIOGÊNESE & ORIGEM DA VIDA // {label_suffix}"
-    if re.search(r"(câncer|célula|dna|gene|biolog|medicin|saúde|corpo|vida|envelhecimento|longevidade)", combined_text):
-        return "biology", f"BIOLOGIA & CÉLULAS // {label_suffix}"
-    if re.search(r"(quasar|buraco negro|espaço|astro|galáxia|universo|estrela|cosmo)", combined_text):
+    # Fallbacks gerais por tema combinado
+    if re.search(r"(quasar|buraco negro|espaço|astro|galáxia|universo|estrela|cosmo)", combined_domain):
         return "orbital", f"ASTROFÍSICA ORBITAL // {label_suffix}"
-    if re.search(r"(polític|governo|sociedade|poder|eleiç|líder)", combined_text):
+    if re.search(r"(polític|governo|sociedade|poder|eleiç|líder)", combined_domain):
         return "politics", f"DINÂMICA SOCIAL // {label_suffix}"
-    if re.search(r"(psicolog|mente|comportamento|cérebro|cogni)", combined_text):
+    if re.search(r"(psicolog|mente|comportamento|cérebro|cogni)", combined_domain):
         return "psychology", f"PSICOLOGIA // {label_suffix}"
-    if re.search(r"(histór|século|guerra|passado|evolução)", combined_text):
+    if re.search(r"(histór|século|guerra|passado|evolução)", combined_domain):
         return "timeline", f"HISTÓRIA & TEMPO // {label_suffix}"
 
     return "lesson", f"AULA & SÍNTESE // {label_suffix}"
@@ -491,8 +535,352 @@ def generate_thematic_motion_html(
     pedag_data = extract_pedagogical_callouts(content, topic=topic, chapter_title=chapter_title, theme=theme)
     callout_cards_html = _render_callout_cards(pedag_data["items"])
 
-    # 1. BIOGÊNESE & ORIGEM DA VIDA
-    if theme in ("biogenesis", "biology", "origin_of_life", "cell_division"):
+    VESTIBULAR_SVGS = {
+        "law_constitution": ("DIREITO CONSTITUCIONAL // CF/88 & ESTADO DEMOCRÁTICO", svg_law_constitution),
+        "law_limpe": ("DIREITO ADMINISTRATIVO // PRINCÍPIOS L.I.M.P.E.", svg_law_limpe),
+        "logic_venn": ("RACIOCÍNIO LÓGICO // DIAGRAMAS DE VENN & CONJUNTOS", svg_logic_venn),
+        "logic_truth_table": ("LÓGICA PROPOSICIONAL // TABELA-VERDADE", svg_logic_truth_table),
+        "grammar_syntax": ("NORMA CULTA // ANÁLISE SINTÁTICA DA ORAÇÃO", svg_grammar_syntax),
+        "redacao_enem": ("REDAÇÃO NOTA 1000 // COMPETÊNCIAS ENEM", svg_redacao_enem),
+        "math_cartesian": ("MATEMÁTICA // FUNÇÕES & GRÁFICO CARTESIANO", svg_math_cartesian),
+        "physics_mechanics": ("FÍSICA MECÂNICA // DINÂMICA & LEIS DE NEWTON", svg_physics_mechanics),
+        "physics_circuits": ("ELETRODINÂMICA // CIRCUITO & 1ª LEI DE OHM", svg_physics_circuits),
+        "chemistry_organic": ("QUÍMICA ORGÂNICA // CADEIAS & RESSONÂNCIA", svg_chemistry_organic),
+        "chemistry_reaction": ("FÍSICO-QUÍMICA // pH & CINÉTICA", svg_chemistry_reaction),
+        "bio_ecology": ("ECOLOGIA // PIRÂMIDE TRÓFICA & ENERGIA", svg_bio_ecology),
+        "bio_neuron": ("FISIOLOGIA HUMANA // NEURÔNIO & SINAPSE", svg_bio_neuron),
+        "history_brazil": ("HISTORIOGRAFIA // CRONOLOGIA & MARCOS", svg_history_brazil),
+        "geo_plates": ("GEOGRAFIA FÍSICA // TECTÔNICA & RELEVO", svg_geo_plates),
+    }
+
+    if theme in VESTIBULAR_SVGS:
+        badge_title, svg_fn = VESTIBULAR_SVGS[theme]
+        stage_svg = svg_fn()
+        return f'''
+      <div class="clip-right-media">
+        <div class="motion-design-graphic motion-vestibular">
+          <div class="bio-header-badge">
+            <span class="hud-sub-badge" data-layout-ignore>{badge_title}</span>
+          </div>
+          <div class="bio-stage-layout">
+            {stage_svg}
+            <div class="pedagogical-callouts-box">
+              {callout_cards_html}
+            </div>
+          </div>
+          <div class="hud-label" data-layout-ignore>{label}</div>
+        </div>
+      </div>'''
+
+    # 1.1 BIOGÊNESE // FRASCO PESCOÇO DE CISNE DE PASTEUR
+    if theme == "biogenesis_pasteur":
+        stage_svg = '''
+    <div class="bio-vector-stage">
+      <svg class="pasteur-flask-svg" viewBox="0 0 460 170" width="100%" height="170">
+        <defs>
+          <linearGradient id="brothGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.8"/>
+            <stop offset="100%" stop-color="#b45309" stop-opacity="0.95"/>
+          </linearGradient>
+          <filter id="flaskGlow" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+          </filter>
+        </defs>
+        <!-- Suporte do frasco / Tripé -->
+        <line x1="160" y1="155" x2="260" y2="155" stroke="rgba(255,255,255,0.2)" stroke-width="2"/>
+        <line x1="210" y1="145" x2="210" y2="155" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+        <!-- Corpo esférico do Frasco de Pasteur -->
+        <circle cx="210" cy="115" r="32" fill="rgba(56, 189, 248, 0.06)" stroke="var(--palettePrimary)" stroke-width="2.5" filter="url(#flaskGlow)"/>
+        <!-- Caldo nutritivo fervido estéril -->
+        <path d="M 182 125 Q 210 135 238 125 A 32 32 0 0 1 182 125 Z" fill="url(#brothGrad)"/>
+        <!-- Bolhas de fervura subindo -->
+        <circle class="pasteur-bubble b1" cx="205" cy="122" r="2.5" fill="#fef08a"/>
+        <circle class="pasteur-bubble b2" cx="218" cy="118" r="3" fill="#fef08a"/>
+        <circle class="pasteur-bubble b3" cx="210" cy="128" r="2" fill="#fef08a"/>
+        <!-- Gargalo curvado em Pescoço de Cisne (Curva em S alongada) -->
+        <path class="swan-neck-path" d="M 210 83 L 210 55 C 210 25, 270 25, 270 55 C 270 85, 330 95, 345 65"
+              fill="none" stroke="var(--palettePrimary)" stroke-width="3" stroke-linecap="round"/>
+        <path d="M 210 83 L 210 55 C 210 25, 270 25, 270 55 C 270 85, 330 95, 345 65"
+              fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.2" stroke-linecap="round"/>
+        <!-- Microrganismos e poeira retidos na curva inferior do gargalo -->
+        <circle class="trapped-dust d1" cx="270" cy="55" r="3" fill="#ef4444"/>
+        <circle class="trapped-dust d2" cx="275" cy="60" r="2.5" fill="#f97316"/>
+        <circle class="trapped-dust d3" cx="265" cy="58" r="2.5" fill="#ef4444"/>
+        <line x1="285" y1="45" x2="310" y2="35" stroke="var(--paletteAccent)" stroke-width="1.5" stroke-dasharray="2 2"/>
+        <text x="315" y="38" fill="var(--paletteAccent)" font-size="10" font-weight="700">POEIRA & GERMES RETIDOS</text>
+        <!-- Ar puro entrando livremente -->
+        <path class="air-flow-arrow" d="M 370 65 L 350 65" stroke="#10b981" stroke-width="2" stroke-linecap="round" marker-end="url(#arrow)"/>
+        <text x="375" y="68" fill="#10b981" font-size="9" font-weight="700">AR PURO</text>
+      </svg>
+      <div class="bio-telemetry-badge" data-layout-ignore>
+        <span class="bio-pulse-dot"></span> EXPERIMENTO DE PASTEUR // FRASCO PESCOÇO DE CISNE
+      </div>
+    </div>'''
+        return f'''
+      <div class="clip-right-media">
+        <div class="motion-design-graphic motion-biogenesis">
+          <div class="bio-header-badge">
+            <span class="hud-sub-badge" data-layout-ignore>EXPERIMENTO DE PASTEUR // CALDO NUTRITIVO</span>
+          </div>
+          <div class="bio-stage-layout">
+            {stage_svg}
+            <div class="pedagogical-callouts-box">
+              {callout_cards_html}
+            </div>
+          </div>
+          <div class="hud-label" data-layout-ignore>{label}</div>
+        </div>
+      </div>'''
+
+    # 1.2 BIOGÊNESE // EXPERIMENTO DE FRANCESCO REDI
+    elif theme == "biogenesis_redi":
+        stage_svg = '''
+    <div class="bio-vector-stage">
+      <svg class="redi-jars-svg" viewBox="0 0 460 170" width="100%" height="170">
+        <defs>
+          <filter id="rediGlow" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+          </filter>
+        </defs>
+        <!-- Pote 1 (Aberto - Moscas entram e geram larvas) -->
+        <rect x="90" y="50" width="80" height="90" rx="8" fill="rgba(239, 68, 68, 0.05)" stroke="#ef4444" stroke-width="2"/>
+        <ellipse cx="130" cy="50" rx="40" ry="10" fill="none" stroke="#ef4444" stroke-width="2"/>
+        <rect x="105" y="110" width="50" height="22" rx="4" fill="#7f1d1d" opacity="0.8"/>
+        <!-- Moscas no Pote Aberto -->
+        <circle class="redi-fly f1" cx="120" cy="35" r="3.5" fill="#fca5a5"/>
+        <circle class="redi-fly f2" cx="140" cy="40" r="3" fill="#fca5a5"/>
+        <circle class="redi-fly f3" cx="130" cy="85" r="2.5" fill="#f87171"/>
+        <text x="130" y="158" fill="#ef4444" font-size="10" font-weight="800" text-anchor="middle">POTE ABERTO: LARVAS</text>
+
+        <!-- Divisor Central -->
+        <line x1="230" y1="35" x2="230" y2="150" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" stroke-dasharray="4 4"/>
+
+        <!-- Pote 2 (Vedado com Gaze - Moscas bloqueadas) -->
+        <rect x="290" y="50" width="80" height="90" rx="8" fill="rgba(16, 185, 129, 0.05)" stroke="#10b981" stroke-width="2"/>
+        <!-- Rede de gaze protetora -->
+        <ellipse cx="330" cy="50" rx="40" ry="10" fill="rgba(16, 185, 129, 0.2)" stroke="#10b981" stroke-width="2"/>
+        <line x1="295" y1="50" x2="365" y2="50" stroke="#10b981" stroke-width="1.5" stroke-dasharray="2 2"/>
+        <rect x="305" y="110" width="50" height="22" rx="4" fill="#064e3b" opacity="0.8"/>
+        <!-- Moscas bloqueadas do lado de fora -->
+        <circle class="redi-fly f4" cx="320" cy="28" r="3.5" fill="#6ee7b7"/>
+        <circle class="redi-fly f5" cx="345" cy="32" r="3" fill="#6ee7b7"/>
+        <!-- Escudo de Bloqueio -->
+        <path d="M 326 42 L 334 42 L 334 48 L 330 52 L 326 48 Z" fill="#10b981"/>
+        <text x="330" y="158" fill="#10b981" font-size="10" font-weight="800" text-anchor="middle">COM GAZE: SEM LARVAS</text>
+      </svg>
+      <div class="bio-telemetry-badge" data-layout-ignore>
+        <span class="bio-pulse-dot"></span> EXPERIMENTO DE REDI // BLOQUEIO BIOLÓGICO
+      </div>
+    </div>'''
+        return f'''
+      <div class="clip-right-media">
+        <div class="motion-design-graphic motion-biogenesis">
+          <div class="bio-header-badge">
+            <span class="hud-sub-badge" data-layout-ignore>EXPERIMENTO DE REDI // TESTE DOS FRASCOS</span>
+          </div>
+          <div class="bio-stage-layout">
+            {stage_svg}
+            <div class="pedagogical-callouts-box">
+              {callout_cards_html}
+            </div>
+          </div>
+          <div class="hud-label" data-layout-ignore>{label}</div>
+        </div>
+      </div>'''
+
+    # 1.3 BIOGÊNESE // MICRORGANISMOS & CAMPO DO MICROSCÓPIO
+    elif theme == "biogenesis_microscope":
+        stage_svg = '''
+    <div class="bio-vector-stage">
+      <svg class="microscope-viewport-svg" viewBox="0 0 460 170" width="100%" height="170">
+        <defs>
+          <radialGradient id="microGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#0284c7" stop-opacity="0.25"/>
+            <stop offset="80%" stop-color="#0369a1" stop-opacity="0.05"/>
+            <stop offset="100%" stop-color="#0f172a" stop-opacity="0.8"/>
+          </radialGradient>
+        </defs>
+        <!-- Lente do Microscópio (Campo Visual Circular) -->
+        <circle cx="230" cy="85" r="68" fill="url(#microGlow)" stroke="var(--palettePrimary)" stroke-width="3"/>
+        <circle cx="230" cy="85" r="62" fill="none" stroke="var(--paletteAccent)" stroke-width="1" stroke-dasharray="4 6"/>
+        <!-- Retículo Óptico / Mira de Medição -->
+        <line x1="230" y1="20" x2="230" y2="150" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+        <line x1="165" y1="85" x2="295" y2="85" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+        <!-- Bactérias Bacilos nadando -->
+        <rect class="bacteria-cell b-bacillus-1" x="200" y="60" width="22" height="9" rx="4.5" transform="rotate(25 211 64)" fill="#38bdf8" stroke="#bae6fd" stroke-width="1.5"/>
+        <rect class="bacteria-cell b-bacillus-2" x="240" y="95" width="26" height="10" rx="5" transform="rotate(-35 253 100)" fill="#a855f7" stroke="#e9d5ff" stroke-width="1.5"/>
+        <!-- Bactérias Cocos (esféricas) -->
+        <circle class="bacteria-cell b-coccus-1" cx="195" cy="105" r="6" fill="#10b981" stroke="#a7f3d0" stroke-width="1.5"/>
+        <circle class="bacteria-cell b-coccus-2" cx="260" cy="65" r="5" fill="#f59e0b" stroke="#fef3c7" stroke-width="1.5"/>
+        <circle class="bacteria-cell b-coccus-3" cx="225" cy="80" r="4" fill="#38bdf8" stroke="#bae6fd" stroke-width="1.5"/>
+        <!-- Telemetria óptica lateral -->
+        <text x="315" y="75" fill="var(--paletteAccent)" font-size="11" font-weight="800">1000x ZOOM</text>
+        <text x="315" y="92" fill="#94a3b8" font-size="9" font-weight="600">CAMPO ÓPTICO</text>
+        <text x="315" y="105" fill="#10b981" font-size="9" font-weight="700">● VIDA ATIVA</text>
+      </svg>
+      <div class="bio-telemetry-badge" data-layout-ignore>
+        <span class="bio-pulse-dot"></span> OBSERVAÇÃO MICROSCÓPICA // BACTÉRIAS E MICRÓBIOS
+      </div>
+    </div>'''
+        return f'''
+      <div class="clip-right-media">
+        <div class="motion-design-graphic motion-biogenesis">
+          <div class="bio-header-badge">
+            <span class="hud-sub-badge" data-layout-ignore>CAMPO MICROSCÓPICO // MICRÓBIOS & BACTÉRIAS</span>
+          </div>
+          <div class="bio-stage-layout">
+            {stage_svg}
+            <div class="pedagogical-callouts-box">
+              {callout_cards_html}
+            </div>
+          </div>
+          <div class="hud-label" data-layout-ignore>{label}</div>
+        </div>
+      </div>'''
+
+    # 1.4 BIOGÊNESE // DUPLA HÉLICE DE DNA
+    elif theme == "biogenesis_dna":
+        stage_svg = '''
+    <div class="bio-vector-stage">
+      <svg class="dna-helix-svg" viewBox="0 0 460 170" width="100%" height="170">
+        <defs>
+          <linearGradient id="dnaGrad1" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#38bdf8"/>
+            <stop offset="100%" stop-color="#818cf8"/>
+          </linearGradient>
+          <linearGradient id="dnaGrad2" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#a855f7"/>
+            <stop offset="100%" stop-color="#ec4899"/>
+          </linearGradient>
+        </defs>
+        <!-- Fitas senoidais da dupla hélice -->
+        <path class="dna-strand s1" d="M 60 85 Q 110 35 160 85 T 260 85 T 360 85 T 420 85" fill="none" stroke="url(#dnaGrad1)" stroke-width="3" stroke-linecap="round"/>
+        <path class="dna-strand s2" d="M 60 85 Q 110 135 160 85 T 260 85 T 360 85 T 420 85" fill="none" stroke="url(#dnaGrad2)" stroke-width="3" stroke-linecap="round"/>
+        <!-- Pontes de hidrogênio (pares de bases) -->
+        <line class="dna-rung r1" x1="110" y1="48" x2="110" y2="122" stroke="var(--paletteAccent)" stroke-width="2" stroke-dasharray="3 3"/>
+        <line class="dna-rung r2" x1="160" y1="85" x2="160" y2="85" stroke="#ffffff" stroke-width="3"/>
+        <line class="dna-rung r3" x1="210" y1="48" x2="210" y2="122" stroke="var(--palettePrimary)" stroke-width="2" stroke-dasharray="3 3"/>
+        <line class="dna-rung r4" x1="260" y1="85" x2="260" y2="85" stroke="#ffffff" stroke-width="3"/>
+        <line class="dna-rung r5" x1="310" y1="48" x2="310" y2="122" stroke="var(--paletteAccent)" stroke-width="2" stroke-dasharray="3 3"/>
+        <line class="dna-rung r6" x1="360" y1="85" x2="360" y2="85" stroke="#ffffff" stroke-width="3"/>
+        <!-- Nós de replicação com brilho -->
+        <circle class="dna-node" cx="110" cy="48" r="5" fill="#38bdf8"/>
+        <circle class="dna-node" cx="110" cy="122" r="5" fill="#ec4899"/>
+        <circle class="dna-node" cx="210" cy="48" r="5" fill="#a855f7"/>
+        <circle class="dna-node" cx="210" cy="122" r="5" fill="#38bdf8"/>
+        <circle class="dna-node" cx="310" cy="48" r="5" fill="#818cf8"/>
+        <circle class="dna-node" cx="310" cy="122" r="5" fill="#ec4899"/>
+      </svg>
+      <div class="bio-telemetry-badge" data-layout-ignore>
+        <span class="bio-pulse-dot"></span> DUPLA HÉLICE DE DNA // CÓDIGO & REPLICAÇÃO
+      </div>
+    </div>'''
+        return f'''
+      <div class="clip-right-media">
+        <div class="motion-design-graphic motion-biogenesis">
+          <div class="bio-header-badge">
+            <span class="hud-sub-badge" data-layout-ignore>CÓDIGO GENÉTICO // DUPLA HÉLICE & REPLICAÇÃO</span>
+          </div>
+          <div class="bio-stage-layout">
+            {stage_svg}
+            <div class="pedagogical-callouts-box">
+              {callout_cards_html}
+            </div>
+          </div>
+          <div class="hud-label" data-layout-ignore>{label}</div>
+        </div>
+      </div>'''
+
+    # 1.5 BIOGÊNESE // MECANISMO INTEGRADO / PUZZLE MOLECULAR
+    elif theme == "biogenesis_puzzle":
+        stage_svg = '''
+    <div class="bio-vector-stage">
+      <svg class="bio-puzzle-svg" viewBox="0 0 460 170" width="100%" height="170">
+        <!-- Engrenagens moleculares / Sistema integrado -->
+        <g class="gear-wheel g1" transform="translate(180, 85)">
+          <circle cx="0" cy="0" r="32" fill="none" stroke="var(--palettePrimary)" stroke-width="2.5" stroke-dasharray="6 4"/>
+          <circle cx="0" cy="0" r="14" fill="rgba(56, 189, 248, 0.2)" stroke="var(--palettePrimary)" stroke-width="2"/>
+          <line x1="-32" y1="0" x2="32" y2="0" stroke="var(--palettePrimary)" stroke-width="2"/>
+          <line x1="0" y1="-32" x2="0" y2="32" stroke="var(--palettePrimary)" stroke-width="2"/>
+        </g>
+        <g class="gear-wheel g2" transform="translate(250, 85)">
+          <circle cx="0" cy="0" r="28" fill="none" stroke="var(--paletteAccent)" stroke-width="2.5" stroke-dasharray="5 3"/>
+          <circle cx="0" cy="0" r="12" fill="rgba(168, 85, 247, 0.2)" stroke="var(--paletteAccent)" stroke-width="2"/>
+          <line x1="-28" y1="0" x2="28" y2="0" stroke="var(--paletteAccent)" stroke-width="2"/>
+          <line x1="0" y1="-28" x2="0" y2="28" stroke="var(--paletteAccent)" stroke-width="2"/>
+        </g>
+        <!-- Conexões moleculares tipo puzzle -->
+        <path d="M 100 85 L 148 85 M 278 85 L 340 85" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-dasharray="4 4"/>
+        <circle cx="100" cy="85" r="8" fill="#10b981"/>
+        <circle cx="340" cy="85" r="8" fill="#f59e0b"/>
+      </svg>
+      <div class="bio-telemetry-badge" data-layout-ignore>
+        <span class="bio-pulse-dot"></span> MECANISMO INTEGRADO // SISTEMA VITAL
+      </div>
+    </div>'''
+        return f'''
+      <div class="clip-right-media">
+        <div class="motion-design-graphic motion-biogenesis">
+          <div class="bio-header-badge">
+            <span class="hud-sub-badge" data-layout-ignore>SISTEMA VITAL // ENGRENAGENS MOLECULARES</span>
+          </div>
+          <div class="bio-stage-layout">
+            {stage_svg}
+            <div class="pedagogical-callouts-box">
+              {callout_cards_html}
+            </div>
+          </div>
+          <div class="hud-label" data-layout-ignore>{label}</div>
+        </div>
+      </div>'''
+
+    # 1.6 BIOGÊNESE // CONFRONTO HISTÓRICO: ABIOGÊNESE vs BIOGÊNESE
+    elif theme == "biogenesis_versus":
+        stage_svg = '''
+    <div class="bio-vector-stage">
+      <svg class="bio-versus-svg" viewBox="0 0 460 170" width="100%" height="170">
+        <!-- Lado Esquerdo: Abiogênese (Refutado) -->
+        <rect x="60" y="30" width="140" height="110" rx="14" fill="rgba(239, 68, 68, 0.06)" stroke="#ef4444" stroke-width="1.8"/>
+        <circle cx="130" cy="65" r="18" fill="rgba(239, 68, 68, 0.2)" stroke="#ef4444" stroke-width="2"/>
+        <text x="130" y="72" fill="#ef4444" font-size="18" font-weight="900" text-anchor="middle">✖</text>
+        <text x="130" y="105" fill="#fca5a5" font-size="11" font-weight="800" text-anchor="middle">ABIOGÊNESE</text>
+        <text x="130" y="122" fill="#94a3b8" font-size="9" text-anchor="middle">Geração do nada (FALSO)</text>
+
+        <!-- Divisor Central VS -->
+        <circle cx="230" cy="85" r="18" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+        <text x="230" y="90" fill="#ffffff" font-size="11" font-weight="900" text-anchor="middle">VS</text>
+
+        <!-- Lado Direito: Biogênese (Comprovado) -->
+        <rect x="260" y="30" width="140" height="110" rx="14" fill="rgba(16, 185, 129, 0.06)" stroke="#10b981" stroke-width="1.8"/>
+        <circle cx="330" cy="65" r="18" fill="rgba(16, 185, 129, 0.2)" stroke="#10b981" stroke-width="2"/>
+        <text x="330" y="72" fill="#10b981" font-size="18" font-weight="900" text-anchor="middle">✔</text>
+        <text x="330" y="105" fill="#86efac" font-size="11" font-weight="800" text-anchor="middle">BIOGÊNESE</text>
+        <text x="330" y="122" fill="#94a3b8" font-size="9" text-anchor="middle">Vida gera vida (REAL)</text>
+      </svg>
+      <div class="bio-telemetry-badge" data-layout-ignore>
+        <span class="bio-pulse-dot"></span> CONFRONTO HISTÓRICO // ABIOGÊNESE vs BIOGÊNESE
+      </div>
+    </div>'''
+        return f'''
+      <div class="clip-right-media">
+        <div class="motion-design-graphic motion-biogenesis">
+          <div class="bio-header-badge">
+            <span class="hud-sub-badge" data-layout-ignore>RUPTURA CIENTÍFICA // ABIOGÊNESE vs BIOGÊNESE</span>
+          </div>
+          <div class="bio-stage-layout">
+            {stage_svg}
+            <div class="pedagogical-callouts-box">
+              {callout_cards_html}
+            </div>
+          </div>
+          <div class="hud-label" data-layout-ignore>{label}</div>
+        </div>
+      </div>'''
+
+    # 1.7 BIOGÊNESE // CITOCINESE & DIVISÃO CELULAR (PADRÃO MITOSE)
+    elif theme in ("biogenesis_cell", "biogenesis", "biology", "origin_of_life", "cell_division"):
         is_biogenesis = "biogênese" in f"{label} {topic} {chapter_title} {content}".lower() or "biogenese" in f"{label} {topic} {chapter_title} {content}".lower()
         badge_text = "BIOGÊNESE & ORIGEM DA VIDA // CIÊNCIA EXPERIMENTAL" if is_biogenesis else "BIOLOGIA CELULAR // ESTRUTURA E VIDA"
         pill_text = "DIVISÃO CELULAR // A VIDA PROVÉM DA VIDA" if is_biogenesis else "DIVISÃO CELULAR // MITOSE & DUPLICAÇÃO"
@@ -522,19 +910,15 @@ def generate_thematic_motion_html(
                     <feComposite in="SourceGraphic" in2="blur" operator="over" />
                   </filter>
                 </defs>
-                <!-- Membrana celular elástica em citocinese -->
                 <path class="cell-membrane" d="M 130 20 C 190 20, 195 65, 230 65 C 265 65, 270 20, 330 20 C 390 20, 420 50, 420 85 C 420 120, 390 150, 330 150 C 270 150, 265 105, 230 105 C 195 105, 190 150, 130 150 C 70 150, 40 120, 40 85 C 40 50, 70 20, 130 20 Z"
                       fill="rgba(56, 189, 248, 0.05)" stroke="var(--palettePrimary)" stroke-width="2.5" filter="url(#bioFilterGlow)"/>
                 <line class="contractile-ring" x1="230" y1="60" x2="230" y2="110" stroke="var(--paletteAccent)" stroke-width="2.5" stroke-dasharray="3 3"/>
-                <!-- Núcleo esquerdo com cromatina -->
                 <circle class="cell-nucleus nuc-left" cx="135" cy="85" r="26" fill="url(#nucGlowLeft)"/>
                 <circle cx="135" cy="85" r="11" fill="#bae6fd" opacity="0.85"/>
                 <path class="chromatin-coil" d="M 128 80 Q 135 76 142 82 T 136 92" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>
-                <!-- Núcleo direito com cromatina -->
                 <circle class="cell-nucleus nuc-right" cx="325" cy="85" r="26" fill="url(#nucGlowRight)"/>
                 <circle cx="325" cy="85" r="11" fill="#e9d5ff" opacity="0.85"/>
                 <path class="chromatin-coil" d="M 318 80 Q 325 76 332 82 T 326 92" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>
-                <!-- Organelas e partículas vitais -->
                 <ellipse class="bio-organelle o-1" cx="95" cy="55" rx="12" ry="6" transform="rotate(-25 95 55)" fill="rgba(16, 185, 129, 0.6)" stroke="#10b981" stroke-width="1.5"/>
                 <ellipse class="bio-organelle o-2" cx="365" cy="115" rx="12" ry="6" transform="rotate(30 365 115)" fill="rgba(16, 185, 129, 0.6)" stroke="#10b981" stroke-width="1.5"/>
                 <circle class="bio-particle bp-1" cx="180" cy="45" r="3" fill="var(--paletteAccent)"/>
@@ -977,7 +1361,7 @@ def build_composition(
         # Motion Design Procedural Neon Temático e Específico do Assunto Falado
         arch = el.get("visual_archetype") or scene.get("visual_archetype") or ""
         ch_title = scene.get("chapter_title") or ""
-        theme_key, theme_label = detect_visual_theme(topic_text, raw_content, ch_title, explicit_archetype=arch)
+        theme_key, theme_label = detect_visual_theme(topic_text, raw_content, ch_title, explicit_archetype=arch, sentence_index=index - 1)
         motion_html = generate_thematic_motion_html(theme_key, theme_label, raw_content, topic=topic_text, chapter_title=ch_title)
 
         # Camada Híbrida Inteligente: une Imagem Real/IA com Overlay de Motion Design Explicativo

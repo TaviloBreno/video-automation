@@ -714,6 +714,54 @@
       box-shadow: 0 12px 32px rgba(0, 0, 0, 0.85) !important;
     }
 
+        /* VETORES MOTION DESIGN: NOVOS ARQUÉTIPOS CIENTÍFICOS & BIOLOGIA */
+    .pasteur-flask-svg,
+    .redi-jars-svg,
+    .microscope-viewport-svg,
+    .dna-helix-svg,
+    .bio-puzzle-svg,
+    .bio-versus-svg {
+      overflow: visible;
+      filter: drop-shadow(0 0 20px rgba(56, 189, 248, 0.18));
+    }
+    .swan-neck-path {
+      stroke-dasharray: 400;
+      stroke-dashoffset: 0;
+    }
+    .gear-wheel {
+      transform-box: fill-box;
+      transform-origin: center center;
+    }
+
+        /* ARQUÉTIPOS VESTIBULAR & CONCURSOS PÚBLICOS */
+    .motion-vestibular {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    .law-justice-svg,
+    .law-limpe-svg,
+    .logic-venn-svg,
+    .logic-table-svg,
+    .syntax-tree-svg,
+    .redacao-enem-svg,
+    .math-cartesian-svg,
+    .physics-mechanics-svg,
+    .physics-circuits-svg,
+    .chem-organic-svg,
+    .chem-reaction-svg,
+    .bio-ecology-svg,
+    .bio-neuron-svg,
+    .history-brazil-svg,
+    .geo-plates-svg {
+      overflow: visible;
+      filter: drop-shadow(0 0 20px rgba(56, 189, 248, 0.16));
+    }
+
     .motion-grammar {
       display: flex;
       flex-direction: column;
@@ -1309,7 +1357,7 @@
 </head>
 <body>
   <div id="root" data-composition-id="main" data-start="0"
-       data-width="1080" data-height="1920" data-duration="35.454249" style="perspective: 1200px;">
+       data-width="1080" data-height="1920" data-duration="53.034416" style="perspective: 1200px;">
     <div class="bg-grid-overlay"></div>
     <div class="hud-border"></div>
     <div class="scene-wipe-beam"></div>
@@ -1320,293 +1368,188 @@
 
     
     <div id="el-1" class="explainer-clip clip"
-         data-start="0.000" data-duration="8.273">
+         data-start="0.000" data-duration="8.073">
       <div class="clip-left-content">
         <div class="clip-heading">
           <span class="clip-index">01</span>
           <span>DESTAQUE // INTRODUÇÃO</span>
         </div>
-        <div class="clip-copy"><span class="kinetic-line">Vamos mergulhar nos exemplos práticos da biogênese! </span><span class="kinetic-line">Você já se perguntou como o mundo começou? </span><span class="kinetic-line">Bom, vamos descobrir juntos. </span></div>
-        
+        <div class="clip-copy"><span class="kinetic-line">E agora que sabemos o que é tecido conjuntivo e como funciona, vamos aplicar esses conhecimentos em situações reais.</span></div>
+        <div class="clip-sources">FONTES & REFERÊNCIAS  /  <span class="citation" title="https://www.dicio.com.br/explicacao/"><b>[S1</b> <i>Explicação - Dicio, Dicionário Online de Português</i></span></div>
       </div>
       
       <div class="clip-right-media">
-        <div class="motion-design-graphic motion-biogenesis">
-          <div class="bio-header-badge">
-            <span class="hud-sub-badge" data-layout-ignore>BIOGÊNESE & ORIGEM DA VIDA // CIÊNCIA EXPERIMENTAL</span>
+        <div class="motion-design-graphic motion-finance">
+          <div class="analytics-hud-header">
+            <span class="hud-sub-badge" data-layout-ignore>MERCADO, PROBABILIDADE & RISCO</span>
           </div>
-          <div class="bio-stage-layout">
-            <div class="bio-vector-stage">
-              <svg class="cell-division-svg" viewBox="0 0 460 170" width="100%" height="170">
-                <defs>
-                  <radialGradient id="nucGlowLeft" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.9" />
-                    <stop offset="60%" stop-color="#0284c7" stop-opacity="0.5" />
-                    <stop offset="100%" stop-color="#0369a1" stop-opacity="0" />
-                  </radialGradient>
-                  <radialGradient id="nucGlowRight" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" stop-color="#a855f7" stop-opacity="0.9" />
-                    <stop offset="60%" stop-color="#7c3aed" stop-opacity="0.5" />
-                    <stop offset="100%" stop-color="#6d28d9" stop-opacity="0" />
-                  </radialGradient>
-                  <filter id="bioFilterGlow" x="-20%" y="-20%" width="140%" height="140%">
-                    <feGaussianBlur stdDeviation="4" result="blur" />
-                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                  </filter>
-                </defs>
-                <!-- Membrana celular elástica em citocinese -->
-                <path class="cell-membrane" d="M 130 20 C 190 20, 195 65, 230 65 C 265 65, 270 20, 330 20 C 390 20, 420 50, 420 85 C 420 120, 390 150, 330 150 C 270 150, 265 105, 230 105 C 195 105, 190 150, 130 150 C 70 150, 40 120, 40 85 C 40 50, 70 20, 130 20 Z"
-                      fill="rgba(56, 189, 248, 0.05)" stroke="var(--palettePrimary)" stroke-width="2.5" filter="url(#bioFilterGlow)"/>
-                <line class="contractile-ring" x1="230" y1="60" x2="230" y2="110" stroke="var(--paletteAccent)" stroke-width="2.5" stroke-dasharray="3 3"/>
-                <!-- Núcleo esquerdo com cromatina -->
-                <circle class="cell-nucleus nuc-left" cx="135" cy="85" r="26" fill="url(#nucGlowLeft)"/>
-                <circle cx="135" cy="85" r="11" fill="#bae6fd" opacity="0.85"/>
-                <path class="chromatin-coil" d="M 128 80 Q 135 76 142 82 T 136 92" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>
-                <!-- Núcleo direito com cromatina -->
-                <circle class="cell-nucleus nuc-right" cx="325" cy="85" r="26" fill="url(#nucGlowRight)"/>
-                <circle cx="325" cy="85" r="11" fill="#e9d5ff" opacity="0.85"/>
-                <path class="chromatin-coil" d="M 318 80 Q 325 76 332 82 T 326 92" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>
-                <!-- Organelas e partículas vitais -->
-                <ellipse class="bio-organelle o-1" cx="95" cy="55" rx="12" ry="6" transform="rotate(-25 95 55)" fill="rgba(16, 185, 129, 0.6)" stroke="#10b981" stroke-width="1.5"/>
-                <ellipse class="bio-organelle o-2" cx="365" cy="115" rx="12" ry="6" transform="rotate(30 365 115)" fill="rgba(16, 185, 129, 0.6)" stroke="#10b981" stroke-width="1.5"/>
-                <circle class="bio-particle bp-1" cx="180" cy="45" r="3" fill="var(--paletteAccent)"/>
-                <circle class="bio-particle bp-2" cx="105" cy="120" r="2.5" fill="var(--palettePrimary)"/>
-                <circle class="bio-particle bp-3" cx="280" cy="45" r="3" fill="var(--paletteAccent)"/>
-                <circle class="bio-particle bp-4" cx="355" cy="50" r="2.5" fill="var(--palettePrimary)"/>
-              </svg>
-              <div class="bio-telemetry-badge" data-layout-ignore>
-                <span class="bio-pulse-dot"></span> DIVISÃO CELULAR // A VIDA PROVÉM DA VIDA
-              </div>
-            </div>
-            <div class="pedagogical-callouts-box">
-              
+          <svg class="analytics-chart-svg" viewBox="0 0 380 160" width="380" height="160">
+            <line x1="30" y1="140" x2="360" y2="140" stroke="rgba(255,255,255,0.18)" stroke-width="2"/>
+            <line x1="30" y1="20" x2="30" y2="140" stroke="rgba(255,255,255,0.18)" stroke-width="2"/>
+            <path d="M 40 120 Q 90 140 140 80 T 240 50 T 350 20" fill="none" stroke="var(--palettePrimary)" stroke-width="3.5" stroke-linecap="round"/>
+            <path d="M 40 135 Q 90 150 140 100 T 240 75 T 350 45" fill="none" stroke="var(--paletteAccent)" stroke-width="2" stroke-dasharray="5 5"/>
+            <circle cx="350" cy="20" r="6" fill="var(--palettePrimary)"/>
+          </svg>
+          <div class="pedagogical-callouts-box compact">
+            
             <div class="pedag-item ">
-              <span class="pedag-badge" data-layout-ignore>01 MECANISMO CELULAR</span>
+              <span class="pedag-badge" data-layout-ignore>01 TESE CENTRAL</span>
               <div class="pedag-body">
-                <span class="pedag-title">REPLICAÇÃO DA VIDA</span>
-                <span class="pedag-desc">Vamos mergulhar nos exemplos práticos da biogênese! Você já se perguntou co...</span>
+                <span class="pedag-title">CRIE UM VIDEO EXPLICAÇÃO SOBRE TECIDO CONJUNTIVO</span>
+                <span class="pedag-desc">E agora que sabemos o que é tecido conjuntivo e como funciona, vamos aplicar esses...</span>
               </div>
             </div>
 
             <div class="pedag-item ">
-              <span class="pedag-badge" data-layout-ignore>02 DIVISÃO CELULAR</span>
+              <span class="pedag-badge" data-layout-ignore>02 ESTRUTURAÇÃO</span>
               <div class="pedag-body">
-                <span class="pedag-title">CONTINUIDADE GENÉTICA</span>
-                <span class="pedag-desc">Transmissão fiel do material genético e organização molecular das células.</span>
+                <span class="pedag-title">FUNDAMENTAÇÃO</span>
+                <span class="pedag-desc">Relação lógica e pedagógica entre causas, evidências e resultados.</span>
               </div>
             </div>
 
             <div class="pedag-item ">
-              <span class="pedag-badge" data-layout-ignore>03 SÍNTESE</span>
+              <span class="pedag-badge" data-layout-ignore>03 MEMORIZAÇÃO</span>
               <div class="pedag-body">
-                <span class="pedag-title">EVOLUÇÃO &amp; ORIGEM</span>
-                <span class="pedag-desc">Linhagem contínua de seres vivos moldando a biodiversidade biológica.</span>
+                <span class="pedag-title">PONTO-CHAVE</span>
+                <span class="pedag-desc">Atalho conceitual projetado para fixação imediata do conteúdo.</span>
               </div>
             </div>
-            </div>
           </div>
-          <div class="hud-label" data-layout-ignore>BIOGÊNESE & ORIGEM DA VIDA // PRÁTICOS EXEMPLOS E MACETE MNEMÔNICO</div>
+          <div class="hud-label" data-layout-ignore>MERCADO & RISCO // APLICANDO O CONHECIMENTO EXEMPLOS E</div>
         </div>
       </div>
     </div>
 
     <div id="el-2" class="explainer-clip clip"
-         data-start="8.273" data-duration="6.765">
+         data-start="8.073" data-duration="8.984">
       <div class="clip-left-content">
         <div class="clip-heading">
           <span class="clip-index">02</span>
           <span>EXPLICAÇÃO</span>
         </div>
-        <div class="clip-copy"><span class="kinetic-line">A biogénese é o processo pelo qual as organizações vivas surgem a partir de moléculas inorgânicas e energia.</span></div>
-        
+        <div class="clip-copy"><span class="kinetic-line">Lembre-se de que o tecido conjuntivo é responsável por absorver choques físicos e químicos, protegendo os órgãos internos do nosso corpo.</span></div>
+        <div class="clip-sources">FONTES & REFERÊNCIAS  /  <span class="citation" title="https://www.dicio.com.br/explicacao/"><b>[S1</b> <i>Explicação - Dicio, Dicionário Online de Português</i></span></div>
       </div>
       
       <div class="clip-right-media">
-        <div class="motion-design-graphic motion-biogenesis">
-          <div class="bio-header-badge">
-            <span class="hud-sub-badge" data-layout-ignore>BIOGÊNESE & ORIGEM DA VIDA // CIÊNCIA EXPERIMENTAL</span>
+        <div class="motion-design-graphic motion-lesson">
+          <div class="lesson-hud-header">
+            <span class="hud-sub-badge" data-layout-ignore>VIDEOAULA // CONCEITO E FIXAÇÃO</span>
           </div>
-          <div class="bio-stage-layout">
-            <div class="bio-vector-stage">
-              <svg class="cell-division-svg" viewBox="0 0 460 170" width="100%" height="170">
-                <defs>
-                  <radialGradient id="nucGlowLeft" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.9" />
-                    <stop offset="60%" stop-color="#0284c7" stop-opacity="0.5" />
-                    <stop offset="100%" stop-color="#0369a1" stop-opacity="0" />
-                  </radialGradient>
-                  <radialGradient id="nucGlowRight" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" stop-color="#a855f7" stop-opacity="0.9" />
-                    <stop offset="60%" stop-color="#7c3aed" stop-opacity="0.5" />
-                    <stop offset="100%" stop-color="#6d28d9" stop-opacity="0" />
-                  </radialGradient>
-                  <filter id="bioFilterGlow" x="-20%" y="-20%" width="140%" height="140%">
-                    <feGaussianBlur stdDeviation="4" result="blur" />
-                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                  </filter>
-                </defs>
-                <!-- Membrana celular elástica em citocinese -->
-                <path class="cell-membrane" d="M 130 20 C 190 20, 195 65, 230 65 C 265 65, 270 20, 330 20 C 390 20, 420 50, 420 85 C 420 120, 390 150, 330 150 C 270 150, 265 105, 230 105 C 195 105, 190 150, 130 150 C 70 150, 40 120, 40 85 C 40 50, 70 20, 130 20 Z"
-                      fill="rgba(56, 189, 248, 0.05)" stroke="var(--palettePrimary)" stroke-width="2.5" filter="url(#bioFilterGlow)"/>
-                <line class="contractile-ring" x1="230" y1="60" x2="230" y2="110" stroke="var(--paletteAccent)" stroke-width="2.5" stroke-dasharray="3 3"/>
-                <!-- Núcleo esquerdo com cromatina -->
-                <circle class="cell-nucleus nuc-left" cx="135" cy="85" r="26" fill="url(#nucGlowLeft)"/>
-                <circle cx="135" cy="85" r="11" fill="#bae6fd" opacity="0.85"/>
-                <path class="chromatin-coil" d="M 128 80 Q 135 76 142 82 T 136 92" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>
-                <!-- Núcleo direito com cromatina -->
-                <circle class="cell-nucleus nuc-right" cx="325" cy="85" r="26" fill="url(#nucGlowRight)"/>
-                <circle cx="325" cy="85" r="11" fill="#e9d5ff" opacity="0.85"/>
-                <path class="chromatin-coil" d="M 318 80 Q 325 76 332 82 T 326 92" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>
-                <!-- Organelas e partículas vitais -->
-                <ellipse class="bio-organelle o-1" cx="95" cy="55" rx="12" ry="6" transform="rotate(-25 95 55)" fill="rgba(16, 185, 129, 0.6)" stroke="#10b981" stroke-width="1.5"/>
-                <ellipse class="bio-organelle o-2" cx="365" cy="115" rx="12" ry="6" transform="rotate(30 365 115)" fill="rgba(16, 185, 129, 0.6)" stroke="#10b981" stroke-width="1.5"/>
-                <circle class="bio-particle bp-1" cx="180" cy="45" r="3" fill="var(--paletteAccent)"/>
-                <circle class="bio-particle bp-2" cx="105" cy="120" r="2.5" fill="var(--palettePrimary)"/>
-                <circle class="bio-particle bp-3" cx="280" cy="45" r="3" fill="var(--paletteAccent)"/>
-                <circle class="bio-particle bp-4" cx="355" cy="50" r="2.5" fill="var(--palettePrimary)"/>
-              </svg>
-              <div class="bio-telemetry-badge" data-layout-ignore>
-                <span class="bio-pulse-dot"></span> DIVISÃO CELULAR // A VIDA PROVÉM DA VIDA
-              </div>
-            </div>
-            <div class="pedagogical-callouts-box">
-              
+          <div class="didactic-vector-map">
+            <svg class="concept-map-svg" viewBox="0 0 460 70" width="100%" height="70">
+              <line x1="80" y1="35" x2="230" y2="35" stroke="var(--palettePrimary)" stroke-width="2" stroke-dasharray="4 4" class="concept-wire wire-1"/>
+              <line x1="230" y1="35" x2="380" y2="35" stroke="var(--paletteAccent)" stroke-width="2" stroke-dasharray="4 4" class="concept-wire wire-2"/>
+              <circle cx="80" cy="35" r="20" fill="rgba(56, 189, 248, 0.2)" stroke="var(--palettePrimary)" stroke-width="2"/>
+              <text x="80" y="39" font-size="10" font-weight="800" fill="#ffffff" text-anchor="middle">CONCEITO</text>
+              <circle cx="230" cy="35" r="24" fill="rgba(168, 85, 247, 0.25)" stroke="var(--paletteAccent)" stroke-width="2"/>
+              <text x="230" y="39" font-size="10" font-weight="800" fill="#ffffff" text-anchor="middle">MECANISMO</text>
+              <circle cx="380" cy="35" r="20" fill="rgba(16, 185, 129, 0.2)" stroke="#10b981" stroke-width="2"/>
+              <text x="380" y="39" font-size="10" font-weight="800" fill="#ffffff" text-anchor="middle">SÍNTESE</text>
+            </svg>
+          </div>
+          <div class="pedagogical-callouts-box">
+            
             <div class="pedag-item ">
-              <span class="pedag-badge" data-layout-ignore>01 MECANISMO CELULAR</span>
+              <span class="pedag-badge" data-layout-ignore>01 TESE CENTRAL</span>
               <div class="pedag-body">
-                <span class="pedag-title">REPLICAÇÃO DA VIDA</span>
-                <span class="pedag-desc">A biogénese é o processo pelo qual as organizações vivas surgem a partir de...</span>
+                <span class="pedag-title">CRIE UM VIDEO EXPLICAÇÃO SOBRE TECIDO CONJUNTIVO</span>
+                <span class="pedag-desc">Lembre-se de que o tecido conjuntivo é responsável por absorver choques físicos e ...</span>
               </div>
             </div>
 
             <div class="pedag-item ">
-              <span class="pedag-badge" data-layout-ignore>02 DIVISÃO CELULAR</span>
+              <span class="pedag-badge" data-layout-ignore>02 ESTRUTURAÇÃO</span>
               <div class="pedag-body">
-                <span class="pedag-title">CONTINUIDADE GENÉTICA</span>
-                <span class="pedag-desc">Transmissão fiel do material genético e organização molecular das células.</span>
+                <span class="pedag-title">FUNDAMENTAÇÃO</span>
+                <span class="pedag-desc">Relação lógica e pedagógica entre causas, evidências e resultados.</span>
               </div>
             </div>
 
             <div class="pedag-item ">
-              <span class="pedag-badge" data-layout-ignore>03 SÍNTESE</span>
+              <span class="pedag-badge" data-layout-ignore>03 MEMORIZAÇÃO</span>
               <div class="pedag-body">
-                <span class="pedag-title">EVOLUÇÃO &amp; ORIGEM</span>
-                <span class="pedag-desc">Linhagem contínua de seres vivos moldando a biodiversidade biológica.</span>
+                <span class="pedag-title">PONTO-CHAVE</span>
+                <span class="pedag-desc">Atalho conceitual projetado para fixação imediata do conteúdo.</span>
               </div>
             </div>
-            </div>
           </div>
-          <div class="hud-label" data-layout-ignore>BIOGÊNESE & ORIGEM DA VIDA // PRÁTICOS EXEMPLOS E MACETE MNEMÔNICO</div>
+          <div class="lesson-footer-pill" data-layout-ignore>
+            <span class="pill-dot"></span> FOCO EM RETENÇÃO & CLAREZA PEDAGÓGICA
+          </div>
+          <div class="hud-label" data-layout-ignore>VIDEOAULA & FIXAÇÃO // APLICANDO O CONHECIMENTO EXEMPLOS E</div>
         </div>
       </div>
     </div>
 
     <div id="el-3" class="explainer-clip clip"
-         data-start="15.038" data-duration="4.678">
+         data-start="17.057" data-duration="10.339">
       <div class="clip-left-content">
         <div class="clip-heading">
           <span class="clip-index">03</span>
           <span>EXPLICAÇÃO</span>
         </div>
-        <div class="clip-copy"><span class="kinetic-line">Imagine uma fábrica onde os componentes são montados em um processo contínuo.</span></div>
-        
+        <div class="clip-copy"><span class="kinetic-line">Por exemplo, se você sofrer uma lesão, o tecido conjuntivo ajuda a prevenir hemorragias e inflamação, permitindo que o corpo recupere mais rapidamente.</span></div>
+        <div class="clip-sources">FONTES & REFERÊNCIAS  /  <span class="citation" title="https://www.dicio.com.br/explicacao/"><b>[S1</b> <i>Explicação - Dicio, Dicionário Online de Português</i></span></div>
       </div>
       
       <div class="clip-right-media">
-        <div class="motion-design-graphic motion-biogenesis">
-          <div class="bio-header-badge">
-            <span class="hud-sub-badge" data-layout-ignore>BIOGÊNESE & ORIGEM DA VIDA // CIÊNCIA EXPERIMENTAL</span>
+        <div class="motion-design-graphic motion-psychology">
+          <div class="psych-hud-header">
+            <span class="hud-sub-badge" data-layout-ignore>PROCESSAMENTO COGNITIVO & VIESES</span>
           </div>
-          <div class="bio-stage-layout">
-            <div class="bio-vector-stage">
-              <svg class="cell-division-svg" viewBox="0 0 460 170" width="100%" height="170">
-                <defs>
-                  <radialGradient id="nucGlowLeft" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.9" />
-                    <stop offset="60%" stop-color="#0284c7" stop-opacity="0.5" />
-                    <stop offset="100%" stop-color="#0369a1" stop-opacity="0" />
-                  </radialGradient>
-                  <radialGradient id="nucGlowRight" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" stop-color="#a855f7" stop-opacity="0.9" />
-                    <stop offset="60%" stop-color="#7c3aed" stop-opacity="0.5" />
-                    <stop offset="100%" stop-color="#6d28d9" stop-opacity="0" />
-                  </radialGradient>
-                  <filter id="bioFilterGlow" x="-20%" y="-20%" width="140%" height="140%">
-                    <feGaussianBlur stdDeviation="4" result="blur" />
-                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                  </filter>
-                </defs>
-                <!-- Membrana celular elástica em citocinese -->
-                <path class="cell-membrane" d="M 130 20 C 190 20, 195 65, 230 65 C 265 65, 270 20, 330 20 C 390 20, 420 50, 420 85 C 420 120, 390 150, 330 150 C 270 150, 265 105, 230 105 C 195 105, 190 150, 130 150 C 70 150, 40 120, 40 85 C 40 50, 70 20, 130 20 Z"
-                      fill="rgba(56, 189, 248, 0.05)" stroke="var(--palettePrimary)" stroke-width="2.5" filter="url(#bioFilterGlow)"/>
-                <line class="contractile-ring" x1="230" y1="60" x2="230" y2="110" stroke="var(--paletteAccent)" stroke-width="2.5" stroke-dasharray="3 3"/>
-                <!-- Núcleo esquerdo com cromatina -->
-                <circle class="cell-nucleus nuc-left" cx="135" cy="85" r="26" fill="url(#nucGlowLeft)"/>
-                <circle cx="135" cy="85" r="11" fill="#bae6fd" opacity="0.85"/>
-                <path class="chromatin-coil" d="M 128 80 Q 135 76 142 82 T 136 92" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>
-                <!-- Núcleo direito com cromatina -->
-                <circle class="cell-nucleus nuc-right" cx="325" cy="85" r="26" fill="url(#nucGlowRight)"/>
-                <circle cx="325" cy="85" r="11" fill="#e9d5ff" opacity="0.85"/>
-                <path class="chromatin-coil" d="M 318 80 Q 325 76 332 82 T 326 92" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>
-                <!-- Organelas e partículas vitais -->
-                <ellipse class="bio-organelle o-1" cx="95" cy="55" rx="12" ry="6" transform="rotate(-25 95 55)" fill="rgba(16, 185, 129, 0.6)" stroke="#10b981" stroke-width="1.5"/>
-                <ellipse class="bio-organelle o-2" cx="365" cy="115" rx="12" ry="6" transform="rotate(30 365 115)" fill="rgba(16, 185, 129, 0.6)" stroke="#10b981" stroke-width="1.5"/>
-                <circle class="bio-particle bp-1" cx="180" cy="45" r="3" fill="var(--paletteAccent)"/>
-                <circle class="bio-particle bp-2" cx="105" cy="120" r="2.5" fill="var(--palettePrimary)"/>
-                <circle class="bio-particle bp-3" cx="280" cy="45" r="3" fill="var(--paletteAccent)"/>
-                <circle class="bio-particle bp-4" cx="355" cy="50" r="2.5" fill="var(--palettePrimary)"/>
-              </svg>
-              <div class="bio-telemetry-badge" data-layout-ignore>
-                <span class="bio-pulse-dot"></span> DIVISÃO CELULAR // A VIDA PROVÉM DA VIDA
-              </div>
-            </div>
-            <div class="pedagogical-callouts-box">
-              
+          <div class="psych-brain-core">
+            <div class="synapse-ring s-outer"></div>
+            <div class="synapse-ring s-mid"></div>
+            <div class="decision-nucleus"></div>
+          </div>
+          <div class="pedagogical-callouts-box compact">
+            
             <div class="pedag-item ">
-              <span class="pedag-badge" data-layout-ignore>01 MECANISMO CELULAR</span>
+              <span class="pedag-badge" data-layout-ignore>01 TESE CENTRAL</span>
               <div class="pedag-body">
-                <span class="pedag-title">REPLICAÇÃO DA VIDA</span>
-                <span class="pedag-desc">Imagine uma fábrica onde os componentes são montados em um processo contínu...</span>
+                <span class="pedag-title">CRIE UM VIDEO EXPLICAÇÃO SOBRE TECIDO CONJUNTIVO</span>
+                <span class="pedag-desc">Por exemplo, se você sofrer uma lesão, o tecido conjuntivo ajuda a prevenir hemorr...</span>
               </div>
             </div>
 
             <div class="pedag-item ">
-              <span class="pedag-badge" data-layout-ignore>02 DIVISÃO CELULAR</span>
+              <span class="pedag-badge" data-layout-ignore>02 ESTRUTURAÇÃO</span>
               <div class="pedag-body">
-                <span class="pedag-title">CONTINUIDADE GENÉTICA</span>
-                <span class="pedag-desc">Transmissão fiel do material genético e organização molecular das células.</span>
+                <span class="pedag-title">FUNDAMENTAÇÃO</span>
+                <span class="pedag-desc">Relação lógica e pedagógica entre causas, evidências e resultados.</span>
               </div>
             </div>
 
             <div class="pedag-item ">
-              <span class="pedag-badge" data-layout-ignore>03 SÍNTESE</span>
+              <span class="pedag-badge" data-layout-ignore>03 MEMORIZAÇÃO</span>
               <div class="pedag-body">
-                <span class="pedag-title">EVOLUÇÃO &amp; ORIGEM</span>
-                <span class="pedag-desc">Linhagem contínua de seres vivos moldando a biodiversidade biológica.</span>
+                <span class="pedag-title">PONTO-CHAVE</span>
+                <span class="pedag-desc">Atalho conceitual projetado para fixação imediata do conteúdo.</span>
               </div>
             </div>
-            </div>
           </div>
-          <div class="hud-label" data-layout-ignore>BIOGÊNESE & ORIGEM DA VIDA // PRÁTICOS EXEMPLOS E MACETE MNEMÔNICO</div>
+          <div class="hud-label" data-layout-ignore>PSICOLOGIA COGNITIVA // APLICANDO O CONHECIMENTO EXEMPLOS E</div>
         </div>
       </div>
     </div>
 
     <div id="el-4" class="explainer-clip clip"
-         data-start="19.716" data-duration="5.064">
+         data-start="27.396" data-duration="7.279">
       <div class="clip-left-content">
         <div class="clip-heading">
           <span class="clip-index">04</span>
           <span>EXPLICAÇÃO</span>
         </div>
-        <div class="clip-copy"><span class="kinetic-line">Algo assim aconteceu no início da vida na Terra, com a formação das primeiras células.</span></div>
-        
+        <div class="clip-copy"><span class="kinetic-line">Além disso, em casos de infecções, o tecido conjuntivo produz células que ajudam a combatê-las.</span></div>
+        <div class="clip-sources">FONTES & REFERÊNCIAS  /  <span class="citation" title="https://www.dicio.com.br/explicacao/"><b>[S1</b> <i>Explicação - Dicio, Dicionário Online de Português</i></span></div>
       </div>
       
       <div class="clip-right-media">
         <div class="motion-design-graphic motion-biogenesis">
           <div class="bio-header-badge">
-            <span class="hud-sub-badge" data-layout-ignore>BIOGÊNESE & ORIGEM DA VIDA // CIÊNCIA EXPERIMENTAL</span>
+            <span class="hud-sub-badge" data-layout-ignore>BIOLOGIA CELULAR // ESTRUTURA E VIDA</span>
           </div>
           <div class="bio-stage-layout">
             <div class="bio-vector-stage">
@@ -1627,19 +1570,15 @@
                     <feComposite in="SourceGraphic" in2="blur" operator="over" />
                   </filter>
                 </defs>
-                <!-- Membrana celular elástica em citocinese -->
                 <path class="cell-membrane" d="M 130 20 C 190 20, 195 65, 230 65 C 265 65, 270 20, 330 20 C 390 20, 420 50, 420 85 C 420 120, 390 150, 330 150 C 270 150, 265 105, 230 105 C 195 105, 190 150, 130 150 C 70 150, 40 120, 40 85 C 40 50, 70 20, 130 20 Z"
                       fill="rgba(56, 189, 248, 0.05)" stroke="var(--palettePrimary)" stroke-width="2.5" filter="url(#bioFilterGlow)"/>
                 <line class="contractile-ring" x1="230" y1="60" x2="230" y2="110" stroke="var(--paletteAccent)" stroke-width="2.5" stroke-dasharray="3 3"/>
-                <!-- Núcleo esquerdo com cromatina -->
                 <circle class="cell-nucleus nuc-left" cx="135" cy="85" r="26" fill="url(#nucGlowLeft)"/>
                 <circle cx="135" cy="85" r="11" fill="#bae6fd" opacity="0.85"/>
                 <path class="chromatin-coil" d="M 128 80 Q 135 76 142 82 T 136 92" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>
-                <!-- Núcleo direito com cromatina -->
                 <circle class="cell-nucleus nuc-right" cx="325" cy="85" r="26" fill="url(#nucGlowRight)"/>
                 <circle cx="325" cy="85" r="11" fill="#e9d5ff" opacity="0.85"/>
                 <path class="chromatin-coil" d="M 318 80 Q 325 76 332 82 T 326 92" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>
-                <!-- Organelas e partículas vitais -->
                 <ellipse class="bio-organelle o-1" cx="95" cy="55" rx="12" ry="6" transform="rotate(-25 95 55)" fill="rgba(16, 185, 129, 0.6)" stroke="#10b981" stroke-width="1.5"/>
                 <ellipse class="bio-organelle o-2" cx="365" cy="115" rx="12" ry="6" transform="rotate(30 365 115)" fill="rgba(16, 185, 129, 0.6)" stroke="#10b981" stroke-width="1.5"/>
                 <circle class="bio-particle bp-1" cx="180" cy="45" r="3" fill="var(--paletteAccent)"/>
@@ -1648,219 +1587,226 @@
                 <circle class="bio-particle bp-4" cx="355" cy="50" r="2.5" fill="var(--palettePrimary)"/>
               </svg>
               <div class="bio-telemetry-badge" data-layout-ignore>
-                <span class="bio-pulse-dot"></span> DIVISÃO CELULAR // A VIDA PROVÉM DA VIDA
+                <span class="bio-pulse-dot"></span> DIVISÃO CELULAR // MITOSE & DUPLICAÇÃO
               </div>
             </div>
             <div class="pedagogical-callouts-box">
               
             <div class="pedag-item ">
-              <span class="pedag-badge" data-layout-ignore>01 MECANISMO CELULAR</span>
+              <span class="pedag-badge" data-layout-ignore>01 TESE CENTRAL</span>
               <div class="pedag-body">
-                <span class="pedag-title">REPLICAÇÃO DA VIDA</span>
-                <span class="pedag-desc">Algo assim aconteceu no início da vida na Terra, com a formação das primeir...</span>
+                <span class="pedag-title">CRIE UM VIDEO EXPLICAÇÃO SOBRE TECIDO CONJUNTIVO</span>
+                <span class="pedag-desc">Além disso, em casos de infecções, o tecido conjuntivo produz células que ajudam a...</span>
               </div>
             </div>
 
             <div class="pedag-item ">
-              <span class="pedag-badge" data-layout-ignore>02 DIVISÃO CELULAR</span>
+              <span class="pedag-badge" data-layout-ignore>02 ESTRUTURAÇÃO</span>
               <div class="pedag-body">
-                <span class="pedag-title">CONTINUIDADE GENÉTICA</span>
-                <span class="pedag-desc">Transmissão fiel do material genético e organização molecular das células.</span>
+                <span class="pedag-title">FUNDAMENTAÇÃO</span>
+                <span class="pedag-desc">Relação lógica e pedagógica entre causas, evidências e resultados.</span>
               </div>
             </div>
 
             <div class="pedag-item ">
-              <span class="pedag-badge" data-layout-ignore>03 SÍNTESE</span>
+              <span class="pedag-badge" data-layout-ignore>03 MEMORIZAÇÃO</span>
               <div class="pedag-body">
-                <span class="pedag-title">EVOLUÇÃO &amp; ORIGEM</span>
-                <span class="pedag-desc">Linhagem contínua de seres vivos moldando a biodiversidade biológica.</span>
+                <span class="pedag-title">PONTO-CHAVE</span>
+                <span class="pedag-desc">Atalho conceitual projetado para fixação imediata do conteúdo.</span>
               </div>
             </div>
             </div>
           </div>
-          <div class="hud-label" data-layout-ignore>BIOGÊNESE & ORIGEM DA VIDA // PRÁTICOS EXEMPLOS E MACETE MNEMÔNICO</div>
+          <div class="hud-label" data-layout-ignore>DIVISÃO CELULAR // APLICANDO O CONHECIMENTO EXEMPLOS E</div>
         </div>
       </div>
     </div>
 
     <div id="el-5" class="explainer-clip clip"
-         data-start="24.780" data-duration="4.188">
+         data-start="34.675" data-duration="5.638">
       <div class="clip-left-content">
         <div class="clip-heading">
           <span class="clip-index">05</span>
           <span>EXPLICAÇÃO</span>
         </div>
-        <div class="clip-copy"><span class="kinetic-line">Elas eram como pequenas máquinas que podiam se reproduzir sozinhas.</span></div>
-        
+        <div class="clip-copy"><span class="kinetic-line">É fundamental entender essa função para tomar medidas preventivas adequadas.</span></div>
+        <div class="clip-sources">FONTES & REFERÊNCIAS  /  <span class="citation" title="https://www.dicio.com.br/explicacao/"><b>[S1</b> <i>Explicação - Dicio, Dicionário Online de Português</i></span></div>
       </div>
       
       <div class="clip-right-media">
-        <div class="motion-design-graphic motion-biogenesis">
+        <div class="motion-design-graphic motion-vestibular">
           <div class="bio-header-badge">
-            <span class="hud-sub-badge" data-layout-ignore>BIOGÊNESE & ORIGEM DA VIDA // CIÊNCIA EXPERIMENTAL</span>
+            <span class="hud-sub-badge" data-layout-ignore>MATEMÁTICA // FUNÇÕES & GRÁFICO CARTESIANO</span>
           </div>
           <div class="bio-stage-layout">
-            <div class="bio-vector-stage">
-              <svg class="cell-division-svg" viewBox="0 0 460 170" width="100%" height="170">
-                <defs>
-                  <radialGradient id="nucGlowLeft" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.9" />
-                    <stop offset="60%" stop-color="#0284c7" stop-opacity="0.5" />
-                    <stop offset="100%" stop-color="#0369a1" stop-opacity="0" />
-                  </radialGradient>
-                  <radialGradient id="nucGlowRight" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" stop-color="#a855f7" stop-opacity="0.9" />
-                    <stop offset="60%" stop-color="#7c3aed" stop-opacity="0.5" />
-                    <stop offset="100%" stop-color="#6d28d9" stop-opacity="0" />
-                  </radialGradient>
-                  <filter id="bioFilterGlow" x="-20%" y="-20%" width="140%" height="140%">
-                    <feGaussianBlur stdDeviation="4" result="blur" />
-                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                  </filter>
-                </defs>
-                <!-- Membrana celular elástica em citocinese -->
-                <path class="cell-membrane" d="M 130 20 C 190 20, 195 65, 230 65 C 265 65, 270 20, 330 20 C 390 20, 420 50, 420 85 C 420 120, 390 150, 330 150 C 270 150, 265 105, 230 105 C 195 105, 190 150, 130 150 C 70 150, 40 120, 40 85 C 40 50, 70 20, 130 20 Z"
-                      fill="rgba(56, 189, 248, 0.05)" stroke="var(--palettePrimary)" stroke-width="2.5" filter="url(#bioFilterGlow)"/>
-                <line class="contractile-ring" x1="230" y1="60" x2="230" y2="110" stroke="var(--paletteAccent)" stroke-width="2.5" stroke-dasharray="3 3"/>
-                <!-- Núcleo esquerdo com cromatina -->
-                <circle class="cell-nucleus nuc-left" cx="135" cy="85" r="26" fill="url(#nucGlowLeft)"/>
-                <circle cx="135" cy="85" r="11" fill="#bae6fd" opacity="0.85"/>
-                <path class="chromatin-coil" d="M 128 80 Q 135 76 142 82 T 136 92" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>
-                <!-- Núcleo direito com cromatina -->
-                <circle class="cell-nucleus nuc-right" cx="325" cy="85" r="26" fill="url(#nucGlowRight)"/>
-                <circle cx="325" cy="85" r="11" fill="#e9d5ff" opacity="0.85"/>
-                <path class="chromatin-coil" d="M 318 80 Q 325 76 332 82 T 326 92" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>
-                <!-- Organelas e partículas vitais -->
-                <ellipse class="bio-organelle o-1" cx="95" cy="55" rx="12" ry="6" transform="rotate(-25 95 55)" fill="rgba(16, 185, 129, 0.6)" stroke="#10b981" stroke-width="1.5"/>
-                <ellipse class="bio-organelle o-2" cx="365" cy="115" rx="12" ry="6" transform="rotate(30 365 115)" fill="rgba(16, 185, 129, 0.6)" stroke="#10b981" stroke-width="1.5"/>
-                <circle class="bio-particle bp-1" cx="180" cy="45" r="3" fill="var(--paletteAccent)"/>
-                <circle class="bio-particle bp-2" cx="105" cy="120" r="2.5" fill="var(--palettePrimary)"/>
-                <circle class="bio-particle bp-3" cx="280" cy="45" r="3" fill="var(--paletteAccent)"/>
-                <circle class="bio-particle bp-4" cx="355" cy="50" r="2.5" fill="var(--palettePrimary)"/>
-              </svg>
-              <div class="bio-telemetry-badge" data-layout-ignore>
-                <span class="bio-pulse-dot"></span> DIVISÃO CELULAR // A VIDA PROVÉM DA VIDA
-              </div>
-            </div>
+            
+    <div class="bio-vector-stage">
+      <svg class="math-cartesian-svg" viewBox="0 0 460 170" width="100%" height="170">
+        <!-- Eixos Cartesianos -->
+        <line x1="80" y1="135" x2="380" y2="135" stroke="rgba(255,255,255,0.4)" stroke-width="2"/>
+        <line x1="160" y1="20" x2="160" y2="150" stroke="rgba(255,255,255,0.4)" stroke-width="2"/>
+        <text x="375" y="125" fill="#94a3b8" font-size="10" font-weight="800">X</text>
+        <text x="170" y="30" fill="#94a3b8" font-size="10" font-weight="800">Y</text>
+        <!-- Curva da Parábola (Função de 2º Grau com Vértice) -->
+        <path class="parabola-curve" d="M 100 35 Q 230 185 360 35" fill="none" stroke="var(--palettePrimary)" stroke-width="3" stroke-linecap="round"/>
+        <!-- Raízes X1 e X2 -->
+        <circle cx="140" cy="135" r="5" fill="var(--paletteAccent)"/>
+        <text x="140" y="152" fill="var(--paletteAccent)" font-size="10" font-weight="800" text-anchor="middle">x₁</text>
+        <circle cx="320" cy="135" r="5" fill="var(--paletteAccent)"/>
+        <text x="320" y="152" fill="var(--paletteAccent)" font-size="10" font-weight="800" text-anchor="middle">x₂</text>
+        <!-- Vértice V (xv, yv) -->
+        <circle cx="230" cy="110" r="5" fill="#ef4444"/>
+        <line x1="230" y1="110" x2="230" y2="135" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="3 3"/>
+        <text x="230" y="100" fill="#fca5a5" font-size="9" font-weight="800" text-anchor="middle">Vértice (Mínimo)</text>
+      </svg>
+      <div class="bio-telemetry-badge" data-layout-ignore>
+        <span class="bio-pulse-dot"></span> MATEMÁTICA // FUNÇÃO QUADRÁTICA & VÉRTICE
+      </div>
+    </div>
             <div class="pedagogical-callouts-box">
               
             <div class="pedag-item ">
-              <span class="pedag-badge" data-layout-ignore>01 MECANISMO CELULAR</span>
+              <span class="pedag-badge" data-layout-ignore>01 TESE CENTRAL</span>
               <div class="pedag-body">
-                <span class="pedag-title">REPLICAÇÃO DA VIDA</span>
-                <span class="pedag-desc">Elas eram como pequenas máquinas que podiam se reproduzir sozinhas.</span>
+                <span class="pedag-title">CRIE UM VIDEO EXPLICAÇÃO SOBRE TECIDO CONJUNTIVO</span>
+                <span class="pedag-desc">É fundamental entender essa função para tomar medidas preventivas adequadas.</span>
               </div>
             </div>
 
             <div class="pedag-item ">
-              <span class="pedag-badge" data-layout-ignore>02 DIVISÃO CELULAR</span>
+              <span class="pedag-badge" data-layout-ignore>02 ESTRUTURAÇÃO</span>
               <div class="pedag-body">
-                <span class="pedag-title">CONTINUIDADE GENÉTICA</span>
-                <span class="pedag-desc">Transmissão fiel do material genético e organização molecular das células.</span>
+                <span class="pedag-title">FUNDAMENTAÇÃO</span>
+                <span class="pedag-desc">Relação lógica e pedagógica entre causas, evidências e resultados.</span>
               </div>
             </div>
 
             <div class="pedag-item ">
-              <span class="pedag-badge" data-layout-ignore>03 SÍNTESE</span>
+              <span class="pedag-badge" data-layout-ignore>03 MEMORIZAÇÃO</span>
               <div class="pedag-body">
-                <span class="pedag-title">EVOLUÇÃO &amp; ORIGEM</span>
-                <span class="pedag-desc">Linhagem contínua de seres vivos moldando a biodiversidade biológica.</span>
+                <span class="pedag-title">PONTO-CHAVE</span>
+                <span class="pedag-desc">Atalho conceitual projetado para fixação imediata do conteúdo.</span>
               </div>
             </div>
             </div>
           </div>
-          <div class="hud-label" data-layout-ignore>BIOGÊNESE & ORIGEM DA VIDA // PRÁTICOS EXEMPLOS E MACETE MNEMÔNICO</div>
+          <div class="hud-label" data-layout-ignore>MATEMÁTICA // FUNÇÕES & GRÁFICOS // APLICANDO O CONHECIMENTO EXEMPLOS E</div>
         </div>
       </div>
     </div>
 
     <div id="el-6" class="explainer-clip clip"
-         data-start="28.968" data-duration="6.486">
+         data-start="40.313" data-duration="4.570">
       <div class="clip-left-content">
         <div class="clip-heading">
           <span class="clip-index">06</span>
           <span>EXPLICAÇÃO</span>
         </div>
-        <div class="clip-copy"><span class="kinetic-line">Ainda, a biogênese é influenciada por fatores como o ambiente, os genes e os processos evolutivos.</span></div>
-        
+        <div class="clip-copy"><span class="kinetic-line">Vamos praticar algumas situações reais com esse conhecimento.</span></div>
+        <div class="clip-sources">FONTES & REFERÊNCIAS  /  <span class="citation" title="https://www.dicio.com.br/explicacao/"><b>[S1</b> <i>Explicação - Dicio, Dicionário Online de Português</i></span></div>
       </div>
       
       <div class="clip-right-media">
-        <div class="motion-design-graphic motion-biogenesis">
-          <div class="bio-header-badge">
-            <span class="hud-sub-badge" data-layout-ignore>BIOGÊNESE & ORIGEM DA VIDA // CIÊNCIA EXPERIMENTAL</span>
+        <div class="motion-design-graphic motion-finance">
+          <div class="analytics-hud-header">
+            <span class="hud-sub-badge" data-layout-ignore>MERCADO, PROBABILIDADE & RISCO</span>
           </div>
-          <div class="bio-stage-layout">
-            <div class="bio-vector-stage">
-              <svg class="cell-division-svg" viewBox="0 0 460 170" width="100%" height="170">
-                <defs>
-                  <radialGradient id="nucGlowLeft" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.9" />
-                    <stop offset="60%" stop-color="#0284c7" stop-opacity="0.5" />
-                    <stop offset="100%" stop-color="#0369a1" stop-opacity="0" />
-                  </radialGradient>
-                  <radialGradient id="nucGlowRight" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" stop-color="#a855f7" stop-opacity="0.9" />
-                    <stop offset="60%" stop-color="#7c3aed" stop-opacity="0.5" />
-                    <stop offset="100%" stop-color="#6d28d9" stop-opacity="0" />
-                  </radialGradient>
-                  <filter id="bioFilterGlow" x="-20%" y="-20%" width="140%" height="140%">
-                    <feGaussianBlur stdDeviation="4" result="blur" />
-                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                  </filter>
-                </defs>
-                <!-- Membrana celular elástica em citocinese -->
-                <path class="cell-membrane" d="M 130 20 C 190 20, 195 65, 230 65 C 265 65, 270 20, 330 20 C 390 20, 420 50, 420 85 C 420 120, 390 150, 330 150 C 270 150, 265 105, 230 105 C 195 105, 190 150, 130 150 C 70 150, 40 120, 40 85 C 40 50, 70 20, 130 20 Z"
-                      fill="rgba(56, 189, 248, 0.05)" stroke="var(--palettePrimary)" stroke-width="2.5" filter="url(#bioFilterGlow)"/>
-                <line class="contractile-ring" x1="230" y1="60" x2="230" y2="110" stroke="var(--paletteAccent)" stroke-width="2.5" stroke-dasharray="3 3"/>
-                <!-- Núcleo esquerdo com cromatina -->
-                <circle class="cell-nucleus nuc-left" cx="135" cy="85" r="26" fill="url(#nucGlowLeft)"/>
-                <circle cx="135" cy="85" r="11" fill="#bae6fd" opacity="0.85"/>
-                <path class="chromatin-coil" d="M 128 80 Q 135 76 142 82 T 136 92" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>
-                <!-- Núcleo direito com cromatina -->
-                <circle class="cell-nucleus nuc-right" cx="325" cy="85" r="26" fill="url(#nucGlowRight)"/>
-                <circle cx="325" cy="85" r="11" fill="#e9d5ff" opacity="0.85"/>
-                <path class="chromatin-coil" d="M 318 80 Q 325 76 332 82 T 326 92" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>
-                <!-- Organelas e partículas vitais -->
-                <ellipse class="bio-organelle o-1" cx="95" cy="55" rx="12" ry="6" transform="rotate(-25 95 55)" fill="rgba(16, 185, 129, 0.6)" stroke="#10b981" stroke-width="1.5"/>
-                <ellipse class="bio-organelle o-2" cx="365" cy="115" rx="12" ry="6" transform="rotate(30 365 115)" fill="rgba(16, 185, 129, 0.6)" stroke="#10b981" stroke-width="1.5"/>
-                <circle class="bio-particle bp-1" cx="180" cy="45" r="3" fill="var(--paletteAccent)"/>
-                <circle class="bio-particle bp-2" cx="105" cy="120" r="2.5" fill="var(--palettePrimary)"/>
-                <circle class="bio-particle bp-3" cx="280" cy="45" r="3" fill="var(--paletteAccent)"/>
-                <circle class="bio-particle bp-4" cx="355" cy="50" r="2.5" fill="var(--palettePrimary)"/>
-              </svg>
-              <div class="bio-telemetry-badge" data-layout-ignore>
-                <span class="bio-pulse-dot"></span> DIVISÃO CELULAR // A VIDA PROVÉM DA VIDA
-              </div>
-            </div>
-            <div class="pedagogical-callouts-box">
-              
+          <svg class="analytics-chart-svg" viewBox="0 0 380 160" width="380" height="160">
+            <line x1="30" y1="140" x2="360" y2="140" stroke="rgba(255,255,255,0.18)" stroke-width="2"/>
+            <line x1="30" y1="20" x2="30" y2="140" stroke="rgba(255,255,255,0.18)" stroke-width="2"/>
+            <path d="M 40 120 Q 90 140 140 80 T 240 50 T 350 20" fill="none" stroke="var(--palettePrimary)" stroke-width="3.5" stroke-linecap="round"/>
+            <path d="M 40 135 Q 90 150 140 100 T 240 75 T 350 45" fill="none" stroke="var(--paletteAccent)" stroke-width="2" stroke-dasharray="5 5"/>
+            <circle cx="350" cy="20" r="6" fill="var(--palettePrimary)"/>
+          </svg>
+          <div class="pedagogical-callouts-box compact">
+            
             <div class="pedag-item ">
-              <span class="pedag-badge" data-layout-ignore>01 MECANISMO CELULAR</span>
+              <span class="pedag-badge" data-layout-ignore>01 TESE CENTRAL</span>
               <div class="pedag-body">
-                <span class="pedag-title">REPLICAÇÃO DA VIDA</span>
-                <span class="pedag-desc">Ainda, a biogênese é influenciada por fatores como o ambiente, os genes e o...</span>
+                <span class="pedag-title">CRIE UM VIDEO EXPLICAÇÃO SOBRE TECIDO CONJUNTIVO</span>
+                <span class="pedag-desc">Vamos praticar algumas situações reais com esse conhecimento.</span>
               </div>
             </div>
 
             <div class="pedag-item ">
-              <span class="pedag-badge" data-layout-ignore>02 DIVISÃO CELULAR</span>
+              <span class="pedag-badge" data-layout-ignore>02 ESTRUTURAÇÃO</span>
               <div class="pedag-body">
-                <span class="pedag-title">CONTINUIDADE GENÉTICA</span>
-                <span class="pedag-desc">Transmissão fiel do material genético e organização molecular das células.</span>
+                <span class="pedag-title">FUNDAMENTAÇÃO</span>
+                <span class="pedag-desc">Relação lógica e pedagógica entre causas, evidências e resultados.</span>
               </div>
             </div>
 
             <div class="pedag-item ">
-              <span class="pedag-badge" data-layout-ignore>03 SÍNTESE</span>
+              <span class="pedag-badge" data-layout-ignore>03 MEMORIZAÇÃO</span>
               <div class="pedag-body">
-                <span class="pedag-title">EVOLUÇÃO &amp; ORIGEM</span>
-                <span class="pedag-desc">Linhagem contínua de seres vivos moldando a biodiversidade biológica.</span>
+                <span class="pedag-title">PONTO-CHAVE</span>
+                <span class="pedag-desc">Atalho conceitual projetado para fixação imediata do conteúdo.</span>
               </div>
             </div>
+          </div>
+          <div class="hud-label" data-layout-ignore>MERCADO & RISCO // APLICANDO O CONHECIMENTO EXEMPLOS E</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="el-7" class="explainer-clip clip"
+         data-start="44.883" data-duration="8.151">
+      <div class="clip-left-content">
+        <div class="clip-heading">
+          <span class="clip-index">07</span>
+          <span>EXPLICAÇÃO</span>
+        </div>
+        <div class="clip-copy"><span class="kinetic-line">Qual é um exemplo do papel do tecido conjuntivo em sua vida diária? </span><span class="kinetic-line">Por favor, compartilhe nos comentários abaixo. </span></div>
+        <div class="clip-sources">FONTES & REFERÊNCIAS  /  <span class="citation" title="https://www.dicio.com.br/explicacao/"><b>[S1</b> <i>Explicação - Dicio, Dicionário Online de Português</i></span></div>
+      </div>
+      
+      <div class="clip-right-media">
+        <div class="motion-design-graphic motion-lesson">
+          <div class="lesson-hud-header">
+            <span class="hud-sub-badge" data-layout-ignore>VIDEOAULA // CONCEITO E FIXAÇÃO</span>
+          </div>
+          <div class="didactic-vector-map">
+            <svg class="concept-map-svg" viewBox="0 0 460 70" width="100%" height="70">
+              <line x1="80" y1="35" x2="230" y2="35" stroke="var(--palettePrimary)" stroke-width="2" stroke-dasharray="4 4" class="concept-wire wire-1"/>
+              <line x1="230" y1="35" x2="380" y2="35" stroke="var(--paletteAccent)" stroke-width="2" stroke-dasharray="4 4" class="concept-wire wire-2"/>
+              <circle cx="80" cy="35" r="20" fill="rgba(56, 189, 248, 0.2)" stroke="var(--palettePrimary)" stroke-width="2"/>
+              <text x="80" y="39" font-size="10" font-weight="800" fill="#ffffff" text-anchor="middle">CONCEITO</text>
+              <circle cx="230" cy="35" r="24" fill="rgba(168, 85, 247, 0.25)" stroke="var(--paletteAccent)" stroke-width="2"/>
+              <text x="230" y="39" font-size="10" font-weight="800" fill="#ffffff" text-anchor="middle">MECANISMO</text>
+              <circle cx="380" cy="35" r="20" fill="rgba(16, 185, 129, 0.2)" stroke="#10b981" stroke-width="2"/>
+              <text x="380" y="39" font-size="10" font-weight="800" fill="#ffffff" text-anchor="middle">SÍNTESE</text>
+            </svg>
+          </div>
+          <div class="pedagogical-callouts-box">
+            
+            <div class="pedag-item ">
+              <span class="pedag-badge" data-layout-ignore>01 CONCEITO-BASE</span>
+              <div class="pedag-body">
+                <span class="pedag-title">CRIE UM VIDEO EXPLICAÇÃO SOBRE TECIDO CONJUNTIVO</span>
+                <span class="pedag-desc">Qual é um exemplo do papel do tecido conjuntivo em sua vida diária</span>
+              </div>
+            </div>
+
+            <div class="pedag-item ">
+              <span class="pedag-badge" data-layout-ignore>02 DESENVOLVIMENTO</span>
+              <div class="pedag-body">
+                <span class="pedag-title">MECANISMO EM AÇÃO</span>
+                <span class="pedag-desc">Por favor, compartilhe nos comentários abaixo</span>
+              </div>
+            </div>
+
+            <div class="pedag-item ">
+              <span class="pedag-badge" data-layout-ignore>03 FIXAÇÃO COGNITIVA</span>
+              <div class="pedag-body">
+                <span class="pedag-title">APLICAÇÃO PRÁTICA</span>
+                <span class="pedag-desc">Princípio orientador para interpretação precisa e domínio do assunto.</span>
+              </div>
             </div>
           </div>
-          <div class="hud-label" data-layout-ignore>BIOGÊNESE & ORIGEM DA VIDA // PRÁTICOS EXEMPLOS E MACETE MNEMÔNICO</div>
+          <div class="lesson-footer-pill" data-layout-ignore>
+            <span class="pill-dot"></span> FOCO EM RETENÇÃO & CLAREZA PEDAGÓGICA
+          </div>
+          <div class="hud-label" data-layout-ignore>VIDEOAULA & FIXAÇÃO // APLICANDO O CONHECIMENTO EXEMPLOS E</div>
         </div>
       </div>
     </div>
@@ -1918,12 +1864,11 @@
 
         if (rightMedia) {
           tl.from(rightMedia, {
-            scale: 0.9,
-            rotationY: 10,
+            scale: 0.96,
             opacity: 0,
-            duration: 0.85,
-            ease: "power3.out"
-          }, start + 0.08);
+            duration: 0.35,
+            ease: "power2.out"
+          }, start);
         }
 
         // 4. Ken Burns Suave para Fotografias e GIFs Reais
@@ -1985,6 +1930,107 @@
             duration: 0.5, 
             ease: "power2.out" 
           }, start + 0.15);
+        }
+
+                // Novas Animações Contínuas de Motion Design Científico & Biologia
+        const pasteurBubbles = el.querySelectorAll(".pasteur-bubble");
+        if (pasteurBubbles.length > 0) {
+          tl.fromTo(pasteurBubbles, 
+            { y: 8, opacity: 0.3 }, 
+            { y: -12, opacity: 1, repeat: Math.ceil(dur * 2), yoyo: true, duration: 0.7, stagger: 0.15, ease: "sine.inOut" }, 
+            start
+          );
+        }
+        const rediFlies = el.querySelectorAll(".redi-fly");
+        if (rediFlies.length > 0) {
+          tl.fromTo(rediFlies, 
+            { x: -5, y: -4 }, 
+            { x: 5, y: 4, repeat: Math.ceil(dur * 3), yoyo: true, duration: 0.45, stagger: 0.08, ease: "sine.inOut" }, 
+            start
+          );
+        }
+        const bacteriaCells = el.querySelectorAll(".bacteria-cell");
+        if (bacteriaCells.length > 0) {
+          tl.fromTo(bacteriaCells, 
+            { x: -7, y: -4, rotation: -10 }, 
+            { x: 7, y: 4, rotation: 10, repeat: Math.ceil(dur * 2), yoyo: true, duration: 1.0, stagger: 0.15, ease: "sine.inOut" }, 
+            start
+          );
+        }
+        const dnaNodes = el.querySelectorAll(".dna-node");
+        if (dnaNodes.length > 0) {
+          tl.fromTo(dnaNodes, 
+            { scale: 0.8 }, 
+            { scale: 1.25, repeat: Math.ceil(dur * 2), yoyo: true, duration: 0.7, stagger: 0.1, ease: "sine.inOut" }, 
+            start
+          );
+        }
+        const gearWheels = el.querySelectorAll(".gear-wheel");
+        gearWheels.forEach((gear, gIdx) => {
+          const dir = gIdx % 2 === 0 ? 1 : -1;
+          tl.fromTo(gear, 
+            { rotation: 0 }, 
+            { rotation: 360 * dir, duration: dur, ease: "none", transformOrigin: "center center" }, 
+            start
+          );
+        });
+        const vsCards = el.querySelectorAll(".bio-versus-svg rect");
+        if (vsCards.length > 0) {
+          tl.from(vsCards, { scale: 0.92, opacity: 0, stagger: 0.15, duration: 0.5, ease: "back.out(1.2)" }, start + 0.05);
+        }
+
+                // Animações Contínuas para Vestibulares & Concursos Públicos
+        const balanceBeams = el.querySelectorAll(".balance-beam");
+        if (balanceBeams.length > 0) {
+          tl.fromTo(balanceBeams, 
+            { rotation: -3.5 }, 
+            { rotation: 3.5, repeat: Math.ceil(dur * 2), yoyo: true, duration: 1.3, ease: "sine.inOut" }, 
+            start
+          );
+        }
+        const circuitElectrons = el.querySelectorAll(".circuit-electron");
+        if (circuitElectrons.length > 0) {
+          tl.fromTo(circuitElectrons, 
+            { opacity: 0.3, scale: 0.8 }, 
+            { opacity: 1, scale: 1.25, repeat: Math.ceil(dur * 3), yoyo: true, duration: 0.4, stagger: 0.1, ease: "sine.inOut" }, 
+            start
+          );
+        }
+        const vennCircles = el.querySelectorAll(".venn-circle");
+        if (vennCircles.length > 0) {
+          tl.fromTo(vennCircles, 
+            { scale: 0.96 }, 
+            { scale: 1.04, repeat: Math.ceil(dur * 2), yoyo: true, duration: 1.5, ease: "sine.inOut", transformOrigin: "center center" }, 
+            start
+          );
+        }
+        const actionPotentials = el.querySelectorAll(".action-potential");
+        if (actionPotentials.length > 0) {
+          tl.fromTo(actionPotentials, 
+            { x: -70 }, 
+            { x: 130, repeat: Math.ceil(dur * 2), duration: 0.95, ease: "power1.inOut" }, 
+            start
+          );
+        }
+        const benzeneRings = el.querySelectorAll(".benzene-ring");
+        if (benzeneRings.length > 0) {
+          tl.fromTo(benzeneRings, 
+            { rotation: -4 }, 
+            { rotation: 4, repeat: Math.ceil(dur * 2), yoyo: true, duration: 1.5, ease: "sine.inOut" }, 
+            start
+          );
+        }
+        const redBlocks = el.querySelectorAll(".red-block");
+        if (redBlocks.length > 0) {
+          tl.from(redBlocks, { y: 15, opacity: 0, stagger: 0.12, duration: 0.5, ease: "power2.out" }, start + 0.1);
+        }
+        const limpeBadges = el.querySelectorAll(".limpe-badge");
+        if (limpeBadges.length > 0) {
+          tl.from(limpeBadges, { scale: 0.7, opacity: 0, stagger: 0.1, duration: 0.5, ease: "back.out(1.4)" }, start + 0.1);
+        }
+        const histNodes = el.querySelectorAll(".hist-node");
+        if (histNodes.length > 0) {
+          tl.from(histNodes, { scale: 0.75, opacity: 0, stagger: 0.12, duration: 0.5, ease: "back.out(1.2)" }, start + 0.1);
         }
 
         const grammarBoard = el.querySelector(".grammar-interactive-board");
@@ -2136,13 +2182,13 @@
           tl.fromTo(core, { scale: 0.9 }, { scale: 1.15, yoyo: true, repeat: Math.ceil(dur), duration: 0.9, ease: "sine.inOut" }, start);
         }
 
-        // 6. Transição de Saída Espacial Fluida (Zoom out cinematográfico com recuo)
-        const exitStart = Math.max(start + 0.3, start + dur - 0.45);
+        // 6. Transição de Saída Espacial Fluida (Sem cortes pretos, sobreposição contínua)
+        const exitDur = 0.22;
+        const exitStart = Math.max(start + 0.1, start + dur - exitDur);
         tl.to(el, {
           opacity: 0,
-          scale: 0.94,
-          x: -30,
-          duration: 0.42,
+          scale: 0.98,
+          duration: exitDur,
           ease: "power2.in"
         }, exitStart);
 

@@ -883,7 +883,7 @@ def build_chapter_scene(
 
         phrase_text = seg["text"].strip()
         # Detecta o arquétipo visual estritamente condizente com o que é explicado NESTA sentença
-        seg_arch, _ = detect_visual_theme(topic, phrase_text, chapter_title)
+        seg_arch, _ = detect_visual_theme(topic, phrase_text, chapter_title, sentence_index=i)
 
         el_type = "title" if i == 0 else "body"
         el: dict[str, Any] = {

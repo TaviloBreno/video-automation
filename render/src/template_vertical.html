@@ -714,6 +714,54 @@
       box-shadow: 0 12px 32px rgba(0, 0, 0, 0.85) !important;
     }
 
+        /* VETORES MOTION DESIGN: NOVOS ARQUÉTIPOS CIENTÍFICOS & BIOLOGIA */
+    .pasteur-flask-svg,
+    .redi-jars-svg,
+    .microscope-viewport-svg,
+    .dna-helix-svg,
+    .bio-puzzle-svg,
+    .bio-versus-svg {
+      overflow: visible;
+      filter: drop-shadow(0 0 20px rgba(56, 189, 248, 0.18));
+    }
+    .swan-neck-path {
+      stroke-dasharray: 400;
+      stroke-dashoffset: 0;
+    }
+    .gear-wheel {
+      transform-box: fill-box;
+      transform-origin: center center;
+    }
+
+        /* ARQUÉTIPOS VESTIBULAR & CONCURSOS PÚBLICOS */
+    .motion-vestibular {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    .law-justice-svg,
+    .law-limpe-svg,
+    .logic-venn-svg,
+    .logic-table-svg,
+    .syntax-tree-svg,
+    .redacao-enem-svg,
+    .math-cartesian-svg,
+    .physics-mechanics-svg,
+    .physics-circuits-svg,
+    .chem-organic-svg,
+    .chem-reaction-svg,
+    .bio-ecology-svg,
+    .bio-neuron-svg,
+    .history-brazil-svg,
+    .geo-plates-svg {
+      overflow: visible;
+      filter: drop-shadow(0 0 20px rgba(56, 189, 248, 0.16));
+    }
+
     .motion-grammar {
       display: flex;
       flex-direction: column;
@@ -1373,12 +1421,11 @@
 
         if (rightMedia) {
           tl.from(rightMedia, {
-            scale: 0.9,
-            rotationY: 10,
+            scale: 0.96,
             opacity: 0,
-            duration: 0.85,
-            ease: "power3.out"
-          }, start + 0.08);
+            duration: 0.35,
+            ease: "power2.out"
+          }, start);
         }
 
         // 4. Ken Burns Suave para Fotografias e GIFs Reais
@@ -1440,6 +1487,107 @@
             duration: 0.5, 
             ease: "power2.out" 
           }, start + 0.15);
+        }
+
+                // Novas Animações Contínuas de Motion Design Científico & Biologia
+        const pasteurBubbles = el.querySelectorAll(".pasteur-bubble");
+        if (pasteurBubbles.length > 0) {
+          tl.fromTo(pasteurBubbles, 
+            { y: 8, opacity: 0.3 }, 
+            { y: -12, opacity: 1, repeat: Math.ceil(dur * 2), yoyo: true, duration: 0.7, stagger: 0.15, ease: "sine.inOut" }, 
+            start
+          );
+        }
+        const rediFlies = el.querySelectorAll(".redi-fly");
+        if (rediFlies.length > 0) {
+          tl.fromTo(rediFlies, 
+            { x: -5, y: -4 }, 
+            { x: 5, y: 4, repeat: Math.ceil(dur * 3), yoyo: true, duration: 0.45, stagger: 0.08, ease: "sine.inOut" }, 
+            start
+          );
+        }
+        const bacteriaCells = el.querySelectorAll(".bacteria-cell");
+        if (bacteriaCells.length > 0) {
+          tl.fromTo(bacteriaCells, 
+            { x: -7, y: -4, rotation: -10 }, 
+            { x: 7, y: 4, rotation: 10, repeat: Math.ceil(dur * 2), yoyo: true, duration: 1.0, stagger: 0.15, ease: "sine.inOut" }, 
+            start
+          );
+        }
+        const dnaNodes = el.querySelectorAll(".dna-node");
+        if (dnaNodes.length > 0) {
+          tl.fromTo(dnaNodes, 
+            { scale: 0.8 }, 
+            { scale: 1.25, repeat: Math.ceil(dur * 2), yoyo: true, duration: 0.7, stagger: 0.1, ease: "sine.inOut" }, 
+            start
+          );
+        }
+        const gearWheels = el.querySelectorAll(".gear-wheel");
+        gearWheels.forEach((gear, gIdx) => {
+          const dir = gIdx % 2 === 0 ? 1 : -1;
+          tl.fromTo(gear, 
+            { rotation: 0 }, 
+            { rotation: 360 * dir, duration: dur, ease: "none", transformOrigin: "center center" }, 
+            start
+          );
+        });
+        const vsCards = el.querySelectorAll(".bio-versus-svg rect");
+        if (vsCards.length > 0) {
+          tl.from(vsCards, { scale: 0.92, opacity: 0, stagger: 0.15, duration: 0.5, ease: "back.out(1.2)" }, start + 0.05);
+        }
+
+                // Animações Contínuas para Vestibulares & Concursos Públicos
+        const balanceBeams = el.querySelectorAll(".balance-beam");
+        if (balanceBeams.length > 0) {
+          tl.fromTo(balanceBeams, 
+            { rotation: -3.5 }, 
+            { rotation: 3.5, repeat: Math.ceil(dur * 2), yoyo: true, duration: 1.3, ease: "sine.inOut" }, 
+            start
+          );
+        }
+        const circuitElectrons = el.querySelectorAll(".circuit-electron");
+        if (circuitElectrons.length > 0) {
+          tl.fromTo(circuitElectrons, 
+            { opacity: 0.3, scale: 0.8 }, 
+            { opacity: 1, scale: 1.25, repeat: Math.ceil(dur * 3), yoyo: true, duration: 0.4, stagger: 0.1, ease: "sine.inOut" }, 
+            start
+          );
+        }
+        const vennCircles = el.querySelectorAll(".venn-circle");
+        if (vennCircles.length > 0) {
+          tl.fromTo(vennCircles, 
+            { scale: 0.96 }, 
+            { scale: 1.04, repeat: Math.ceil(dur * 2), yoyo: true, duration: 1.5, ease: "sine.inOut", transformOrigin: "center center" }, 
+            start
+          );
+        }
+        const actionPotentials = el.querySelectorAll(".action-potential");
+        if (actionPotentials.length > 0) {
+          tl.fromTo(actionPotentials, 
+            { x: -70 }, 
+            { x: 130, repeat: Math.ceil(dur * 2), duration: 0.95, ease: "power1.inOut" }, 
+            start
+          );
+        }
+        const benzeneRings = el.querySelectorAll(".benzene-ring");
+        if (benzeneRings.length > 0) {
+          tl.fromTo(benzeneRings, 
+            { rotation: -4 }, 
+            { rotation: 4, repeat: Math.ceil(dur * 2), yoyo: true, duration: 1.5, ease: "sine.inOut" }, 
+            start
+          );
+        }
+        const redBlocks = el.querySelectorAll(".red-block");
+        if (redBlocks.length > 0) {
+          tl.from(redBlocks, { y: 15, opacity: 0, stagger: 0.12, duration: 0.5, ease: "power2.out" }, start + 0.1);
+        }
+        const limpeBadges = el.querySelectorAll(".limpe-badge");
+        if (limpeBadges.length > 0) {
+          tl.from(limpeBadges, { scale: 0.7, opacity: 0, stagger: 0.1, duration: 0.5, ease: "back.out(1.4)" }, start + 0.1);
+        }
+        const histNodes = el.querySelectorAll(".hist-node");
+        if (histNodes.length > 0) {
+          tl.from(histNodes, { scale: 0.75, opacity: 0, stagger: 0.12, duration: 0.5, ease: "back.out(1.2)" }, start + 0.1);
         }
 
         const grammarBoard = el.querySelector(".grammar-interactive-board");
@@ -1591,13 +1739,13 @@
           tl.fromTo(core, { scale: 0.9 }, { scale: 1.15, yoyo: true, repeat: Math.ceil(dur), duration: 0.9, ease: "sine.inOut" }, start);
         }
 
-        // 6. Transição de Saída Espacial Fluida (Zoom out cinematográfico com recuo)
-        const exitStart = Math.max(start + 0.3, start + dur - 0.45);
+        // 6. Transição de Saída Espacial Fluida (Sem cortes pretos, sobreposição contínua)
+        const exitDur = 0.22;
+        const exitStart = Math.max(start + 0.1, start + dur - exitDur);
         tl.to(el, {
           opacity: 0,
-          scale: 0.94,
-          x: -30,
-          duration: 0.42,
+          scale: 0.98,
+          duration: exitDur,
           ease: "power2.in"
         }, exitStart);
 
