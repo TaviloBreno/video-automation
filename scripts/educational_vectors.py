@@ -497,8 +497,127 @@ def svg_geo_plates() -> str:
     </div>'''
 
 
+def svg_bio_tissue() -> str:
+    """Histologia Humana: Tecido Conjuntivo, Matriz Extracelular, Colágeno, Fibras e Células."""
+    return '''
+    <div class="bio-vector-stage">
+      <svg class="bio-tissue-svg" viewBox="0 0 460 170" width="100%" height="170">
+        <defs>
+          <linearGradient id="collagenGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="var(--palettePrimary)" stop-opacity="0.9"/>
+            <stop offset="50%" stop-color="#38bdf8" stop-opacity="0.95"/>
+            <stop offset="100%" stop-color="var(--paletteAccent)" stop-opacity="0.9"/>
+          </linearGradient>
+          <filter id="tissueGlow" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+          </filter>
+        </defs>
+
+        <!-- Matriz Extracelular (Substância Fundamental Amorfa) -->
+        <rect x="50" y="20" width="360" height="130" rx="14" fill="rgba(56, 189, 248, 0.04)" stroke="rgba(56, 189, 248, 0.2)" stroke-width="1.5"/>
+        <text x="65" y="38" fill="#94a3b8" font-size="9" font-weight="800" letter-spacing="1">MATRIZ EXTRACELULAR (MEC)</text>
+
+        <!-- Feixes de Fibras Colágenas (Resistência e Sustentação) -->
+        <path d="M 60 70 Q 140 45, 220 75 T 400 65" fill="none" stroke="url(#collagenGrad)" stroke-width="4.5" stroke-linecap="round" opacity="0.85"/>
+        <path d="M 60 110 Q 150 135, 240 105 T 400 120" fill="none" stroke="url(#collagenGrad)" stroke-width="3.5" stroke-linecap="round" opacity="0.75"/>
+
+        <!-- Fibras Elásticas Ramificadas (Elasticidade) -->
+        <path d="M 70 95 Q 120 120, 180 85 T 310 100 T 390 85" fill="none" stroke="var(--paletteAccent)" stroke-width="1.8" stroke-dasharray="6 3" opacity="0.9"/>
+
+        <!-- Fibroblasto Ativo 1 (Célula Alongada que produz o colágeno) -->
+        <g class="fibroblast fb1" transform="translate(130, 75)">
+          <path d="M -45 0 Q -15 -18, 0 -12 Q 15 -18, 45 0 Q 15 18, 0 12 Q -15 18, -45 0 Z" fill="rgba(56, 189, 248, 0.25)" stroke="var(--palettePrimary)" stroke-width="2"/>
+          <ellipse cx="0" cy="0" rx="10" ry="6" fill="var(--palettePrimary)" filter="url(#tissueGlow)"/>
+          <text x="0" y="22" fill="#38bdf8" font-size="8.5" font-weight="800" text-anchor="middle">FIBROBLASTO</text>
+        </g>
+
+        <!-- Fibroblasto Ativo 2 -->
+        <g class="fibroblast fb2" transform="translate(320, 110)">
+          <path d="M -40 0 Q -12 -16, 0 -10 Q 12 -16, 40 0 Q 12 16, 0 10 Q -12 16, -40 0 Z" fill="rgba(168, 85, 247, 0.25)" stroke="var(--paletteAccent)" stroke-width="2"/>
+          <ellipse cx="0" cy="0" rx="9" ry="5" fill="var(--paletteAccent)" filter="url(#tissueGlow)"/>
+          <text x="0" y="22" fill="#c084fc" font-size="8.5" font-weight="800" text-anchor="middle">FIBROBLASTO</text>
+        </g>
+
+        <!-- Célula de Defesa Imunitária (Macrófago Fagocitário / Mastócito) -->
+        <g class="macrophage" transform="translate(230, 48)">
+          <circle cx="0" cy="0" r="16" fill="rgba(16, 185, 129, 0.2)" stroke="#10b981" stroke-width="2"/>
+          <circle cx="-3" cy="-2" r="6" fill="#10b981"/>
+          <text x="0" y="25" fill="#86efac" font-size="8" font-weight="800" text-anchor="middle">MACRÓFAGO</text>
+        </g>
+
+        <!-- Capilar Sanguíneo Nutritivo (Vascularização) -->
+        <g transform="translate(230, 132)">
+          <line x1="-150" y1="0" x2="150" y2="0" stroke="rgba(239, 68, 68, 0.4)" stroke-width="6" stroke-linecap="round"/>
+          <circle cx="-60" cy="0" r="3.5" fill="#ef4444"/>
+          <circle cx="0" cy="0" r="3.5" fill="#ef4444"/>
+          <circle cx="60" cy="0" r="3.5" fill="#ef4444"/>
+          <text x="0" y="12" fill="#fca5a5" font-size="7.5" font-weight="700" text-anchor="middle">CAPILAR SANGUÍNEO // NUTRIÇÃO</text>
+        </g>
+      </svg>
+      <div class="bio-telemetry-badge" data-layout-ignore>
+        <span class="bio-pulse-dot"></span> HISTOLOGIA // TECIDO CONJUNTIVO & MATRIZ EXTRACELULAR
+      </div>
+    </div>'''
+
+
 # ==============================================================================
-# DETECTOR UNIVERSAL DE VESTIBULAR & CONCURSOS
+# RESOLUÇÃO PRECISA DO DOMÍNIO PEDAGÓGICO (ISOLAMENTO RÍGIDO DE DISCIPLINA)
+# ==============================================================================
+
+def resolve_topic_domain(topic: str, chapter_title: str = "") -> str:
+    """Classifica com precisão matemática a macro-disciplina da aula para blindar contra contaminação entre matérias."""
+    text = f" {topic} {chapter_title} ".lower()
+
+    # 1. DIREITO & ADMINISTRAÇÃO PÚBLICA (CONCURSOS)
+    if re.search(r"(\bdireito\b|constitucional|cf/88|cf\s*88|artigo\s*\d+|art\.\s*\d+|direitos\s+fundamentais|remédios\s+constitucionais|habeas\s+corpus|mandado\s+de\s+segurança|três\s+poderes|judiciário|legislativo|executivo|stf|stj|administrativo|limpe|legalidade|impessoalidade|moralidade|publicidade|eficiência|servidor\s+público|ato\s+administrativo|concurso\s+público|licitação|processo\s+disciplinar|órgão\s+público|oab)", text):
+        return "LAW"
+
+    # 2. GRAMÁTICA, LÍNGUA PORTUGUESA & REDAÇÃO
+    if re.search(r"(\bcrase\b|acento\s+grave|regência|regencia|concordância|concordancia|preposição|preposicao|artigo\s+definido|artigo\s+indefinido|artigo\s+feminino|artigo\s+masculino|substantivo|adjetivo|pronome|verbo|análise\s+sintática|analise\s+sintatica|sujeito|predicado|oração|oracao|período\s+composto|pontuação|pontuacao|ortografia|acentuação|acentuacao|redação\s+enem|redacao\s+enem|nota\s+1000|língua\s+portuguesa|lingua\s+portuguesa|\bportuguês\b|\bportugues\b)", text):
+        return "GRAMMAR"
+
+    # 3. BIOLOGIA & SAÚDE
+    if re.search(r"(\bbiologia\b|\bbiolog|célula|celular|tecido|histologia|histolog|conjuntiv|epitelial|ósseo|osseo|cartilag|muscular|sanguíneo|sanguineo|linfático|linfatico|adipos|fibroblasto|colágen|colagen|biogênese|biogenese|abiogênese|abiogenese|origem\s+da\s+vida|pasteur|redi|dna|genética|genetica|genoma|mitocôndria|mitocondria|mitose|meiose|organela|ecologia|trófic|trofic|cadeia\s+alimentar|fotossíntese|fotossintese|respiração\s+celular|respiracao\s+celular|neurônio|neuronio|sinapse|sistema\s+nervoso|imunologia|anticorpo|vacina|vírus|virus|bactéria|bacteria|\bevolução\b|\bevolucao\b|darwin|seleção\s+natural|anatomia|fisiologia)", text):
+        return "BIOLOGY"
+
+    # 4. FÍSICA
+    if re.search(r"(\bfísica\b|\bfisica\b|newton|leis\s+de\s+newton|plano\s+inclinado|cinemática|cinematica|velocidade|aceleração|aceleracao|dinâmica|dinamica|gravitação|gravitacao|termodinâmica|termodinamica|óptica|optica|espelho|lente|ondulatória|ondulatoria|comprimento\s+de\s+onda|eletricidade|circuito|resistor|\bohm\b|voltagem|corrente\s+elétrica|corrente\s+eletrica|eletromagnetismo|indução|campo\s+magnético|mecânica\s+quântica|mecanica\s+quantica)", text):
+        return "PHYSICS"
+
+    # 5. QUÍMICA
+    if re.search(r"(\bquímica\b|\bquimica\b|tabela\s+periódica|tabela\s+periodica|ligação\s+química|ligacao\s+quimica|ligação\s+covalente|ligação\s+iônica|estequiometria|\bmol\b|massa\s+molar|química\s+orgânica|quimica\s+organica|hidrocarboneto|benzeno|função\s+orgânica|isomeria|álcool|termoquímica|entalpia|cinética\s+química|\bph\b|ácido|base|titulação|soluções|eletroquímica|pilha|eletrólise)", text):
+        return "CHEMISTRY"
+
+    # 6. MATEMÁTICA & RACIOCÍNIO LÓGICO
+    if re.search(r"(\bmatemática\b|\bmatematica\b|função\s+afim|função\s+quadrática|parábola|bhaskara|vértice|geometria|trigonometria|seno|cosseno|tangente|matriz|determinante|probabilidade|análise\s+combinatória|analise\s+combinatoria|estatística|estatistica|desvio\s+padrão|raciocínio\s+lógico|rlm|diagrama\s+de\s+venn|tabela[- ]verdade|lógica\s+proposicional)", text):
+        return "MATH"
+
+    # 7. HISTÓRIA
+    if re.search(r"(\bhistória\b|\bhistoria\b|brasil\s+colônia|brasil\s+império|brasil\s+república|era\s+vargas|ditadura\s+militar|revolução|revolucao|século|seculo|idade\s+média|idade\s+moderna|feudalismo|iluminismo|primeira\s+guerra|segunda\s+guerra|guerra\s+fria)", text):
+        return "HISTORY"
+
+    # 8. GEOGRAFIA
+    if re.search(r"(\bgeografia\b|placas\s+tectônicas|placas\s+tectonicas|tectônica|deriva\s+continental|relevo|orogênese|crosta|manto|vulcão|terremoto|clima|cartografia|bioma|demografia|urbanização|geopolítica)", text):
+        return "GEOGRAPHY"
+
+    # 9. FINANÇAS & MERCADO FINANCEIRO
+    if re.search(r"(\bfinanças\b|\bfinancas\b|bolsa\s+de\s+valores|ibovespa|\bações\b|investimento|renda\s+fixa|selic|cdi|fundo\s+imobiliário|criptomoeda|bitcoin|balanço\s+patrimonial|valuation|dividendos)", text):
+        return "FINANCE"
+
+    # 10. PSICOLOGIA & COMPORTAMENTO
+    if re.search(r"(\bpsicologia\b|psicanálise|psicanalise|freud|jung|saúde\s+mental|saude\s+mental|neurociência|neurociencia|viés\s+cognitivo|vies\s+cognitivo|behaviorismo)", text):
+        return "PSYCHOLOGY"
+
+    # 11. ASTRONOMIA & ASTROFÍSICA
+    if re.search(r"(\bastronomia\b|astrofísica|astrofisica|quasar|buraco\s+negro|singularidade|horizonte\s+de\s+eventos|via\s+láctea|exoplaneta|telescópio\s+james\s+webb|cosmologia|supernova)", text):
+        return "ASTRONOMY"
+
+    return "GENERAL"
+
+
+# ==============================================================================
+# DETECTOR UNIVERSAL DE VESTIBULAR & CONCURSOS COM ISOLAMENTO DE DOMÍNIO
 # ==============================================================================
 
 def detect_vestibular_concurso_archetype(
@@ -507,105 +626,193 @@ def detect_vestibular_concurso_archetype(
     chapter_title: str = "",
     sentence_index: int = 0,
 ) -> tuple[str, str]:
-    """Classifica com precisão matemática a sentença em um dos 25+ arquétipos de Vestibular e Concursos."""
+    """Classifica com rigor a sentença no arquétipo educacional exato, blindando contra mistura indevida de matérias."""
     c_lower = (content or "").lower()
-    t_lower = (topic or "").lower()
-    ch_lower = (chapter_title or "").lower()
     combined = f"{topic} {chapter_title} {content}".lower()
+    domain = resolve_topic_domain(topic, chapter_title)
 
-    # 1. DIREITO CONSTITUCIONAL & ESTADO
-    if re.search(r"(constituição|constituicao|cf/88|artigo 5|direitos fundamentais|remédios constitucionais|habeas corpus|mandado de segurança|três poderes|judiciário|legislativo|executivo|stf|democracia)", c_lower):
-        return "law_constitution", "DIREITO CONSTITUCIONAL // CF/88"
+    # -------------------------------------------------------------------------
+    # 1. ESCOPO: BIOLOGIA & SAÚDE (Totalmente isolado: Proibido Matemática/Direito/Finanças)
+    # -------------------------------------------------------------------------
+    if domain == "BIOLOGY":
+        # Histologia / Tecido Conjuntivo e Matriz
+        if re.search(r"(tecido\s+conjuntivo|colágen|colagen|matriz|fibroblasto|fibra|fibras|sustentação|sustentar|tendão|tendões|ligamento|cartilag|adipos|ósseo|absorver\s+choque|lesão|cicatriz|derme)", c_lower):
+            return "bio_tissue", "HISTOLOGIA // TECIDO CONJUNTIVO & MATRIZ EXTRACELULAR"
 
-    # 2. DIREITO ADMINISTRATIVO & PRINCÍPIOS
-    if re.search(r"(administrativo|limpe|legalidade|impessoalidade|moralidade|publicidade|eficiência|servidor público|ato administrativo|concurso público|licitação|processo disciplinar|órgão público)", c_lower):
-        return "law_limpe", "DIREITO ADMINISTRATIVO // L.I.M.P.E."
+        # Citologia / Fisiologia Celular
+        if re.search(r"(célula|celular|membrana|mitose|meiose|organela|mitocôndria|proteína|proteina|citoplasma|núcleo)", c_lower):
+            return "biogenesis_cell", "BIOLOGIA // ESTRUTURA CELULAR"
 
-    # 3. RACIOCÍNIO LÓGICO: CONJUNTOS & VENN
-    if re.search(r"(diagrama de venn|conjuntos|intersecção|interseccao|união|uniao|pertence|conectivo|raciocínio lógico|rlm)", c_lower):
-        return "logic_venn", "RACIOCÍNIO LÓGICO // DIAGRAMA DE VENN"
+        # Fisiologia / Sistema Nervoso
+        if re.search(r"(neurônio|neuronio|sinapse|sistema nervoso|cérebro|potencial de ação|neurotransmissor)", c_lower):
+            return "bio_neuron", "FISIOLOGIA // SISTEMA NERVOSO & SINAPSE"
 
-    # 4. RACIOCÍNIO LÓGICO: TABELA-VERDADE & PROPOSIÇÕES
-    if re.search(r"(tabela-verdade|tabela verdade|proposição|proposicao|se\.\.\. então|se e somente se|tautologia|conjunção|disjunção|equivalência lógica)", c_lower):
-        return "logic_truth_table", "LÓGICA PROPOSICIONAL // TABELA-VERDADE"
+        # Ecologia e Níveis Tróficos
+        if re.search(r"(ecologia|cadeia alimentar|teia trófica|pirâmide de energia|produtores|consumidores|bioma)", c_lower):
+            return "bio_ecology", "ECOLOGIA // PIRÂMIDE TRÓFICA"
 
-    # 5. SINTAXE DA LÍNGUA PORTUGUESA
-    if re.search(r"(sujeito|predicado|objeto direto|objeto indireto|oração subordinada|oração coordenada|período composto|conjunção integrante|transitivo)", c_lower):
-        return "grammar_syntax", "NORMA CULTA // ANÁLISE SINTÁTICA"
+        # Genética e DNA
+        if re.search(r"(dna|genética|genetica|gene|genes|código genético|dupla hélice|replicação)", c_lower):
+            return "biogenesis_dna", "GENÉTICA // DUPLA HÉLICE & CÓDIGO CELULAR"
 
-    # 6. REDAÇÃO ENEM / NOTA 1000
-    if re.search(r"(redação|redacao|nota 1000|proposta de intervenção|tese|repertório sociocultural|competência|dissertativo-argumentativo|argumento)", c_lower):
-        return "redacao_enem", "REDAÇÃO NOTA 1000 // COMPETÊNCIAS ENEM"
+        # Experimentos Clássicos de Origem da Vida
+        if re.search(r"(pasteur|pescoço de cisne|caldo fervido|esterilização)", c_lower):
+            return "biogenesis_pasteur", "EXPERIMENTO DE PASTEUR // ORIGEM DA VIDA"
+        if re.search(r"(redi|francesco|mosca|moscas|larva|larvas|pote|potes|carne)", c_lower):
+            return "biogenesis_redi", "EXPERIMENTO DE REDI // BIOGÊNESE"
+        if re.search(r"(abiogênese|abiogenese|geração espontânea|mito|inanimada|versus|vs)", c_lower):
+            return "biogenesis_versus", "ABIOGÊNESE vs BIOGÊNESE"
 
-    # 7. MATEMÁTICA: FUNÇÕES & CARTESIANO
-    if re.search(r"(função|funcao|parábola|parabola|vértice|vertice|raízes|raizes|plano cartesiano|eixo x|eixo y|afim|quadrática|bhaskara)", c_lower):
-        return "math_cartesian", "MATEMÁTICA // FUNÇÕES & GRÁFICOS"
+        # Microscopia / Infecções / Defesa
+        if re.search(r"(microscóp|microscop|bactéria|bacteria|vírus|virus|micróbio|infecção|infeccao|combater|anticorpo|imun)", c_lower):
+            return "biogenesis_microscope", "MICROSCOPIA // DEFESA & CÉLULAS"
 
-    # 8. FÍSICA: MECÂNICA & FORÇAS
-    if re.search(r"(newton|plano inclinado|força peso|força normal|atrito|cinemática|cinematica|velocidade|aceleração|aceleracao|gravidade|dinâmica)", c_lower):
-        return "physics_mechanics", "FÍSICA MECÂNICA // LEIS DE NEWTON"
-
-    # 9. FÍSICA: ELETRICIDADE & CIRCUITOS
-    if re.search(r"(circuito|resistor|ohm|voltagem|corrente elétrica|corrente eletrica|ampere|diferença de potencial|ddp|potência elétrica)", c_lower):
-        return "physics_circuits", "ELETRODINÂMICA // LEIS DE OHM"
-
-    # 10. QUÍMICA ORGÂNICA
-    if re.search(r"(química orgânica|organica|benzeno|anel aromático|carbono|hidrocarboneto|função orgânica|isomeria|álcool|aldeído|fenol)", c_lower):
-        return "chemistry_organic", "QUÍMICA ORGÂNICA // CADEIAS CARBÔNICAS"
-
-    # 11. QUÍMICA GERAL / pH / TERMOQUÍMICA
-    if re.search(r"(ph|ácido|acido|base|alcalino|termoquímica|reação química|entalpia|cinética|catalisador|solução)", c_lower):
-        return "chemistry_reaction", "FÍSICO-QUÍMICA // pH & REAÇÕES"
-
-    # 12. BIOLOGIA: ECOLOGIA & CADEIA TRÓFICA
-    if re.search(r"(ecologia|cadeia alimentar|teia trófica|pirâmide de energia|produtores|consumidores|decompositores|bioma|impacto ambiental)", c_lower):
-        return "bio_ecology", "ECOLOGIA // PIRÂMIDE TRÓFICA"
-
-    # 13. BIOLOGIA: FISIOLOGIA & NEURÔNIO
-    if re.search(r"(neurônio|neuronio|sinapse|sistema nervoso|cérebro|potencial de ação|neurotransmissor|célula nervosa)", c_lower):
-        return "bio_neuron", "FISIOLOGIA // SISTEMA NERVOSO & SINAPSE"
-
-    # 14. HISTÓRIA DO BRASIL & GERAL
-    if re.search(r"(história|historia|brasil colônia|império|república|era vargas|ditadura|revolução|século|independência|cronologia)", c_lower):
-        return "history_brazil", "HISTÓRIA // CRONOLOGIA & MARCOS"
-
-    # 15. GEOGRAFIA FÍSICA & TECTÔNICA
-    if re.search(r"(tectônica|tectonica|placas tectônicas|deriva continental|relevo|orogênese|crosta|manto|vulcão|terremoto|geografia)", c_lower):
-        return "geo_plates", "GEOGRAFIA // TECTÔNICA & RELEVO"
-
-    # Rotação inteligente se o tema for um domínio amplo
-    if re.search(r"(direito|concurso|administração|jurídico)", combined):
-        domain_cycle = [
-            ("law_constitution", "DIREITO CONSTITUCIONAL // CF/88"),
-            ("law_limpe", "DIREITO ADMINISTRATIVO // L.I.M.P.E."),
-            ("logic_truth_table", "RACIOCÍNIO LÓGICO // PROPOSIÇÕES"),
-            ("grammar_syntax", "NORMA PADRÃO // SINTAXE"),
-        ]
-        return domain_cycle[sentence_index % len(domain_cycle)]
-
-    if re.search(r"(física|fisica|exatas)", combined):
-        physics_cycle = [
-            ("physics_mechanics", "FÍSICA // LEIS DE NEWTON"),
-            ("physics_circuits", "ELETRODINÂMICA // LEIS DE OHM"),
-            ("math_cartesian", "MATEMÁTICA // FUNÇÕES"),
-        ]
-        return physics_cycle[sentence_index % len(physics_cycle)]
-
-    if re.search(r"(química|quimica)", combined):
-        chem_cycle = [
-            ("chemistry_organic", "QUÍMICA ORGÂNICA // CADEIAS"),
-            ("chemistry_reaction", "FÍSICO-QUÍMICA // pH & ENERGIA"),
-        ]
-        return chem_cycle[sentence_index % len(chem_cycle)]
-
-    if re.search(r"(biologia|enem)", combined):
+        # Fallback rotacional estritamente biológico para garantir dinamismo visual sem sair da biologia
         bio_cycle = [
-            ("bio_ecology", "ECOLOGIA // CADEIA TRÓFICA"),
-            ("bio_neuron", "FISIOLOGIA // NEURÔNIO & SINAPSE"),
-            ("math_cartesian", "INTERPRETAÇÃO DE DADOS"),
-            ("redacao_enem", "REDAÇÃO ENEM // ESTRUTURA"),
+            ("bio_tissue", "HISTOLOGIA // TECIDO CONJUNTIVO & MATRIZ"),
+            ("biogenesis_cell", "BIOLOGIA // CITOLOGIA & CÉLULAS"),
+            ("biogenesis_microscope", "MICROSCOPIA // ULTRAESTRUTURA"),
+            ("bio_tissue", "HISTOLOGIA // FIBRAS DE COLÁGENO"),
+            ("biogenesis_dna", "GENÉTICA // CÓDIGO BIOLÓGICO"),
+            ("bio_neuron", "FISIOLOGIA // COORDENAÇÃO TECIDUAL"),
         ]
         return bio_cycle[sentence_index % len(bio_cycle)]
 
+    # -------------------------------------------------------------------------
+    # 2. ESCOPO: DIREITO & CONCURSOS PÚBLICOS
+    # -------------------------------------------------------------------------
+    if domain == "LAW":
+        if re.search(r"(constituição|constituicao|cf/88|artigo 5|direitos fundamentais|remédios constitucionais|habeas corpus|mandado de segurança|três poderes|judiciário|legislativo|executivo|stf)", c_lower):
+            return "law_constitution", "DIREITO CONSTITUCIONAL // CF/88"
+        if re.search(r"(administrativo|limpe|legalidade|impessoalidade|moralidade|publicidade|eficiência|servidor público|ato administrativo|concurso público|licitação|processo disciplinar|órgão público)", c_lower):
+            return "law_limpe", "DIREITO ADMINISTRATIVO // L.I.M.P.E."
+        if re.search(r"(tabela-verdade|proposição|lógica proposicional|conectivo|se\.\.\. então)", c_lower):
+            return "logic_truth_table", "RACIOCÍNIO LÓGICO // PROPOSIÇÕES"
+        if re.search(r"(sintaxe|concordância|regência|redação oficial)", c_lower):
+            return "grammar_syntax", "NORMA CULTA // REDAÇÃO DE CONCURSO"
+
+        law_cycle = [
+            ("law_constitution", "DIREITO CONSTITUCIONAL // CF/88"),
+            ("law_limpe", "DIREITO ADMINISTRATIVO // PRINCÍPIOS"),
+            ("logic_truth_table", "RACIOCÍNIO LÓGICO // PROPOSIÇÕES"),
+            ("grammar_syntax", "NORMA CULTA // REDAÇÃO OFICIAL"),
+        ]
+        return law_cycle[sentence_index % len(law_cycle)]
+
+    # -------------------------------------------------------------------------
+    # 3. ESCOPO: GRAMÁTICA, LÍNGUA PORTUGUESA & REDAÇÃO
+    # -------------------------------------------------------------------------
+    if domain == "GRAMMAR":
+        if re.search(r"(sujeito|predicado|objeto direto|objeto indireto|oração|período composto|transitivo|conjunção)", c_lower):
+            return "grammar_syntax", "NORMA CULTA // ANÁLISE SINTÁTICA"
+        if re.search(r"(redação\s+enem|nota 1000|proposta de intervenção|competência|dissertativo)", c_lower):
+            return "redacao_enem", "REDAÇÃO NOTA 1000 // COMPETÊNCIAS ENEM"
+
+        grammar_cycle = [
+            ("grammar", "NORMA PADRÃO // REGÊNCIA & CRASE"),
+            ("grammar_syntax", "NORMA CULTA // ANÁLISE SINTÁTICA"),
+            ("comparison", "CERTO vs ERRADO // APLICAÇÃO"),
+            ("lesson", "DICA DE OURO // MACETE PRÁTICO"),
+        ]
+        return grammar_cycle[sentence_index % len(grammar_cycle)]
+
+    # -------------------------------------------------------------------------
+    # 4. ESCOPO: FÍSICA
+    # -------------------------------------------------------------------------
+    if domain == "PHYSICS":
+        if re.search(r"(newton|plano inclinado|força peso|força normal|atrito|cinemática|cinematica|velocidade|aceleração|gravidade|dinâmica)", c_lower):
+            return "physics_mechanics", "FÍSICA MECÂNICA // LEIS DE NEWTON"
+        if re.search(r"(circuito|resistor|ohm|voltagem|corrente elétrica|ampere|ddp|potência elétrica)", c_lower):
+            return "physics_circuits", "ELETRODINÂMICA // LEIS DE OHM"
+        if re.search(r"(gráfico|curva|parábola|cartesiano|trajetória)", c_lower):
+            return "math_cartesian", "CINEMÁTICA // GRÁFICOS DO MOVIMENTO"
+
+        phys_cycle = [
+            ("physics_mechanics", "FÍSICA // DINÂMICA & NEWTON"),
+            ("physics_circuits", "ELETRODINÂMICA // CIRCUITO & OHM"),
+            ("formula", "EQUAÇÕES FUNDAMENTAIS DA FÍSICA"),
+        ]
+        return phys_cycle[sentence_index % len(phys_cycle)]
+
+    # -------------------------------------------------------------------------
+    # 5. ESCOPO: QUÍMICA
+    # -------------------------------------------------------------------------
+    if domain == "CHEMISTRY":
+        if re.search(r"(orgânica|benzeno|anel aromático|carbono|hidrocarboneto|isomeria|álcool|aldeído|fenol)", c_lower):
+            return "chemistry_organic", "QUÍMICA ORGÂNICA // CADEIAS CARBÔNICAS"
+        if re.search(r"(ph|ácido|base|alcalino|termoquímica|reação química|entalpia|cinética|catalisador)", c_lower):
+            return "chemistry_reaction", "FÍSICO-QUÍMICA // pH & REAÇÕES"
+
+        chem_cycle = [
+            ("chemistry_organic", "QUÍMICA ORGÂNICA // CADEIAS"),
+            ("chemistry_reaction", "FÍSICO-QUÍMICA // pH & CINÉTICA"),
+            ("quantum", "ESTRUTURA ATÔMICA & LIGAÇÕES"),
+        ]
+        return chem_cycle[sentence_index % len(chem_cycle)]
+
+    # -------------------------------------------------------------------------
+    # 6. ESCOPO: MATEMÁTICA & RLM
+    # -------------------------------------------------------------------------
+    if domain == "MATH":
+        if re.search(r"(\bfunção\b|\bfuncao\b|parábola|vértice|raízes|plano cartesiano|eixo x|eixo y|afim|quadrática|bhaskara)", c_lower):
+            return "math_cartesian", "MATEMÁTICA // FUNÇÕES & GRÁFICOS"
+        if re.search(r"(diagrama de venn|conjuntos|intersecção|união|pertence)", c_lower):
+            return "logic_venn", "RACIOCÍNIO LÓGICO // DIAGRAMA DE VENN"
+        if re.search(r"(tabela-verdade|proposição|se\.\.\. então|tautologia|conjunção|disjunção)", c_lower):
+            return "logic_truth_table", "LÓGICA PROPOSICIONAL // TABELA-VERDADE"
+
+        math_cycle = [
+            ("math_cartesian", "MATEMÁTICA // FUNÇÕES & GRÁFICOS"),
+            ("logic_venn", "RACIOCÍNIO LÓGICO // CONJUNTOS"),
+            ("logic_truth_table", "LÓGICA PROPOSICIONAL // VALORAÇÃO"),
+            ("analytics", "ESTATÍSTICA // DADOS & TENDÊNCIA"),
+        ]
+        return math_cycle[sentence_index % len(math_cycle)]
+
+    # -------------------------------------------------------------------------
+    # 7. ESCOPO: HISTÓRIA
+    # -------------------------------------------------------------------------
+    if domain == "HISTORY":
+        return "history_brazil", "HISTÓRIA // CRONOLOGIA & MARCOS"
+
+    # -------------------------------------------------------------------------
+    # 8. ESCOPO: GEOGRAFIA
+    # -------------------------------------------------------------------------
+    if domain == "GEOGRAPHY":
+        return "geo_plates", "GEOGRAFIA // TECTÔNICA & RELEVO"
+
+    # -------------------------------------------------------------------------
+    # 9. DOMÍNIO GERAL OU NÃO ESPECIFICADO (Exige contexto específico para evitar falso-positivo)
+    # -------------------------------------------------------------------------
+    if re.search(r"(constituição|cf/88|artigo 5|direitos fundamentais|remédios constitucionais)", c_lower):
+        return "law_constitution", "DIREITO CONSTITUCIONAL // CF/88"
+    if re.search(r"(administrativo|limpe|legalidade|servidor público|ato administrativo)", c_lower):
+        return "law_limpe", "DIREITO ADMINISTRATIVO // L.I.M.P.E."
+    if re.search(r"(diagrama de venn|intersecção de conjuntos)", c_lower):
+        return "logic_venn", "RACIOCÍNIO LÓGICO // DIAGRAMA DE VENN"
+    if re.search(r"(tabela-verdade|proposição lógica|se\.\.\. então)", c_lower):
+        return "logic_truth_table", "LÓGICA PROPOSICIONAL // TABELA-VERDADE"
+    if re.search(r"(sujeito e predicado|objeto direto|oração subordinada)", c_lower):
+        return "grammar_syntax", "NORMA CULTA // ANÁLISE SINTÁTICA"
+    if re.search(r"(redação nota 1000|proposta de intervenção enem)", c_lower):
+        return "redacao_enem", "REDAÇÃO NOTA 1000 // COMPETÊNCIAS ENEM"
+    if re.search(r"(função afim|função quadrática|parábola da função|plano cartesiano|vértice da parábola)", c_lower):
+        return "math_cartesian", "MATEMÁTICA // FUNÇÕES & GRÁFICOS"
+    if re.search(r"(leis de newton|plano inclinado|força peso e normal)", c_lower):
+        return "physics_mechanics", "FÍSICA MECÂNICA // LEIS DE NEWTON"
+    if re.search(r"(circuito elétrico|lei de ohm|resistor em série)", c_lower):
+        return "physics_circuits", "ELETRODINÂMICA // LEIS DE OHM"
+    if re.search(r"(química orgânica|anel aromático|anel benzênico)", c_lower):
+        return "chemistry_organic", "QUÍMICA ORGÂNICA // CADEIAS CARBÔNICAS"
+    if re.search(r"(escala de ph|reação endotérmica|entalpia de reação)", c_lower):
+        return "chemistry_reaction", "FÍSICO-QUÍMICA // pH & REAÇÕES"
+    if re.search(r"(pirâmide trófica|níveis tróficos|cadeia alimentar)", c_lower):
+        return "bio_ecology", "ECOLOGIA // PIRÂMIDE TRÓFICA"
+    if re.search(r"(neurônio e sinapse|potencial de ação nervosa)", c_lower):
+        return "bio_neuron", "FISIOLOGIA // SISTEMA NERVOSO & SINAPSE"
+    if re.search(r"(placas tectônicas|tectônica de placas|deriva continental)", c_lower):
+        return "geo_plates", "GEOGRAFIA // TECTÔNICA & RELEVO"
+
     return "", ""
+
 

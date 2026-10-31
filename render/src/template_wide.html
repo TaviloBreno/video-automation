@@ -735,6 +735,7 @@
       height: 100%;
       position: relative;
     }
+    .bio-tissue-svg,
     .law-justice-svg,
     .law-limpe-svg,
     .logic-venn-svg,
@@ -1529,6 +1530,22 @@
         }
 
                 // Animações Contínuas para Vestibulares & Concursos Públicos
+        const fibroblasts = el.querySelectorAll(".fibroblast");
+        if (fibroblasts.length > 0) {
+          tl.fromTo(fibroblasts, 
+            { scale: 0.95, rotation: -2 }, 
+            { scale: 1.05, rotation: 2, repeat: Math.ceil(dur * 2), yoyo: true, duration: 1.6, ease: "sine.inOut", transformOrigin: "center center", stagger: 0.2 }, 
+            start
+          );
+        }
+        const macrophages = el.querySelectorAll(".macrophage");
+        if (macrophages.length > 0) {
+          tl.fromTo(macrophages, 
+            { x: -5, y: -3 }, 
+            { x: 5, y: 3, repeat: Math.ceil(dur * 2), yoyo: true, duration: 2.0, ease: "sine.inOut" }, 
+            start
+          );
+        }
         const balanceBeams = el.querySelectorAll(".balance-beam");
         if (balanceBeams.length > 0) {
           tl.fromTo(balanceBeams, 

@@ -196,6 +196,16 @@ def _smart_truncate(text: str, max_chars: int) -> str:
 
 
 SUPPORTED_ARCHETYPES = [
+    # Vestibular, Concursos & Ciências da Natureza
+    "bio_tissue", "biogenesis_cell", "biogenesis_pasteur", "biogenesis_redi",
+    "biogenesis_microscope", "biogenesis_dna", "biogenesis_puzzle", "biogenesis_versus",
+    "bio_ecology", "bio_neuron", "law_constitution", "law_limpe", "logic_venn",
+    "logic_truth_table", "grammar_syntax", "redacao_enem", "math_cartesian",
+    "physics_mechanics", "physics_circuits", "chemistry_organic", "chemistry_reaction",
+    "history_brazil", "geo_plates",
+    # Didática Geral, Gramática & Fixação
+    "grammar", "lesson", "comparison", "finance",
+    # Divulgação Científica
     "politics", "social", "psychology", "analytics", "history",
     "orbital", "infographic", "blueprint", "spectrum", "network", "timeline", "quantum", "formula"
 ]

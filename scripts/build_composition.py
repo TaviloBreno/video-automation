@@ -16,6 +16,8 @@ from pathlib import Path
 
 from scripts.educational_vectors import (
     detect_vestibular_concurso_archetype,
+    resolve_topic_domain,
+    svg_bio_tissue,
     svg_law_constitution, svg_law_limpe, svg_logic_venn, svg_logic_truth_table,
     svg_grammar_syntax, svg_redacao_enem, svg_math_cartesian, svg_physics_mechanics,
     svg_physics_circuits, svg_chemistry_organic, svg_chemistry_reaction,
@@ -133,8 +135,87 @@ def extract_pedagogical_callouts(
 
     items = []
 
-    # 1. BIOGÊNESE, ABIOGÊNESE & ORIGEM DA VIDA
-    if theme in ("biogenesis", "biology") or re.search(r"(biogênese|biogenese|abiogênese|abiogenese|geração espontânea|geracao espontanea|origem da vida|pasteur|redi)", combined):
+    # 1. HISTOLOGIA & TECIDO CONJUNTIVO
+    if theme == "bio_tissue" or re.search(r"(tecido\s+conjuntivo|colágen|colagen|matriz\s+extracelular|fibroblasto|fibra\s+elástica|sustentação)", combined):
+        if re.search(r"(o que é|significa|conceito|fundamental|importante|dúvida|duvida)", c_lower):
+            items.append({
+                "num": "01",
+                "tag": "DEFINIÇÃO HISTOLÓGICA",
+                "title": "TECIDO DE SUSTENTAÇÃO",
+                "desc": "Tecido mais abundante do corpo que conecta, sustenta e preenche espaços entre órgãos."
+            })
+            items.append({
+                "num": "02",
+                "tag": "COMPOSIÇÃO",
+                "title": "MATRIZ & FIBROBLASTOS",
+                "desc": "Formado por matriz rica em colágeno, fibras elásticas, líquido intersticial e células ativas."
+            })
+            items.append({
+                "num": "03",
+                "tag": "IMPORTÂNCIA VITAL",
+                "title": "NUTRIÇÃO & PROTEÇÃO",
+                "desc": "Amortece impactos, transporta nutrientes por capilares e abriga células do sistema imune."
+            })
+        elif re.search(r"(função|funcao|estrutura|unir|sustentar|fibras)", c_lower):
+            items.append({
+                "num": "01",
+                "tag": "FUNÇÃO MECÂNICA",
+                "title": "COESÃO E SUSTENTAÇÃO",
+                "desc": "Suporte estrutural firme para pele, ossos, tendões, cartilagens e músculos."
+            })
+            items.append({
+                "num": "02",
+                "tag": "BIOSSÍNTESE",
+                "title": "COLÁGENO & ELASTINA",
+                "desc": "Proteínas sintetizadas pelos fibroblastos garantindo flexibilidade e resistência à tração."
+            })
+            items.append({
+                "num": "03",
+                "tag": "HOMEOSTASE",
+                "title": "ABSORÇÃO DE IMPACTO",
+                "desc": "Dissipa choques mecânicos e protege órgãos internos vitais contra traumas."
+            })
+        elif re.search(r"(lesão|lesao|inflamação|inflamacao|cicatriz|defesa|infecção|infeccao)", c_lower):
+            items.append({
+                "num": "01",
+                "tag": "REGENERAÇÃO",
+                "title": "RESPOSTA A LESÕES",
+                "desc": "Fibroblastos migram e sintetizam novas fibras para regenerar áreas lesionadas."
+            })
+            items.append({
+                "num": "02",
+                "tag": "DEFESA IMUNITÁRIA",
+                "title": "AÇÃO DE MACRÓFAGOS",
+                "desc": "Macrófagos fagocitam bactérias e detritos celulares em casos de infecção."
+            })
+            items.append({
+                "num": "03",
+                "tag": "CICATRIZAÇÃO",
+                "title": "RESTABELECIMENTO",
+                "desc": "Prevenção de hemorragias e reorganização da matriz tecidual para rápida recuperação."
+            })
+        else:
+            items.append({
+                "num": "01",
+                "tag": "CONCEITO-CHAVE",
+                "title": "TECIDO CONJUNTIVO",
+                "desc": f"{cleaned[:75]}..." if len(cleaned) > 75 else cleaned
+            })
+            items.append({
+                "num": "02",
+                "tag": "ORGANIZAÇÃO",
+                "title": "FIBROBLASTOS & MATRIZ",
+                "desc": "Células especializadas imersas na substância fundamental amorfa e fibras proteicas."
+            })
+            items.append({
+                "num": "03",
+                "tag": "APLICAÇÃO PRÁTICA",
+                "title": "FISIOLOGIA HUMANA",
+                "desc": "Manutenção da integridade celular e preservação da arquitetura biológica corporal."
+            })
+
+    # 2. BIOGÊNESE, ABIOGÊNESE & ORIGEM DA VIDA
+    elif theme in ("biogenesis", "biology") or re.search(r"(biogênese|biogenese|abiogênese|abiogenese|geração espontânea|geracao espontanea|origem da vida|pasteur|redi)", combined):
         if re.search(r"(o que significa|entender|conceito|fundamental|compreensão|compreensao)", c_lower):
             items.append({
                 "num": "01",
@@ -308,7 +389,7 @@ def detect_visual_theme(
     explicit_archetype: str = "",
     sentence_index: int = 0,
 ) -> tuple[str, str]:
-    """Detecta o campo do conhecimento e subtema específico para gerar Motion Design variado em todas as cenas."""
+    """Detecta o campo do conhecimento com isolamento rígido de disciplina para garantir Motion Design condizente."""
     raw_sub = re.sub(r"[^\w\s]", "", chapter_title or topic).strip()
     if len(raw_sub) > 36:
         cutoff = raw_sub[:36].rfind(" ")
@@ -319,191 +400,139 @@ def detect_visual_theme(
 
     c_text = (content or "").lower()
     combined_domain = f"{topic} {chapter_title}".lower()
+    macro_domain = resolve_topic_domain(topic, chapter_title)
 
-    # Verificação de alta fidelidade para Vestibulares (ENEM, Fuvest) e Concursos Públicos
+    # 1. Se um arquétipo explícito válido for fornecido, honra-o se condizente com a macro-disciplina
+    if explicit_archetype:
+        arch = explicit_archetype.lower().strip()
+        # Blindagem: se o domínio é biológico, bloqueia gráficos matemáticos ou financeiros
+        if macro_domain == "BIOLOGY" and arch in ("math_cartesian", "finance", "law_constitution", "law_limpe", "grammar_syntax", "redacao_enem"):
+            arch = ""
+        elif macro_domain == "GRAMMAR" and arch in ("math_cartesian", "finance", "bio_ecology", "bio_neuron", "bio_tissue"):
+            arch = ""
+        elif macro_domain == "LAW" and arch in ("math_cartesian", "bio_tissue", "bio_neuron"):
+            arch = ""
+
+        if arch:
+            arch_labels = {
+                "bio_tissue": ("bio_tissue", f"HISTOLOGIA // {label_suffix}"),
+                "biogenesis_pasteur": ("biogenesis_pasteur", f"EXPERIMENTO DE PASTEUR // {label_suffix}"),
+                "biogenesis_redi": ("biogenesis_redi", f"EXPERIMENTO DE REDI // {label_suffix}"),
+                "biogenesis_microscope": ("biogenesis_microscope", f"MICRORGANISMOS // {label_suffix}"),
+                "biogenesis_dna": ("biogenesis_dna", f"CÓDIGO GENÉTICO // {label_suffix}"),
+                "biogenesis_puzzle": ("biogenesis_puzzle", f"MECANISMO VITAL // {label_suffix}"),
+                "biogenesis_versus": ("biogenesis_versus", f"ABIOGÊNESE vs BIOGÊNESE // {label_suffix}"),
+                "biogenesis_cell": ("biogenesis_cell", f"DIVISÃO CELULAR // {label_suffix}"),
+                "biogenesis": ("biogenesis_cell", f"BIOGÊNESE & VIDA // {label_suffix}"),
+                "biology": ("biogenesis_cell", f"BIOLOGIA CELULAR // {label_suffix}"),
+                "grammar": ("grammar", f"NORMA PADRÃO & GRAMÁTICA // {label_suffix}"),
+                "lesson": ("lesson", f"VIDEOAULA & FIXAÇÃO // {label_suffix}"),
+                "comparison": ("comparison", f"CERTO vs ERRADO // {label_suffix}"),
+                "politics": ("politics", f"DINÂMICA DE PODER // {label_suffix}"),
+                "psychology": ("psychology", f"PSICOLOGIA COGNITIVA // {label_suffix}"),
+                "orbital": ("orbital", f"ASTROFÍSICA ORBITAL // {label_suffix}"),
+                "infographic": ("infographic", f"TELEMETRIA & DADOS // {label_suffix}"),
+                "blueprint": ("blueprint", f"DIAGRAMA TÉCNICO // {label_suffix}"),
+                "spectrum": ("spectrum", f"ESPECTROGRAFIA // {label_suffix}"),
+                "network": ("network", f"REDE & SISTEMAS // {label_suffix}"),
+                "timeline": ("timeline", f"REGISTRO HISTÓRICO // {label_suffix}"),
+                "quantum": ("quantum", f"ESTRUTURA QUÂNTICA // {label_suffix}"),
+                "formula": ("formula", f"EQUAÇÃO FUNDAMENTAL // {label_suffix}"),
+                "radar": ("radar", f"VARREDURA & DETECÇÃO // {label_suffix}"),
+                "analytics": ("analytics", f"DADOS & TENDÊNCIA // {label_suffix}"),
+            }
+            if arch in arch_labels:
+                return arch_labels[arch]
+
+    # 2. Verificação com Isolamento Rígido de Domínio (Vestibulares, Concursos e Disciplinas)
     edu_arch, edu_label = detect_vestibular_concurso_archetype(content, topic=topic, chapter_title=chapter_title, sentence_index=sentence_index)
     if edu_arch:
         return edu_arch, f"{edu_label} // {label_suffix}"
 
-    # Se um arquétipo explícito válido for fornecido, honra-o
-    if explicit_archetype:
-        arch = explicit_archetype.lower().strip()
-        arch_labels = {
-            "biogenesis_pasteur": ("biogenesis_pasteur", f"EXPERIMENTO DE PASTEUR // {label_suffix}"),
-            "biogenesis_redi": ("biogenesis_redi", f"EXPERIMENTO DE REDI // {label_suffix}"),
-            "biogenesis_microscope": ("biogenesis_microscope", f"MICRORGANISMOS // {label_suffix}"),
-            "biogenesis_dna": ("biogenesis_dna", f"CÓDIGO GENÉTICO // {label_suffix}"),
-            "biogenesis_puzzle": ("biogenesis_puzzle", f"MECANISMO VITAL // {label_suffix}"),
-            "biogenesis_versus": ("biogenesis_versus", f"ABIOGÊNESE vs BIOGÊNESE // {label_suffix}"),
-            "biogenesis_cell": ("biogenesis_cell", f"DIVISÃO CELULAR // {label_suffix}"),
-            "biogenesis": ("biogenesis_cell", f"BIOGÊNESE & VIDA // {label_suffix}"),
-            "biology": ("biogenesis_cell", f"BIOLOGIA CELULAR // {label_suffix}"),
-            "grammar": ("grammar", f"NORMA PADRÃO & GRAMÁTICA // {label_suffix}"),
-            "lesson": ("lesson", f"VIDEOAULA & FIXAÇÃO // {label_suffix}"),
-            "comparison": ("comparison", f"CERTO vs ERRADO // {label_suffix}"),
-            "politics": ("politics", f"DINÂMICA DE PODER // {label_suffix}"),
-            "psychology": ("psychology", f"PSICOLOGIA COGNITIVA // {label_suffix}"),
-            "orbital": ("orbital", f"ASTROFÍSICA ORBITAL // {label_suffix}"),
-            "infographic": ("infographic", f"TELEMETRIA & DADOS // {label_suffix}"),
-            "blueprint": ("blueprint", f"DIAGRAMA TÉCNICO // {label_suffix}"),
-            "spectrum": ("spectrum", f"ESPECTROGRAFIA // {label_suffix}"),
-            "network": ("network", f"REDE & SISTEMAS // {label_suffix}"),
-            "timeline": ("timeline", f"REGISTRO HISTÓRICO // {label_suffix}"),
-            "quantum": ("quantum", f"ESTRUTURA QUÂNTICA // {label_suffix}"),
-            "formula": ("formula", f"EQUAÇÃO FUNDAMENTAL // {label_suffix}"),
-            "radar": ("radar", f"VARREDURA & DETECÇÃO // {label_suffix}"),
-            "analytics": ("analytics", f"DADOS & TENDÊNCIA // {label_suffix}"),
-        }
-        if arch in arch_labels:
-            return arch_labels[arch]
-
-    # 1. BIOGÊNESE, BIOLOGIA CELULAR & ORIGEM DA VIDA (Variedade em cada cena)
-    is_bio_domain = bool(re.search(r"(\bbiogênese\b|\bbiogenese\b|\babiogênese\b|\babiogenese\b|geração espontânea|geracao espontanea|origem da vida|biolog|louis pasteur|\bpasteur\b|francesco redi|\bredi\b)", combined_domain))
-
-    if is_bio_domain or re.search(r"(\bbiogênese\b|\bbiogenese\b|\babiogênese\b|\babiogenese\b|geração espontânea|geracao espontanea|origem da vida|\bpasteur\b|\bredi\b)", c_text):
-        if re.search(r"(pasteur|pescoço de cisne|pescoco de cisne|caldo fervido|fervura|esterilização|esterilizacao|gargalo)", c_text):
+    # 3. BIOLOGIA & SAÚDE (Totalmente Blindada contra Contaminação)
+    if macro_domain == "BIOLOGY":
+        if re.search(r"(tecido\s+conjuntivo|colágen|colagen|matriz|fibroblasto|fibra|sustentação|sustentar|tendão|tendões|ligamento|cartilag|adipos|ósseo|absorver\s+choque|lesão|cicatriz|derme)", c_text):
+            return "bio_tissue", f"HISTOLOGIA // {label_suffix}"
+        if re.search(r"(pasteur|pescoço de cisne|caldo fervido|fervura|esterilização)", c_text):
             return "biogenesis_pasteur", f"EXPERIMENTO DE PASTEUR // {label_suffix}"
-        if re.search(r"(redi|francesco|carne|pote|potes|mosca|moscas|larva|larvas|gaze)", c_text):
+        if re.search(r"(redi|francesco|mosca|moscas|larva|larvas|pote|potes|carne)", c_text):
             return "biogenesis_redi", f"EXPERIMENTO DE REDI // {label_suffix}"
-        if re.search(r"(microscópio|microscopio|bactéria|bacteria|bactérias|bacterias|vírus|virus|micróbio|microbio|microrganismo|invisível|invisivel|lente)", c_text):
+        if re.search(r"(microscópio|microscopio|bactéria|bacteria|vírus|virus|micróbio|microrganismo|infecção|infeccao|combater)", c_text):
             return "biogenesis_microscope", f"MICRORGANISMOS & CÉLULAS // {label_suffix}"
-        if re.search(r"(dna|genética|genetica|gene|genes|código genético|codigo genetico|dupla hélice|dupla helice|replicação|replicacao)", c_text):
+        if re.search(r"(dna|genética|genetica|gene|genes|código genético|dupla hélice|replicação)", c_text):
             return "biogenesis_dna", f"CÓDIGO GENÉTICO // {label_suffix}"
-        if re.search(r"(puzzle|fábrica|fabrica|máquina|maquina|máquinas|maquinas|engrenagem|peça|peças|montagem|montados|sistema)", c_text):
-            return "biogenesis_puzzle", f"MECANISMO INTEGRADO // {label_suffix}"
-        if re.search(r"(abiogênese|abiogenese|geração espontânea|geracao espontanea|mito|do nada|inanimada|versus|vs|oposição)", c_text):
-            return "biogenesis_versus", f"ABIOGÊNESE vs BIOGÊNESE // {label_suffix}"
-        if re.search(r"(célula|celular|mitose|divisão celular|divisao celular|citocinese|reprodução|reproducao|organela)", c_text):
+        if re.search(r"(célula|celular|mitose|divisão celular|citoplasma|membrana|organela|mitocôndria)", c_text):
             return "biogenesis_cell", f"DIVISÃO CELULAR // {label_suffix}"
 
-        # Rotação inteligente para sentenças gerais da aula, garantindo cenas visuais sempre distintas
         bio_variations = [
+            ("bio_tissue", f"HISTOLOGIA // {label_suffix}"),
             ("biogenesis_cell", f"DIVISÃO CELULAR // {label_suffix}"),
-            ("biogenesis_pasteur", f"EXPERIMENTO DE PASTEUR // {label_suffix}"),
             ("biogenesis_microscope", f"MICRORGANISMOS // {label_suffix}"),
+            ("bio_tissue", f"MATRIZ & COLÁGENO // {label_suffix}"),
             ("biogenesis_dna", f"CÓDIGO GENÉTICO // {label_suffix}"),
-            ("biogenesis_versus", f"ABIOGÊNESE vs BIOGÊNESE // {label_suffix}"),
-            ("biogenesis_puzzle", f"MECANISMO VITAL // {label_suffix}"),
-            ("biogenesis_redi", f"MÉTODO DE REDI // {label_suffix}"),
+            ("bio_neuron", f"FISIOLOGIA TECIDUAL // {label_suffix}"),
         ]
         return bio_variations[sentence_index % len(bio_variations)]
 
-    # 2. Biologia Geral e Celular
-    if re.search(r"(célula|celular|mitose|meiose|divisão celular|citoplasma|membrana plasmática|núcleo celular|organela|mitocôndria|dna|genoma|mutação|gene|imunoterap|anticorpo|linfócit|vírus|bactéria|vacina|biolog|sangue|telômero|organismo vivo|evolução)", c_text) or re.search(r"(célula|celular|dna|genoma|biolog|mitose)", combined_domain):
-        return "biogenesis_cell", f"BIOLOGIA CELULAR // {label_suffix}"
+    # 4. GRAMÁTICA, LÍNGUA PORTUGUESA & CRASE
+    if macro_domain == "GRAMMAR":
+        if re.search(r"(crase|acento grave|regência|regencia|preposição|preposicao|artigo)", c_text):
+            return "grammar", f"NORMA PADRÃO & GRAMÁTICA // {label_suffix}"
+        if re.search(r"(certo ou errado|correto ou incorreto|nunca use|evite)", c_text):
+            return "comparison", f"CERTO vs ERRADO // {label_suffix}"
+        return "grammar", f"LÍNGUA PORTUGUESA // {label_suffix}"
 
-    # 3. Gramática, Língua Portuguesa, Crase, Regras e Ortografia
-    if re.search(r"(\bcrase\b|acento grave|regência|regencia|preposição|preposicao|artigo feminino|substantivo|verbo transitivo|concordância|concordancia|ortografia|acentuação|acentuacao|sintaxe|pontuação|pontuacao|oração|oracao|vocábulo|vocabulo|língua portuguesa|lingua portuguesa|gramática|gramatica)", c_text) or re.search(r"(\bcrase\b|gramática|gramatica|língua portuguesa|português|portugues)", combined_domain):
-        return "grammar", f"NORMA PADRÃO & GRAMÁTICA // {label_suffix}"
+    # 5. DIREITO & ADMINISTRAÇÃO PÚBLICA
+    if macro_domain == "LAW":
+        if re.search(r"(constituição|cf/88|artigo 5|direitos fundamentais)", c_text):
+            return "law_constitution", f"DIREITO CONSTITUCIONAL // {label_suffix}"
+        if re.search(r"(administrativo|limpe|legalidade|servidor)", c_text):
+            return "law_limpe", f"DIREITO ADMINISTRATIVO // {label_suffix}"
+        return "law_constitution", f"DIREITO PÚBLICO // {label_suffix}"
 
-    # 4. Certo vs Errado / Comparação Prática
-    if re.search(r"(certo ou errado|correto ou incorreto|permitido ou proibido|nunca use|evite usar|forma errada|forma certa|versus|diferença entre|antes de palavra)", c_text):
-        return "comparison", f"CERTO vs ERRADO // {label_suffix}"
+    # 6. FÍSICA
+    if macro_domain == "PHYSICS":
+        if re.search(r"(newton|dinâmica|força|atrito|gravidade)", c_text):
+            return "physics_mechanics", f"FÍSICA MECÂNICA // {label_suffix}"
+        if re.search(r"(circuito|resistor|ohm|voltagem|corrente)", c_text):
+            return "physics_circuits", f"ELETRODINÂMICA // {label_suffix}"
+        return "formula", f"FÍSICA FUNDAMENTAL // {label_suffix}"
 
-    # 5. Finanças, Moedas, Dólar, Investimentos, Risco & Mercado
-    if re.search(r"(\bdólar|dolar|câmbio|cambio|real|moeda|inflação|inflacao|juros|selic|mercado|bolsa|ações|acoes|ibov|investiment|lucro|preço|preco|volatilidade|risco|probabilidade|chance|ganhar|dinheiro|bilhões|bilhoes|previsão financeira|carteira)", c_text):
+    # 7. QUÍMICA
+    if macro_domain == "CHEMISTRY":
+        if re.search(r"(orgânica|benzeno|anel|carbono|hidrocarboneto)", c_text):
+            return "chemistry_organic", f"QUÍMICA ORGÂNICA // {label_suffix}"
+        if re.search(r"(ph|ácido|base|reação|entalpia)", c_text):
+            return "chemistry_reaction", f"FÍSICO-QUÍMICA // {label_suffix}"
+        return "chemistry_reaction", f"QUÍMICA GERAL // {label_suffix}"
+
+    # 8. MATEMÁTICA
+    if macro_domain == "MATH":
+        if re.search(r"(função|funcao|parábola|cartesiano|vértice)", c_text):
+            return "math_cartesian", f"MATEMÁTICA // {label_suffix}"
+        if re.search(r"(conjuntos|venn)", c_text):
+            return "logic_venn", f"RACIOCÍNIO LÓGICO // {label_suffix}"
+        return "analytics", f"MATEMÁTICA // {label_suffix}"
+
+    # 9. Fallbacks gerais para temas abertos / gerais
+    if re.search(r"(moeda\s+real|câmbio|dólar|inflação|selic|ibovespa|bolsa\s+de\s+valores|ações\s+da\s+empresa)", c_text):
         return "finance", f"MERCADO & RISCO // {label_suffix}"
-
-    # 6. Fórmulas Matemáticas e Equações
-    if re.search(r"(\be\s*=\s*mc|\bf\s*=\s*g|\br_s\s*=|equação|fórmula|lei da grav|incerteza|constante|c\^2|matemát)", c_text):
+    if re.search(r"(e\s*=\s*mc|f\s*=\s*g|r_s\s*=|lei da grav|incerteza de heisenberg)", c_text):
         return "formula", f"EQUAÇÃO FUNDAMENTAL // {label_suffix}"
-
-    # 7. Dados Estatísticos e Grandezas
-    if re.search(r"(\b\d+([.,]\d+)?\s*(%|vezes|x|km/s|km|anos-luz|graus|k|ºc)\b|porcento|por cento|aumento de|queda de|estatística|gráfico|taxa de|crescimento)", c_text):
-        return "analytics", f"DADOS & TENDÊNCIA ESTATÍSTICA // {label_suffix}"
-
-    # 8. Partículas Subatômicas, Átomos & Mecânica Quântica
-    if re.search(r"(partícula|subatôm|átomo|quântic|fóton|elétron|próton|nêutron|bóson|quarks)", c_text):
+    if re.search(r"(\d+([.,]\d+)?\s*(%|vezes|km/s|anos-luz)|estatística rigorosa)", c_text):
+        return "analytics", f"DADOS ESTATÍSTICOS // {label_suffix}"
+    if re.search(r"(partícula subatômica|bóson|quarks|fóton|mecânica quântica)", c_text):
         return "quantum", f"MECÂNICA QUÂNTICA // {label_suffix}"
-
-    # 9. Cronologia, História, Séculos & Evolução no Tempo
-    if re.search(r"(anos de história|século|séculos|ao longo de|cronologia|passado|evolução histórica|linha do tempo|décadas|milhões de anos|bilhões de anos)", c_text):
-        return "timeline", f"LINHA DO TEMPO & CRONOLOGIA // {label_suffix}"
-
-    # 10. Política, Eleições, Pesquisa de Opinião, Voto & Democracia
-    if re.search(r"(eleição|eleicao|eleições|eleicoes|pesquisa de opinião|pesquisa eleitoral|voto|votar|candidato|urna|partido|governo|democracia|congresso|deputado|senador|presidente|rejeição|amostragem|polític|poder executivo|poder judiciário|poder político)", c_text):
-        return "politics", f"CENÁRIO ELEITORAL // {label_suffix}"
-
-    # 11. Astrofísica Orbital, Buracos Negros, Quasars & Gravidade
-    if re.search(r"(quasar|quásar|buraco negro|singularidade|acrec|horizonte de eventos|órbita|gravidade|plasma|estrela de nêutrons|supernova|galáxia|universo)", c_text):
-        return "orbital", f"ASTROFÍSICA ORBITAL // {label_suffix}"
-
-    # 12. Psicologia, Cognição, Mente, Decisões & Comportamento
-    if re.search(r"(psicolog|mente|comportamento|persuas|viés|cogni|emoç|influên|cérebro|percepç|decisão|inconsciente|hábito|atitude)", c_text):
-        return "psychology", f"PSICOLOGIA COGNITIVA // {label_suffix}"
-
-    # 13. Didática Específica, Macetes e Dicas de Fixação
-    if re.search(r"(macete|dica de ouro|mnemônico|mnemonico|como usar|aprenda|passo a passo|não erre|exemplo prático|exemplo pratico|na prática|na pratica|em sala|memorizar|fixar|revisão|revisao)", c_text):
-        return "lesson", f"AULA & DICA DE FIXAÇÃO // {label_suffix}"
-
-    # Fallbacks gerais por tema combinado
-    if re.search(r"(quasar|buraco negro|espaço|astro|galáxia|universo|estrela|cosmo)", combined_domain):
-        return "orbital", f"ASTROFÍSICA ORBITAL // {label_suffix}"
-    if re.search(r"(polític|governo|sociedade|poder|eleiç|líder)", combined_domain):
-        return "politics", f"DINÂMICA SOCIAL // {label_suffix}"
-    if re.search(r"(psicolog|mente|comportamento|cérebro|cogni)", combined_domain):
+    if re.search(r"(século\s+[xvi]+|evolução histórica ao longo dos séculos|linha do tempo histórica)", c_text):
+        return "timeline", f"LINHA DO TEMPO // {label_suffix}"
+    if re.search(r"(eleição presidencial|partido político|poder executivo e judiciário)", c_text):
+        return "politics", f"CENÁRIO INSTITUCIONAL // {label_suffix}"
+    if re.search(r"(buraco negro|singularidade|horizonte de eventos|quasar|galáxia)", c_text):
+        return "orbital", f"ASTROFÍSICA // {label_suffix}"
+    if re.search(r"(viés cognitivo|psicologia cognitiva|psicanálise freudiana)", c_text):
         return "psychology", f"PSICOLOGIA // {label_suffix}"
-    if re.search(r"(histór|século|guerra|passado|evolução)", combined_domain):
-        return "timeline", f"HISTÓRIA & TEMPO // {label_suffix}"
 
     return "lesson", f"AULA & SÍNTESE // {label_suffix}"
-
-
-def _get_formula_preset(text: str) -> dict[str, Any]:
-    """Retorna fórmula matemática consagrada correspondente ao contexto."""
-    lower = text.lower()
-    if "buraco negro" in lower or "singularidade" in lower or "horizonte" in lower or "raio" in lower:
-        return {
-            "eq": "R<sub>s</sub> = <sup>2GM</sup>&frasl;<sub>c<sup>2</sup></sub>",
-            "name": "Raio de Schwarzschild (Horizonte de Eventos)",
-            "vars": [
-                ("R<sub>s</sub>", "Raio Limite"),
-                ("G", "Cte Gravitacional"),
-                ("M", "Massa do Objeto"),
-                ("c", "Velocidade da Luz"),
-            ],
-        }
-    elif "hubble" in lower or "expansão" in lower or "universo" in lower or "distância" in lower:
-        return {
-            "eq": "v = H<sub>0</sub> &times; d",
-            "name": "Lei de Hubble-Lemaître (Expansão Cósmica)",
-            "vars": [
-                ("v", "Velocidade de Recessão"),
-                ("H<sub>0</sub>", "Constante de Hubble"),
-                ("d", "Distância Cósmica"),
-            ],
-        }
-    elif "quântic" in lower or "incerteza" in lower or "heisenberg" in lower or "partícula" in lower:
-        return {
-            "eq": "&Delta;x &middot; &Delta;p &ge; <sup>&hbar;</sup>&frasl;<sub>2</sub>",
-            "name": "Princípio da Incerteza de Heisenberg",
-            "vars": [
-                ("&Delta;x", "Incerteza da Posição"),
-                ("&Delta;p", "Incerteza do Momento"),
-                ("&hbar;", "Constante de Planck Reduzida"),
-            ],
-        }
-    elif "gravid" in lower or "atração" in lower or "órbita" in lower or "newton" in lower:
-        return {
-            "eq": "F = G &middot; <sup>(m<sub>1</sub> &middot; m<sub>2</sub>)</sup>&frasl;<sub>r<sup>2</sup></sub>",
-            "name": "Lei da Gravitação Universal de Newton",
-            "vars": [
-                ("F", "Força Gravitacional"),
-                ("G", "Constante Gravitacional"),
-                ("m", "Massas Interagentes"),
-                ("r", "Distância Radial"),
-            ],
-        }
-    else:
-        return {
-            "eq": "E = m &middot; c<sup>2</sup>",
-            "name": "Equivalência Massa-Energia de Einstein",
-            "vars": [
-                ("E", "Energia Repouso"),
-                ("m", "Massa Relativística"),
-                ("c", "Velocidade da Luz"),
-            ],
-        }
 
 
 def _render_callout_cards(callouts: list[dict], extra_class: str = "") -> str:
@@ -536,6 +565,7 @@ def generate_thematic_motion_html(
     callout_cards_html = _render_callout_cards(pedag_data["items"])
 
     VESTIBULAR_SVGS = {
+        "bio_tissue": ("HISTOLOGIA // TECIDO CONJUNTIVO & MATRIZ EXTRACELULAR", svg_bio_tissue),
         "law_constitution": ("DIREITO CONSTITUCIONAL // CF/88 & ESTADO DEMOCRÁTICO", svg_law_constitution),
         "law_limpe": ("DIREITO ADMINISTRATIVO // PRINCÍPIOS L.I.M.P.E.", svg_law_limpe),
         "logic_venn": ("RACIOCÍNIO LÓGICO // DIAGRAMAS DE VENN & CONJUNTOS", svg_logic_venn),
