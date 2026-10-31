@@ -108,7 +108,7 @@ def detect_visual_theme(
     chapter_title: str = "",
     explicit_archetype: str = "",
 ) -> tuple[str, str]:
-    """Detecta o campo do conhecimento e subtema para gerar Motion Design estritamente contextualizado ao assunto."""
+    """Detecta o campo do conhecimento e subtema para gerar Motion Design estritamente contextualizado ao assunto falado."""
     raw_sub = re.sub(r"[^\w\s]", "", chapter_title or topic).strip()
     if len(raw_sub) > 36:
         cutoff = raw_sub[:36].rfind(" ")
@@ -117,78 +117,98 @@ def detect_visual_theme(
         clean_sub = raw_sub.upper()
     label_suffix = clean_sub if clean_sub else "DADOS & CONCEITO"
 
+    c_text = (content or "").lower()
+    combined_text = f"{topic} {chapter_title} {content}".lower()
+
+        # 0. Finanças, Moedas, Dólar, Investimentos, Risco, Probabilidade & Mercado
+    if re.search(r"(\bdólar|dolar|câmbio|cambio|real|moeda|inflação|inflacao|juros|selic|mercado|bolsa|ações|acoes|ibov|investiment|lucro|preço|preco|volatilidade|risco|probabilidade|chance|ganhar|dinheiro|bilhões|bilhoes|previsão financeira|carteira)", c_text):
+        return "finance", f"MERCADO & RISCO // {label_suffix}"
+
+    # 0.1 Lançamento de Produto, Negócios, Startups, Vendas & Marketing
+    if re.search(r"(lançamento de produto|lancamento de produto|produto|marca|negócio|negocio|startup|vendas|marketing|cliente|conversão|posicionamento|empresa|comercial|novo recurso)", c_text):
+        return "business", f"LANÇAMENTO // {label_suffix}"
+
+    # 0.2 Política, Eleições, Pesquisa de Opinião, Voto & Democracia
+    if re.search(r"(eleição|eleicao|eleições|eleicoes|pesquisa de opinião|pesquisa eleitoral|voto|votar|candidato|urna|partido|governo|democracia|congresso|deputado|senador|presidente|rejeição|amostragem)", c_text):
+        return "politics", f"CENÁRIO ELEITORAL // {label_suffix}"
+
+    # 1. Prioridade Semântica da Sentença: Fórmulas Matemáticas e Equações
+    if re.search(r"(\be\s*=\s*mc|\bf\s*=\s*g|\br_s\s*=|equação|fórmula|lei da grav|incerteza|constante|c\^2|matemát)", c_text):
+        return "formula", f"EQUAÇÃO FUNDAMENTAL // {label_suffix}"
+
+    # 2. Prioridade Semântica da Sentença: Dados Estatísticos, Porcentagens, Tendência & Grandezas
+    if re.search(r"(\b\d+([.,]\d+)?\s*(%|vezes|x|km/s|km|anos-luz|graus|k|ºc)\b|porcento|por cento|aumento de|queda de|estatística|gráfico|taxa de|crescimento)", c_text):
+        return "analytics", f"DADOS & TENDÊNCIA ESTATÍSTICA // {label_suffix}"
+
+    # 3. Prioridade Semântica da Sentença: Espectro de Luz, Ondas, Radiação, Frequência & Raios-X
+    if re.search(r"(espectro|raios-x|radiação|frequência|onda|luminos|comprimento de onda|doppler|redshift|eletromagnét)", c_text):
+        return "spectrum", f"ESPECTROGRAFIA & ONDAS // {label_suffix}"
+
+    # 4. Prioridade Semântica da Sentença: Telescópios, Observatórios, Instrumentos & Óptica
+    if re.search(r"(telescópio|observatório|detector|hubble|james webb|instrumento|óptica|espelho|resolução|calibração)", c_text):
+        return "blueprint", f"DIAGRAMA INSTRUMENTAL // {label_suffix}"
+
+    # 5. Prioridade Semântica da Sentença: Radar, Varredura & Detecção de Sinais
+    if re.search(r"(radar|sonar|varredura|rastreamento|sinal|detecção|varrer|sensor)", c_text):
+        return "radar", f"VARREDURA & DETECÇÃO // {label_suffix}"
+
+    # 6. Prioridade Semântica da Sentença: Cronologia, História, Séculos & Evolução no Tempo
+    if re.search(r"(anos de história|século|séculos|ao longo de|cronologia|passado|evolução|linha do tempo|décadas|milhões de anos|bilhões de anos)", c_text):
+        return "timeline", f"LINHA DO TEMPO & CRONOLOGIA // {label_suffix}"
+
+    # 7. Prioridade Semântica da Sentença: Partículas Subatômicas, Átomos & Mecânica Quântica
+    if re.search(r"(partícula|subatôm|átomo|quântic|fóton|elétron|próton|nêutron|bóson|quarks)", c_text):
+        return "quantum", f"MECÂNICA QUÂNTICA // {label_suffix}"
+
+    # 8. Prioridade Semântica da Sentença: Biologia Celular, Células, DNA, Medicina & Neurônios
+    if re.search(r"(câncer|tumor|carcinoma|oncol|célula|biópsia|dna|genoma|mutação|gene|imunoterap|anticorpo|linfócit|vírus|vacina|biolog|sangue|telômero|senescência|neurônio|sinapse)", c_text):
+        return "network", f"BIOLOGIA & CÉLULAS // {label_suffix}"
+
+    # 9. Prioridade Semântica da Sentença: Psicologia, Cognição, Mente, Decisões & Comportamento
+    if re.search(r"(psicolog|mente|comportamento|persuas|viés|cogni|emoç|influên|cérebro|percepç|decisão|inconsciente|hábito|atitude)", c_text):
+        return "psychology", f"PSICOLOGIA COGNITIVA // {label_suffix}"
+
+    # 10. Prioridade Semântica da Sentença: Política, Poder, Governo & Dinâmica Social
+    if re.search(r"(polític|manipula|agitador|eleiç|poder|propaganda|retórica|ideolog|governo|estado|voto|partido|líder|democrac|polariza|massa|autorit|opinião pública|populis|discurso)", c_text):
+        return "politics", f"DINÂMICA DE PODER // {label_suffix}"
+
+    # 11. Prioridade Semântica da Sentença: Astrofísica Orbital, Buracos Negros, Quasars & Gravidade
+    if re.search(r"(quasar|quásar|buraco negro|singularidade|acrec|horizonte de eventos|órbita|gravidade|plasma|estrela de nêutrons|supernova|galáxia|universo)", c_text):
+        return "orbital", f"ASTROFÍSICA ORBITAL // {label_suffix}"
+
+    # Se a sentença não tiver termos específicos próprios, recorre ao arquétipo explícito válido
     if explicit_archetype:
         arch = explicit_archetype.lower().strip()
         arch_labels = {
-            "politics": ("politics", f"DINÂMICA DE PODER & INFLUÊNCIA // {label_suffix}"),
-            "social": ("politics", f"DINÂMICA SOCIAL & OPINIÃO // {label_suffix}"),
-            "psychology": ("psychology", f"PSICOLOGIA COGNITIVA & MENTE // {label_suffix}"),
-            "mind": ("psychology", f"COMPORTAMENTO HUMANO // {label_suffix}"),
-            "orbital": ("orbital", f"DINÂMICA ORBITAL // {label_suffix}"),
+            "politics": ("politics", f"DINÂMICA DE PODER // {label_suffix}"),
+            "psychology": ("psychology", f"PSICOLOGIA COGNITIVA // {label_suffix}"),
+            "orbital": ("orbital", f"ASTROFÍSICA ORBITAL // {label_suffix}"),
             "infographic": ("infographic", f"TELEMETRIA & DADOS // {label_suffix}"),
             "blueprint": ("blueprint", f"DIAGRAMA TÉCNICO // {label_suffix}"),
-            "spectrum": ("spectrum", f"ESPECTRO & ONDAS // {label_suffix}"),
-            "network": ("network", f"REDE DE CONEXÕES // {label_suffix}"),
-            "timeline": ("timeline", f"CRONOLOGIA HISTÓRICA // {label_suffix}"),
-            "history": ("timeline", f"REGISTRO HISTÓRICO // {label_suffix}"),
+            "spectrum": ("spectrum", f"ESPECTROGRAFIA // {label_suffix}"),
+            "network": ("network", f"REDE & SISTEMAS // {label_suffix}"),
+            "timeline": ("timeline", f"REGISTRO HISTÓRICO // {label_suffix}"),
             "quantum": ("quantum", f"ESTRUTURA QUÂNTICA // {label_suffix}"),
             "formula": ("formula", f"EQUAÇÃO FUNDAMENTAL // {label_suffix}"),
-            "equation": ("formula", f"EQUAÇÃO FUNDAMENTAL // {label_suffix}"),
+            "radar": ("radar", f"VARREDURA & DETECÇÃO // {label_suffix}"),
+            "analytics": ("analytics", f"DADOS & TENDÊNCIA // {label_suffix}"),
         }
         if arch in arch_labels:
             return arch_labels[arch]
 
-    text = f"{topic} {chapter_title} {content}".lower()
-
-    # 1. POLÍTICA, MANIPULAÇÃO, AGITADORES, ELEIÇÃO, PODER E MASSAS
-    if re.search(r"(polític|manipula|agitador|eleiç|poder|propaganda|retórica|ideolog|governo|estado|voto|partido|líder|democrac|polariza|massa|autorit|opinião pública|populis|discurso)", text):
-        return "politics", f"DINÂMICA DE PODER & POLÍTICA // {label_suffix}"
-
-    # 2. PSICOLOGIA, COMPORTAMENTO, MENTE, VIESES, PERSUASÃO E COGNIÇÃO
-    if re.search(r"(psicolog|mente|comportamento|persuas|viés|cogni|emoç|influên|cérebro|percepç|decisão|inconsciente|hábito|atitude)", text):
-        return "psychology", f"PSICOLOGIA COGNITIVA & MENTE // {label_suffix}"
-
-    # 3. SOCIOLOGIA, SOCIEDADE E COLETIVO
-    if re.search(r"(sociedade|social|cultura|coletiv|populaç|comunidade|desigualdade|movimento social)", text):
-        return "politics", f"DINÂMICA SOCIAL & COLETIVO // {label_suffix}"
-
-    # 4. HISTÓRIA, GUERRAS E CIVILIZAÇÕES
-    if re.search(r"(histór|guerra|revoluç|século|império|tratado|conflito|era moderna|antiguidade|geopolític)", text):
-        return "timeline", f"REGISTRO HISTÓRICO & CRONOLOGIA // {label_suffix}"
-
-    # 5. Fórmulas e Leis Físicas Matemáticas
-    if re.search(r"(\be\s*=\s*mc|\bf\s*=\s*g|\br_s\s*=|\bkepler|\bnewton|\bhubble|\bequação|\bfórmula|\blei da grav|\bincerteza)", text):
-        return "formula", f"EQUAÇÃO FUNDAMENTAL // {label_suffix}"
-
-    # 6. Biologia, Células, Medicina e Saúde
-    if re.search(r"(câncer|tumor|carcinoma|oncol|célula|biópsia|dna|genoma|mutação|gene|imunoterap|imune|anticorpo|linfócit|vírus|vacina|biolog|sangue|medicin)", text):
+    # Recorre ao tema global combinado (tópico e título do capítulo)
+    if re.search(r"(câncer|célula|dna|gene|biolog|medicin|saúde|corpo|vida|envelhecimento|longevidade)", combined_text):
         return "network", f"BIOLOGIA & CÉLULAS // {label_suffix}"
+    if re.search(r"(quasar|buraco negro|espaço|astro|galáxia|universo|estrela|cosmo)", combined_text):
+        return "orbital", f"ASTROFÍSICA ORBITAL // {label_suffix}"
+    if re.search(r"(polític|governo|sociedade|poder|eleiç|líder)", combined_text):
+        return "politics", f"DINÂMICA SOCIAL // {label_suffix}"
+    if re.search(r"(psicolog|mente|comportamento|cérebro|cogni)", combined_text):
+        return "psychology", f"PSICOLOGIA // {label_suffix}"
+    if re.search(r"(histór|século|guerra|passado|evolução)", combined_text):
+        return "timeline", f"HISTÓRIA & TEMPO // {label_suffix}"
 
-    # 7. Astrofísica, Buracos Negros e Espaço
-    if re.search(r"(quasar|quásar|buraco negro|singularidade|acrec|horizonte de eventos|espaço|astro|galáxia|universo|estrela|supernova)", text):
-        return "orbital", f"ASTROFÍSICA & COSMO // {label_suffix}"
-
-    # 8. Telescópios e Observação
-    if re.search(r"(telescópio|hubble|james webb|óptica|espelho|observatório|detector|resolução|coordenadas)", text):
-        return "blueprint", f"OBSERVAÇÃO TÉCNICA // {label_suffix}"
-
-    # 9. Luz e Ondas
-    if re.search(r"(luz|onda|espectro|frequência|comprimento de onda|doppler|redshift|radiação|eletromagnét)", text):
-        return "spectrum", f"ESPECTROGRAFIA // {label_suffix}"
-
-    # 10. Evolução e Tempo
-    if re.search(r"(tempo|evolução|anos|milhões de anos|origem|cronologia|big bang)", text):
-        return "timeline", f"EVOLUÇÃO TEMPORAL // {label_suffix}"
-
-    # 11. Física Quântica
-    if re.search(r"(átomo|quântic|elétron|próton|fóton|física|partícula)", text):
-        return "quantum", f"MECÂNICA QUÂNTICA // {label_suffix}"
-
-    # 12. Tecnologia, IA e Redes
-    if re.search(r"(inteligência artificial|ia|rede neural|algoritmo|computador|dados|deep learning)", text):
-        return "network", f"SISTEMAS NEURAIS // {label_suffix}"
-
-    return "infographic", f"DADOS & MEDIÇÃO // {label_suffix}"
+    return "infographic", f"TELEMETRIA & DADOS // {label_suffix}"
 
 
 def _get_formula_preset(text: str) -> dict[str, Any]:
@@ -250,16 +270,59 @@ def _get_formula_preset(text: str) -> dict[str, Any]:
 
 def generate_thematic_motion_html(theme: str, label: str) -> str:
     """Retorna Motion Design vetorial procedural específico do assunto falado."""
-    if theme in ("politics", "social", "power", "opinion"):
+    if theme in ("finance", "economy", "money", "market"):
+        return f'''
+      <div class="clip-right-media">
+        <div class="motion-design-graphic motion-finance">
+          <div class="analytics-hud-header">
+            <span class="hud-sub-badge">MERCADO, PROBABILIDADE & RISCO</span>
+          </div>
+          <svg class="analytics-chart-svg" viewBox="0 0 380 180" width="380" height="180">
+            <line x1="30" y1="160" x2="360" y2="160" stroke="rgba(255,255,255,0.18)" stroke-width="2"/>
+            <line x1="30" y1="20" x2="30" y2="160" stroke="rgba(255,255,255,0.18)" stroke-width="2"/>
+            <path d="M 40 130 Q 90 150 140 90 T 240 60 T 350 25" fill="none" stroke="var(--palettePrimary)" stroke-width="3.5" stroke-linecap="round"/>
+            <path d="M 40 145 Q 90 160 140 110 T 240 85 T 350 55" fill="none" stroke="var(--paletteAccent)" stroke-width="2" stroke-dasharray="5 5"/>
+            <circle cx="350" cy="25" r="7" fill="var(--palettePrimary)"/>
+          </svg>
+          <div class="analytics-bars-row">
+            <div class="stat-col"><div class="stat-fill f1" style="height: 55%; background: var(--palettePrimary);"></div><span>IBOV</span></div>
+            <div class="stat-col"><div class="stat-fill f2" style="height: 82%; background: var(--paletteAccent);"></div><span>USD</span></div>
+            <div class="stat-col"><div class="stat-fill f3" style="height: 40%; background: var(--palettePrimary);"></div><span>VOL</span></div>
+            <div class="stat-col"><div class="stat-fill f4" style="height: 91%; background: #10b981;"></div><span>META</span></div>
+          </div>
+          <div class="hud-label">{label}</div>
+        </div>
+      </div>'''
+
+    elif theme in ("business", "product", "launch"):
+        return f'''
+      <div class="clip-right-media">
+        <div class="motion-design-graphic motion-business">
+          <div class="psych-hud-header">
+            <span class="hud-sub-badge">LANÇAMENTO // PRODUTO & IMPACTO</span>
+          </div>
+          <div class="product-hud-core" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1rem; padding:1.5rem 0;">
+            <div style="width:110px; height:110px; border-radius:24px; border:2px solid var(--palettePrimary); display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.04); box-shadow:0 0 30px var(--palettePrimary); font-size:2.5rem;">
+              ✨
+            </div>
+            <div class="readout-pill" style="font-weight:700; letter-spacing:0.05em; font-size:0.85rem; padding:0.4rem 1rem; border-radius:9999px; background:rgba(255,255,255,0.08); border:1px solid var(--paletteAccent);">
+              CONVERSÃO & VALOR DE MERCADO
+            </div>
+          </div>
+          <div class="hud-label">{label}</div>
+        </div>
+      </div>'''
+
+    elif theme in ("politics", "social", "power", "opinion"):
         return f'''
       <div class="clip-right-media">
         <div class="motion-design-graphic motion-politics">
           <div class="polarization-hud">
-            <span class="hud-sub-badge">DINÂMICA DE PODER & INFLUÊNCIA</span>
+            <span class="hud-sub-badge">DINÂMICA SOCIAL & OPINIÃO PÚBLICA</span>
             <div class="polarity-spectrum">
-              <span class="pol-label left">POLO ALFA // 48%</span>
+              <span class="pol-label left">GRUPO A // 48%</span>
               <div class="pol-bar"><div class="pol-needle"></div></div>
-              <span class="pol-label right">POLO BETA // 52%</span>
+              <span class="pol-label right">GRUPO B // 52%</span>
             </div>
           </div>
           <svg class="influence-net-svg" viewBox="0 0 380 230" width="380" height="230">
@@ -273,8 +336,8 @@ def generate_thematic_motion_html(theme: str, label: str) -> str:
             <circle class="mass-node m-2" cx="190" cy="175" r="14" fill="rgba(255,255,255,0.7)"/>
           </svg>
           <div class="politics-readouts">
-            <div class="readout-pill">ÍNDICE DE PERSUASÃO: <b>89.4%</b></div>
-            <div class="readout-pill">DISPERSÃO DE NARRATIVA: <b>ALTA</b></div>
+            <div class="readout-pill">AMOSTRAGEM & PESQUISA: <b>REPRESENTATIVA</b></div>
+            <div class="readout-pill">MARGEM DE ERRO: <b>±2.0%</b></div>
           </div>
           <div class="hud-label">{label}</div>
         </div>
@@ -335,7 +398,7 @@ def generate_thematic_motion_html(theme: str, label: str) -> str:
           </div>
           <div class="gauge-center-readout">
             <span class="readout-val">98.4%</span>
-            <span class="readout-unit">FLUXO RELATIVÍSTICO</span>
+            <span class="readout-unit">MÉTRICA // ÍNDICE</span>
           </div>
           <div class="hud-label">{label}</div>
         </div>
@@ -354,7 +417,7 @@ def generate_thematic_motion_html(theme: str, label: str) -> str:
           <div class="blueprint-corner tr"></div>
           <div class="blueprint-corner bl"></div>
           <div class="blueprint-corner br"></div>
-          <div class="blueprint-hud-coords">AZ: 184.22° // EL: +47.19° // RA: 12h 55m</div>
+          <div class="blueprint-hud-coords">SISTEMA: ATIVO // ANÁLISE ESTRUTURAL</div>
           <div class="hud-label">{label}</div>
         </div>
       </div>'''
@@ -404,8 +467,8 @@ def generate_thematic_motion_html(theme: str, label: str) -> str:
           <div class="timeline-axis"></div>
           <div class="timeline-nodes">
             <div class="tl-node n-1"><div class="tl-pulse"></div><span>T-0</span></div>
-            <div class="tl-node n-2"><div class="tl-pulse"></div><span>ERA I</span></div>
-            <div class="tl-node n-3"><div class="tl-pulse"></div><span>ERA II</span></div>
+            <div class="tl-node n-2"><div class="tl-pulse"></div><span>FASE I</span></div>
+            <div class="tl-node n-3"><div class="tl-pulse"></div><span>FASE II</span></div>
             <div class="tl-node n-4 active"><div class="tl-pulse"></div><span>PRESENTE</span></div>
           </div>
           <div class="timeline-scanner-beam"></div>
@@ -435,7 +498,7 @@ def generate_thematic_motion_html(theme: str, label: str) -> str:
       <div class="clip-right-media">
         <div class="motion-design-graphic motion-formula">
           <div class="formula-card">
-            <div class="formula-sub-badge">LEI CIENTÍFICA FUNDAMENTAL</div>
+            <div class="formula-sub-badge">LEI OU EQUAÇÃO FUNDAMENTAL</div>
             <div class="formula-math-display">{preset["eq"]}</div>
             <div class="formula-caption">{preset["name"]}</div>
             <div class="formula-vars-grid">{vars_badges}</div>
@@ -484,13 +547,19 @@ def generate_thematic_motion_html(theme: str, label: str) -> str:
       </div>'''
 
     else:
+        # Fallback Universal Moderno: Motion Design Geométrico Limpo e Neutro (para qualquer assunto)
         return f'''
       <div class="clip-right-media">
-        <div class="motion-design-graphic">
-          <div class="orbit-ring ring-outer"></div>
-          <div class="orbit-ring ring-mid"></div>
-          <div class="orbit-ring ring-inner"></div>
-          <div class="pulse-core"></div>
+        <div class="motion-design-graphic motion-universal">
+          <div class="universal-waves" style="position:relative; width:340px; height:200px; display:flex; align-items:center; justify-content:center;">
+            <svg viewBox="0 0 340 180" width="340" height="180">
+              <rect x="20" y="20" width="300" height="140" rx="16" fill="rgba(255,255,255,0.03)" stroke="var(--palettePrimary)" stroke-width="1.5" stroke-dasharray="6 6"/>
+              <circle cx="170" cy="90" r="45" fill="none" stroke="var(--paletteAccent)" stroke-width="2.5"/>
+              <circle cx="170" cy="90" r="22" fill="var(--palettePrimary)" opacity="0.85"/>
+              <line x1="60" y1="90" x2="110" y2="90" stroke="var(--paletteAccent)" stroke-width="2"/>
+              <line x1="230" y1="90" x2="280" y2="90" stroke="var(--paletteAccent)" stroke-width="2"/>
+            </svg>
+          </div>
           <div class="hud-label">{label}</div>
         </div>
       </div>'''
@@ -514,11 +583,11 @@ def build_composition(
     clips_html = []
     cursor = 0.0
     role_labels = {
-        "title": "A PERGUNTA / TÍTULO",
-        "subtitle": "IDEIA-CHAVE",
-        "body": "MECANISMO & CIÊNCIA",
-        "image": "OBSERVAÇÃO REAL",
-        "shape": "MODELO TEÓRICO",
+        "title": "DESTAQUE // INTRODUÇÃO",
+        "subtitle": "PONTO CENTRAL",
+        "body": "EXPLICAÇÃO",
+        "image": "REGISTRO VISUAL",
+        "shape": "CONCEITO",
     }
 
     elements = scene.get("elements", [])
@@ -543,7 +612,7 @@ def build_composition(
                 )
                 for s in cited_sources
             )
-            source_line = f'<div class="clip-sources">FONTES CIENTÍFICAS  /  {citations}</div>'
+            source_line = f'<div class="clip-sources">FONTES & REFERÊNCIAS  /  {citations}</div>'
 
         # Verifica se há imagem associada
         image_src = el.get("image_path") or el.get("image_url") or ""

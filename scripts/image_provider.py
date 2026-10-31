@@ -241,16 +241,40 @@ def search_multiple_gifs(query: str, limit: int = 8) -> List[Dict[str, Any]]:
     return None
 
 
-# Mapeamento semântico de termos científicos para conceitos visuais de alta fidelidade
+# Mapeamento semântico rico para conceitos visuais de alta fidelidade (Geral & Científico)
 SCIENTIFIC_CONCEPTS_MAP = [
-    (r"(câncer|tumor|carcinoma|oncol|célula|biópsia|mutação celular)", ["Cancer_cell", "Mitosis", "Tumor", "Cell_biology"]),
-    (r"(imunoterap|sistema imune|anticorpo|linfócit|t-cell|car-t)", ["Immunotherapy", "T_cell", "Antibody", "Immune_system"]),
-    (r"(dna|genoma|mutação|gene|genétic|crispr|código genético)", ["DNA", "Gene_editing", "Chromosome", "Mutation"]),
+    # Economia, Finanças, Câmbio & Dólar
+    (r"(dólar|dolar|câmbio|cambio|moeda|inflação|inflacao|juros|selic|bolsa de valores|ações|investimento|mercado financeiro)", ["United_States_dollar", "Currency", "Stock_market", "Finance", "Economy"]),
+    (r"(probabilidade|risco|estatística|chance|volatilidade)", ["Probability", "Risk", "Statistics"]),
+    
+    # Política, Eleições & Pesquisas de Opinião
+    (r"(eleição|eleicao|eleições|eleicoes|voto|urna|pesquisa eleitoral|pesquisa de opinião|congresso|democracia|governo)", ["Election", "Voting", "Ballot", "Opinion_poll", "Democracy"]),
+    
+    # Negócios, Startups & Lançamento de Produto
+    (r"(produto|lançamento de produto|marketing|vendas|marca|empresa|startup)", ["Product_management", "Startup_company", "Marketing", "Brand"]),
+
+    # Biologia Celular, Longevidade & Genética
+    (r"(célula imortal|hela|henrietta lacks)", ["HeLa", "Cell_biology", "Mitosis"]),
+    (r"(telômero|telomerase|senescência|envelhecimento celular|longevidade)", ["Telomere", "Aging", "Cell_biology", "DNA"]),
+    (r"(mitocôndria|energia celular|respiração celular)", ["Mitochondrion", "Cell_biology"]),
+    (r"(câncer|tumor|carcinoma|oncol|célula|biópsia|mutação celular|divisão celular|mitose)", ["Cancer_cell", "Mitosis", "Tumor", "Cell_biology"]),
+    (r"(imunoterap|sistema imune|anticorpo|linfócit|t-cell|car-t|imunidade)", ["Immunotherapy", "T_cell", "Antibody", "Immune_system"]),
+    (r"(dna|genoma|mutação|gene|genétic|crispr|código genético|cromossomo)", ["DNA", "Gene_editing", "Chromosome", "Mutation"]),
+    
+    # Astrofísica, Cosmologia & Espaço
     (r"(quasar|quásar|buraco negro|singularidade|acrec|horizonte de eventos)", ["Quasar", "Black_hole", "Accretion_disk", "Supermassive_black_hole"]),
-    (r"(galáxia|universo|hubble|james webb|telescópio|estrela|supernova|nebulosa)", ["Galaxy", "James_Webb_Space_Telescope", "Supernova", "Nebula", "Milky_Way"]),
+    (r"(estrela de nêutrons|pulsar|magnetar|supernova)", ["Neutron_star", "Pulsar", "Supernova"]),
+    (r"(galáxia|universo|hubble|james webb|telescópio|estrela|nebulosa|via láctea)", ["Galaxy", "James_Webb_Space_Telescope", "Supernova", "Nebula", "Milky_Way"]),
+    
+    # Física Quântica & Partículas
+    (r"(átomo|quântic|elétron|próton|física de partículas|fóton|bóson|quarks)", ["Atom", "Quantum_mechanics", "Particle_physics", "Large_Hadron_Collider"]),
+    (r"(relatividade|espaço-tempo|gravidade|einstein)", ["General_relativity", "Gravitational_wave", "Spacetime"]),
+    
+    # Neurociência & Cognição
+    (r"(cérebro|neurônio|sinapse|neurociência|córtex|cogni)", ["Neuron", "Brain", "Synapse", "Neuroscience"]),
+    
+    # Computação & IA
     (r"(inteligência artificial|rede neural|algoritmo|deep learning|robô|computação)", ["Artificial_intelligence", "Artificial_neural_network", "Robotics"]),
-    (r"(átomo|quântic|elétron|próton|física de partículas|fóton)", ["Atom", "Quantum_mechanics", "Particle_physics"]),
-    (r"(cérebro|neurônio|sinapse|neurociência|cogni)", ["Neuron", "Brain", "Synapse"]),
 ]
 
 
@@ -264,17 +288,21 @@ def extract_scientific_terms(topic: str, title: str, narration: str = "") -> lis
                 if t not in candidates:
                     candidates.append(t)
 
-    # Se não houver correspondência nas categorias principais, extrai substantivos-chave
-    if not candidates:
-        words = [w for w in re.sub(r"[^\w\s]", " ", title).split() if len(w) > 3]
-        if words:
-            candidates.append(words[0].capitalize())
+    # Extrai substantivos científicos e substantivos próprios do título
+    words = [w for w in re.sub(r"[^\w\s]", " ", title).split() if len(w) > 3 and w.lower() not in (
+        "como", "para", "onde", "qual", "mais", "sobre", "esse", "essa", "esses", "essas",
+        "segredo", "segredos", "nunca", "você", "estudo", "vídeo", "coisa", "algo"
+    )]
+    for w in words[:3]:
+        cap = w.capitalize()
+        if cap not in candidates:
+            candidates.append(cap)
     return candidates
 
 
 def search_wikipedia_image(
     term: str,
-    lang: str = "en",
+    lang: str = "pt",
     used_urls: Optional[set[str]] = None,
     timeout: float = 8.0,
 ) -> Optional[Dict[str, Any]]:
@@ -293,7 +321,7 @@ def search_wikipedia_image(
 
                 title = data.get("title", clean_term).replace("_", " ")
                 desc = data.get("description", "Ilustração Científica Oficial")
-                author = "Wikipedia / Wikimedia Commons"
+                author = f"Wikipedia ({lang.upper()}) / Wikimedia Commons"
                 page_url = data.get("content_urls", {}).get("desktop", {}).get("page", "")
 
                 if used_urls is not None:
@@ -312,7 +340,7 @@ def search_wikipedia_image(
                     "height": img_data.get("height", 1080),
                 }
     except Exception as exc:
-        logger.debug("Wikipedia image falhou para '%s': %s", term, exc)
+        logger.debug("Wikipedia image falhou para '%s' (%s): %s", term, lang, exc)
     return None
 
 
@@ -325,7 +353,7 @@ def search_free_image(
     used_urls: Optional[set[str]] = None,
 ) -> Optional[Dict[str, Any]]:
     """Busca imagem de alta fidelidade ligada exatamente ao assunto falado neste capítulo específico."""
-    # 1. Prioridade máxima: visual_keywords sugeridas pelo LLM para o conteúdo específico do capítulo
+    # 1. Prioridade máxima: visual_keywords sugeridas para o capítulo
     if visual_keywords:
         for kw in visual_keywords:
             if not kw or len(kw.strip()) < 3:
@@ -337,7 +365,10 @@ def search_free_image(
                 if gif_res:
                     return gif_res
 
-            # Tenta Wikipedia
+            # Tenta Wikipedia em PT e depois em EN
+            res = search_wikipedia_image(clean_kw, lang="pt", used_urls=used_urls)
+            if res:
+                return res
             res = search_wikipedia_image(clean_kw, lang="en", used_urls=used_urls)
             if res:
                 return res
@@ -346,32 +377,44 @@ def search_free_image(
             if res:
                 return res
 
-    # 2. Termos científicos específicos extraídos apenas do título e narração do capítulo (evitando poluição do topic global)
+    # 2. Termos científicos específicos extraídos da narração e título do capítulo
     ch_terms = extract_scientific_terms(chapter_title, chapter_title, narration)
-    for t in ch_terms[:3]:
+    for t in ch_terms[:4]:
         # Tenta GIF se o capítulo falar de dinâmica/movimento
         if re.search(r"(movimento|órbita|rotação|fusão|colisão|expansão|onda|pulso|reação)", f"{chapter_title} {narration}", re.IGNORECASE):
             gif_res = search_wikimedia_gif(t, used_urls=used_urls)
             if gif_res:
                 return gif_res
 
+        # Wikipedia PT
+        res = search_wikipedia_image(t, lang="pt", used_urls=used_urls)
+        if res:
+            return res
+        # Wikipedia EN
         res = search_wikipedia_image(t, lang="en", used_urls=used_urls)
         if res:
             return res
+        # Wikimedia Commons
         res = search_wikimedia_image(t, used_urls=used_urls)
         if res:
             return res
 
-    # 3. Tentativa no Wikimedia Commons com o título do capítulo limpo
+    # 3. Tentativa com o título do capítulo limpo
     if chapter_title:
+        res = search_wikipedia_image(chapter_title, lang="pt", used_urls=used_urls)
+        if res:
+            return res
         res = search_wikimedia_image(chapter_title, used_urls=used_urls)
         if res:
             return res
 
-    # 4. Termos do tópico geral somente como fallback se nada for encontrado para o capítulo
+    # 4. Fallback com o tópico geral
     if topic:
         topic_terms = extract_scientific_terms(topic, "", "")
         for t in topic_terms[:3]:
+            res = search_wikipedia_image(t, lang="pt", used_urls=used_urls)
+            if res:
+                return res
             res = search_wikipedia_image(t, lang="en", used_urls=used_urls)
             if res:
                 return res

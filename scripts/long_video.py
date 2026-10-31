@@ -307,7 +307,7 @@ def generate_outline(
         "   - Deve conter 3 elementos indispensáveis: 1) Uma PROMESSA clara sobre o que será desvendado; "
         "2) Criação de alta EXPECTATIVA sobre o peso da descoberta; 3) Uma CURIOSIDADE provocativa que o telespectador sinta a necessidade urgente de resolver.\n"
         "2. Capítulos Intermediários (Jornada de Investigação Progressiva):\n"
-        "   - Desenvolva a ciência em camadas, apresentando pistas, mecanismos e evidências sem entregar a resposta completa de imediato, mantendo o suspense intelectual.\n"
+        "   - Desenvolva o tema em camadas progressivas, apresentando fatos, dados, mecanismos e exemplos práticos com clareza e dinamismo, prendendo a atenção do início ao fim.\n"
         "3. Capítulo Final (Resolução do Enigma & CTA Nerdociência):\n"
         "   - Entregue a resposta definitiva da promessa inicial com maravilhamento e emoção.\n"
         "   - Termine OBRIGATORIAMENTE com um Call to Action (CTA) dinâmico e caloroso para o público curtir o vídeo, compartilhar com outros curiosos e deixar seu comentário no canal Nerdociência.\n\n"
@@ -437,7 +437,7 @@ def write_chapter(
         '- "key_points": 1 a 3 frases explicativas curtas e impactantes (de 20 a 80 caracteres) para aparecer na tela. PROIBIDO responder apenas com "..." ou reticências!\n'
         '- "visual_keywords": 2 a 3 termos de busca em inglês específicos para ilustrar este capítulo, incluindo simulações ou GIFs quando couber (ex: "Black hole accretion simulation gif", "James Webb mirror", "Quantum wave packet").\n'
         '- "visual_archetype": escolha um estilo de motion design único para este capítulo entre: "orbital", "infographic", "blueprint", "spectrum", "network", "timeline", "quantum", "formula".\n\n'
-        'Responda em JSON: {"narration": "texto falado do capítulo com pontuação expressiva e pausas", "key_points": ["Conceito científico 1", "Conceito científico 2"], "visual_keywords": ["..."], "visual_archetype": "orbital"}'
+        'Responda em JSON: {"narration": "texto falado do capítulo com pontuação expressiva e pausas", "key_points": ["Ponto central 1", "Ponto central 2"], "visual_keywords": ["relevant_term_1", "relevant_term_2"], "visual_archetype": "infographic"}'
         + _evidence_block(chapter_sources)
     )
 
@@ -677,9 +677,15 @@ def build_chapter_scene(
     image_info: dict[str, Any] | None = None,
     topic: str = "",
 ) -> dict[str, Any]:
-    """Cria a cena de um capítulo com micro-cenas dinâmicas a cada 4-7s,
-    garantindo que o Motion Design mude de visual constantemente ao longo de todo o vídeo.
+    """Cria a cena de um capítulo com micro-cenas rigorosamente sincronizadas com a narração de áudio.
+
+    Cada micro-cena:
+    1. Permanece na tela exatamente durante o tempo em que a respectiva explicação é falada (a partir de voice.words.json).
+    2. Apresenta o texto falado ou seu conceito-chave imediato, eliminando descompassos temporais.
+    3. Exibe um Motion Design ou Imagem Real estritamente condizente com a sentença que está sendo explicada.
     """
+    from scripts.build_composition import detect_visual_theme
+
     image_dict: dict[str, Any] = {}
     if image_info:
         local_p = image_info.get("local_path")
@@ -690,108 +696,143 @@ def build_chapter_scene(
             image_dict["image_path"] = str(local_p)
         image_dict["image_credit"] = _smart_truncate(credit, 100)
 
-    # Arquétipo visual contextualizado ao tema específico
-    archetype = chapter.get("visual_archetype")
-    if not archetype or archetype not in SUPPORTED_ARCHETYPES:
-        from scripts.build_composition import detect_visual_theme
-        detected_arch, _ = detect_visual_theme(topic or "", chapter.get("narration", ""), chapter.get("title", ""))
-        archetype = detected_arch
+    narration_text = str(chapter.get("narration") or "").strip()
+    chapter_title = str(chapter.get("title") or "Capítulo").strip()
 
-    points = chapter.get("key_points", [])
+    # 1. Segmentação da narração em frases completas e pontuadas
+    raw_sentences = [
+        s.strip() for s in re.split(r"(?<=[.!?])\s+|—\s*", narration_text) if len(s.strip()) > 3
+    ]
+    if not raw_sentences:
+        raw_sentences = chapter.get("key_points") or [chapter_title]
 
-    # Se não houver imagem real (modo Motion Design), dividimos a narração em micro-cenas dinâmicas de 4 a 6.5s
-    if not image_dict:
-        narration_text = chapter.get("narration", "")
-        # Extrai frases completas ou orações ricas da narração
-        sentences = [
-            s.strip() for s in re.split(r"(?<=[.!?])\s+|—\s*|\.{3}\s*", narration_text)
-            if len(s.strip()) >= 10
-        ]
-        sub_points: list[str] = []
-        for s in sentences:
-            if len(s) > 95:
-                parts = [p.strip() for p in re.split(r"[,;:]\s+", s) if len(p.strip()) >= 12]
-                if parts:
-                    sub_points.extend(parts)
-                else:
-                    sub_points.append(s)
+    # Se alguma frase for muito longa (> 115 caracteres), divide em orações lógicas para dinamismo visual
+    segmented_phrases: list[str] = []
+    for s in raw_sentences:
+        if len(s) > 115 and ("," in s or ";" in s):
+            clauses = [c.strip() for c in re.split(r"[,;]\s+(?=(?:mas|e|porém|pois|onde|porque|enquanto|quando|que)\b)", s) if len(c.strip()) >= 15]
+            if len(clauses) >= 2:
+                segmented_phrases.extend(clauses)
             else:
-                sub_points.append(s)
-
-        # Meta de dinamismo: trocar de cena visual a cada ~5.5 segundos
-        target_scene_count = max(3, min(12, int(round(slot_seconds / 5.5))))
-        if len(sub_points) >= target_scene_count:
-            step = len(sub_points) / target_scene_count
-            points = [_smart_truncate(sub_points[int(k * step)], 90) for k in range(target_scene_count)]
-        elif sub_points:
-            points = [_smart_truncate(p, 90) for p in sub_points]
+                segmented_phrases.append(s)
         else:
-            points = [_smart_truncate(p, 90) for p in chapter.get("key_points", ["Destaque da Cena"])]
+            segmented_phrases.append(s)
 
-    segments = len(points) + 1
-    boundaries = [0.0]
-    for k in range(1, segments):
-        idx = min(len(words) - 1, max(0, round(len(words) * k / segments)))
-        boundaries.append(float(words[idx]["start"]))
-    boundaries.append(slot_seconds)
-    durations = [boundaries[i + 1] - boundaries[i] for i in range(segments)]
-    if min(durations) < 1.2:
-        durations = [slot_seconds / segments] * segments
-    durations[-1] = slot_seconds - sum(durations[:-1])
+    # 2. Alinhamento temporal com as palavras reais de voice.words.json
+    total_words = len(words)
+    raw_segments: list[dict[str, Any]] = []
+    w_cursor = 0
 
-    # Piscina variada de Motion Design para não repetir o mesmo componente em sequência
-    archetypes_pool = [
-        archetype, "analytics", "network", "quantum", "formula",
-        "politics", "psychology", "blueprint", "timeline", "spectrum", "infographic"
-    ]
-    archetypes_pool = list(dict.fromkeys(archetypes_pool))
+    if total_words > 0:
+        for phrase in segmented_phrases:
+            n_w = len(phrase.split())
+            st_idx = min(w_cursor, total_words - 1)
+            end_idx = min(w_cursor + n_w - 1, total_words - 1)
+            w_cursor = end_idx + 1
+            t_start = float(words[st_idx]["start"])
+            t_end = float(words[end_idx]["end"])
+            raw_segments.append({"text": phrase, "start": t_start, "end": t_end})
+    else:
+        # Fallback se não houver palavras no json
+        step = slot_seconds / max(1, len(segmented_phrases))
+        for i, phrase in enumerate(segmented_phrases):
+            raw_segments.append({
+                "text": phrase,
+                "start": i * step,
+                "end": (i + 1) * step,
+            })
 
-    # Elemento 1 (Título do Capítulo): Abre sempre com Motion Design Procedural Temático
-    elements: list[dict[str, Any]] = [
-        {
-            "type": "title",
-            "content": chapter["title"],
-            "position": "center",
-            "animation": "zoom",
-            "duration_seconds": round(durations[0], 3),
-            "visual_archetype": archetype,
-        }
-    ]
+    # 3. Fusão de segmentos adjacentes muito curtos (< 3.2s) para evitar cortes excessivos
+    merged_segments: list[dict[str, Any]] = []
+    for seg in raw_segments:
+        if merged_segments and (
+            (seg["end"] - seg["start"] < 3.2)
+            or (merged_segments[-1]["end"] - merged_segments[-1]["start"] < 3.2)
+        ):
+            merged_segments[-1]["text"] += " " + seg["text"]
+            merged_segments[-1]["end"] = max(merged_segments[-1]["end"], seg["end"])
+        else:
+            merged_segments.append(dict(seg))
 
-    # Elementos seguintes: Alternam dinamicamente entre arquétipos de Motion Design ou Imagem Real
+    if not merged_segments:
+        merged_segments = [{"text": narration_text or chapter_title, "start": 0.0, "end": slot_seconds}]
+
+    # 4. Ajuste exato de fronteiras contíguas de 0.0s até slot_seconds (sem lacunas)
+    merged_segments[0]["start"] = 0.0
+    for i in range(len(merged_segments) - 1):
+        merged_segments[i]["end"] = merged_segments[i + 1]["start"]
+    merged_segments[-1]["end"] = slot_seconds
+
+    # 5. Escolha de arquétipo contextual para cada sentença falada e alocação de imagem
+    elements: list[dict[str, Any]] = []
     animations = ["fade", "slide-up", "slide-left", "zoom", "slide-up"]
-    for i, point in enumerate(points):
-        scene_arch = archetypes_pool[(i + 1) % len(archetypes_pool)]
+
+    # Identifica o melhor segmento para receber a imagem real (se existir)
+    best_img_idx = -1
+    if image_dict:
+        img_title = str(image_info.get("title") or "").lower()
+        best_score = -1.0
+        for idx, seg in enumerate(merged_segments):
+            score = 0.0
+            seg_lower = seg["text"].lower()
+            for w in img_title.split():
+                if len(w) > 3 and w in seg_lower:
+                    score += 2.0
+            for w in chapter_title.lower().split():
+                if len(w) > 3 and w in seg_lower:
+                    score += 1.0
+            if idx in (0, 1):
+                score += 0.5
+            if score > best_score:
+                best_score = score
+                best_img_idx = idx
+
+    for i, seg in enumerate(merged_segments):
+        seg_dur = round(seg["end"] - seg["start"], 3)
+        if seg_dur < 1.0:
+            seg_dur = 1.0
+
+        phrase_text = seg["text"].strip()
+        # Detecta o arquétipo visual estritamente condizente com o que é explicado NESTA sentença
+        seg_arch, _ = detect_visual_theme(topic, phrase_text, chapter_title)
+
+        el_type = "title" if i == 0 else "body"
         el: dict[str, Any] = {
-            "type": "body",
-            "content": point,
+            "type": el_type,
+            "content": phrase_text,
             "position": "center",
             "animation": animations[i % len(animations)],
-            "duration_seconds": round(durations[i + 1], 3),
-            "visual_archetype": scene_arch,
+            "duration_seconds": seg_dur,
+            "visual_archetype": seg_arch,
         }
-        # Se houver imagem real disponível, alterna foto com o motion design
-        if image_dict and (i == 0 or i % 2 == 0):
+
+        # Se o modo de imagens estiver ativo e houver imagem disponível,
+        # exibe a imagem em todos os segmentos do capítulo para que ela permaneça contínua na tela
+        if image_dict:
             el.update(image_dict)
 
         if sources:
             known = {s["id"] for s in sources}
             valid_ids = [sid for sid in chapter.get("source_ids", []) if sid in known]
             el["source_ids"] = valid_ids or [sources[0]["id"]]
+
         elements.append(el)
 
-    # Reajusta o arredondamento para a soma bater com o capítulo.
-    elements[-1]["duration_seconds"] = round(
-        slot_seconds - sum(e["duration_seconds"] for e in elements[:-1]), 3
-    )
+    # 6. Reajusta com precisão de milissegundos para a soma bater exatamente com slot_seconds
+    total_assigned = sum(e["duration_seconds"] for e in elements[:-1])
+    elements[-1]["duration_seconds"] = round(max(1.0, slot_seconds - total_assigned), 3)
+
+    # Arquétipo geral de fallback para o capítulo
+    ch_arch, _ = detect_visual_theme(topic, chapter_title, chapter_title)
+
     scene: dict[str, Any] = {
         "elements": elements,
         "palette": palette,
         "suggested_duration_hint": min(120.0, max(5.0, round(slot_seconds, 2))),
-        "narration_text": chapter["narration"],
-        "topic": topic or chapter.get("title", ""),
-        "chapter_title": chapter.get("title", ""),
-        "visual_archetype": archetype,
+        "narration_text": narration_text,
+        "topic": topic or chapter_title,
+        "chapter_title": chapter_title,
+        "visual_archetype": ch_arch,
     }
     if sources:
         scene["sources"] = sources
@@ -972,7 +1013,7 @@ def run_long_video(
         _save_json(scene_path, scene)
         img_sig = ch_img.get("filename", "") if ch_img else ""
         arch_sig = scene.get("visual_archetype", "")
-        sig = _signature(scene_path, words_path, d / "voice.mp3", chosen_template, extra=f"{pad:.3f}|{palette}|{img_sig}|{arch_sig}|{aspect_ratio}|split_motion_v4")
+        sig = _signature(scene_path, words_path, d / "voice.mp3", chosen_template, extra=f"{pad:.3f}|{palette}|{img_sig}|{arch_sig}|{aspect_ratio}|sentence_synced_v5")
         pct = 0.45 + 0.43 * (i / n)
         if video_path.exists() and sig_path.exists() and sig_path.read_text().strip() == sig:
             progress(pct, f"Capítulo {i + 1}/{n} já renderizado.")
