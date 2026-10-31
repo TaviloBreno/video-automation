@@ -129,6 +129,16 @@ def _search_query(value: str) -> str:
     )
 
 
+_FOREIGN_SCRIPTS_RE = re.compile(
+    r"[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uac00-\ud7af\u0400-\u04ff\u0600-\u06ff]"
+)
+
+
+def _has_foreign_script(text: str) -> bool:
+    """Descarta fontes com caracteres chineses, japoneses, coreanos, cirílicos ou árabes."""
+    return bool(_FOREIGN_SCRIPTS_RE.search(text))
+
+
 SPAM_AND_JUNK_PATTERNS = [
     r"buracoon", r"jogo[s]?\s+de\s+buraco", r"jogue\s+gr[aá]tis", r"jogar\s+online",
     r"100%\s+gr[aá]tis", r"cassino", r"casino", r"\bbet[s]?\b", r"aposta[s]?",

@@ -1023,7 +1023,17 @@ def run_long_video(
                 str(scene_path), str(words_path), str(chosen_template), str(COMPOSITION_PATH),
                 padding=pad,
             )
-            render_scene(str(COMPOSITION_PATH), str(video_path), timeout=900)
+            def _sub_render_prog(step_pct: float, step_msg: str):
+                sub_pct = pct + (0.43 / n) * (step_pct / 100.0)
+                progress(sub_pct, f"Capítulo {i + 1}/{n}: {step_msg}")
+
+            render_scene(
+                str(COMPOSITION_PATH),
+                str(video_path),
+                timeout=900,
+                progress=_sub_render_prog,
+                cancelled=cancelled,
+            )
             sig_path.write_text(sig, encoding="utf-8")
         chapter_videos.append(video_path)
 

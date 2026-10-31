@@ -577,7 +577,7 @@
       border: 1px solid color-mix(in srgb, var(--paletteAccent) 35%, transparent);
     }
     .formula-math-display {
-      font-family: 'Cambria Math', 'Latin Modern Math', 'KaTeX_Math', 'Times New Roman', serif;
+      font-family: 'Times New Roman', Times, serif;
       font-size: 52px;
       font-weight: 700;
       color: #ffffff;
@@ -623,7 +623,7 @@
     .formula-var-chip .var-sym {
       color: var(--paletteAccent);
       font-weight: 800;
-      font-family: 'Cambria Math', 'Latin Modern Math', 'Times New Roman', serif;
+      font-family: 'Times New Roman', Times, serif;
     }
     .formula-var-chip .var-lbl {
       color: color-mix(in srgb, var(--paletteText) 75%, transparent);
@@ -977,7 +977,7 @@
         // 0. Arquétipo Política & Dinâmica de Poder
         const polNeedle = el.querySelector(".pol-needle");
         if (polNeedle) {
-          tl.fromTo(polNeedle, { left: "35%" }, { left: "68%", yoyo: true, repeat: Math.ceil(dur * 1.5), duration: 1.2, ease: "sine.inOut" }, start);
+          tl.fromTo(polNeedle, { xPercent: -180 }, { xPercent: 180, yoyo: true, repeat: Math.ceil(dur * 1.5), duration: 1.2, ease: "sine.inOut" }, start);
         }
         const infLines = el.querySelectorAll(".inf-line");
         infLines.forEach((line) => {

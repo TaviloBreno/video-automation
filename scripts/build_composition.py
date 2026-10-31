@@ -637,7 +637,7 @@ def build_composition(
         role = html.escape(role_labels.get(el.get("type"), "EXPLICAÇÃO"))
 
         clips_html.append(f'''
-    <div id="el-{index}" class="explainer-clip"
+    <div id="el-{index}" class="explainer-clip clip"
          data-start="{cursor:.3f}" data-duration="{dur:.3f}">
       <div class="clip-left-content">
         <div class="clip-heading">
